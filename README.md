@@ -1,2 +1,2 @@
-# formula-language
+# formula
 A simple extensible formula language for .NET
