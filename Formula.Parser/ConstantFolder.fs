@@ -42,5 +42,6 @@ module ConstantFolder =
                     Constant(Number(valueA / valueB))
             | _ -> Arithmetic(resA, op, resB)
         | Function (f, args) ->
-            Function(f, args)
+            let res = args |> List.map foldConstants
+            Function(f, res)
 
