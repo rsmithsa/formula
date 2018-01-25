@@ -10,6 +10,7 @@ open System.Diagnostics
 open FParsec.CharParsers
 
 open Formula.Parser.Parser
+open Formula.Parser.ConstantFolder
 open Formula.Parser.Interpreter
 
 let waitToClose (returnCode: int) =
@@ -35,7 +36,10 @@ let main argv =
     match result with
     | Success (v, _, _) ->
         // Print AST
-        printfn "The AST of the input formula is:\n%A" v
+        printfn "The AST of the input formula is:\n%A\n" v
+
+        let fold = foldConstants v
+        printfn "The constant folded AST of the input formula is:\n%A\n" fold
 
         // Build variable lookup from argv.[1..]
         let variableMap =
@@ -46,7 +50,10 @@ let main argv =
 
         // Interpret and print result
         let evalResult = interpretFormula v variableMap
-        printfn "Function result:\n%f" evalResult
+        printfn "Function result:\n%f\n" evalResult
+
+        let evalFoldResult = interpretFormula fold variableMap
+        printfn "Folded function result:\n%f\n" evalFoldResult
 
         waitToClose 0
     | Failure (msg, err, _) ->
