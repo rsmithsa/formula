@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.1.0</Version>
+    <Authors>Richard Smith</Authors>
+    <Copyright>Richard Smith</Copyright>
+    <RepositoryUrl>https://github.com/rsmithsa/formula</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/rsmithsa/formula</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/rsmithsa/formula/master/LICENSE</PackageLicenseUrl>
+    <Description>A simple extensible formula language for .NET</Description>
+    <Company />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Ast.fs" />
+    <Compile Include="Parser.fs" />
+	<Compile Include="ConstantFolder.fs" />
+    <Compile Include="Interpreter.fs" />
+	<Compile Include="CsWrapper.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FParsec" Version="1.0.3" />
+  </ItemGroup>
+
+</Project>
