@@ -18,7 +18,8 @@ module Interpreter =
         Map.empty.
             Add("SQRT", fun(args: float list) -> sqrt args.[0]).
             Add("PI", fun(args: float list) -> System.Math.PI).
-            Add("POW", fun(args: float list) -> args.[0] ** args.[1])
+            Add("POW", fun(args: float list) -> args.[0] ** args.[1]).
+            Add("COUNT", fun(args: float list) -> float(args.Length))
 
     let rec interpretFormula ast (vars: VariableMap) =
         let interpretConstant constant =

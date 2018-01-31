@@ -1,5 +1,5 @@
-//-----------------------------------------------------------------------
-// <copyright file="ParserTests.fs" company="Richard Smith">
+﻿//-----------------------------------------------------------------------
+// <copyright file="InterpreterTests.fs" company="Richard Smith">
 //     Copyright (c) Richard Smith. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -12,146 +12,152 @@ open Microsoft.VisualStudio.TestTools.UnitTesting
 
 open Formula.Parser.Ast
 open Formula.Parser.Parser
+open Formula.Parser.Interpreter
 
 [<TestClass>]
-type ParserTests () =
+type InterpreterTests () =
+
+    let varMap = 
+        Map.empty.
+            Add("MyVar", 42.0)
 
     [<TestMethod>]
-    member this.TestParseConstant () =
+    member this.TestInterpretConstant () =
         let result = parseFormulaString "42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Constant(Number(42.0))
-            Assert.AreEqual(expected, ast);
+            let value = interpretFormula ast Map.empty
+            Assert.AreEqual(42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
-     
+
     [<TestMethod>]
-    member this.TestParseNegationConstant () =
+    member this.TestInterpretNegationConstant () =
         let result = parseFormulaString "-42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Negation(Constant(Number(42.0)))
-            Assert.AreEqual(expected, ast);
+            let value = interpretFormula ast Map.empty
+            Assert.AreEqual(-42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParseAdditionConstant () =
+    member this.TestInterpretAdditionConstant () =
         let result = parseFormulaString "1 + 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Arithmetic(Constant(Number(1.0)), Add, Constant(Number(42.0)))
-            Assert.AreEqual(expected, ast);
+            let value = interpretFormula ast Map.empty
+            Assert.AreEqual(1.0 + 42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParseSubtractionConstant () =
+    member this.TestInterpretSubtractionConstant () =
         let result = parseFormulaString "1 - 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Arithmetic(Constant(Number(1.0)), Subtract, Constant(Number(42.0)))
-            Assert.AreEqual(expected, ast);
+            let value = interpretFormula ast Map.empty
+            Assert.AreEqual(1.0 - 42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParseMultiplicationConstant () =
+    member this.TestInterpretMultiplicationConstant () =
         let result = parseFormulaString "1 * 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Arithmetic(Constant(Number(1.0)), Multiply, Constant(Number(42.0)))
-            Assert.AreEqual(expected, ast);
+            let value = interpretFormula ast Map.empty
+            Assert.AreEqual(1.0 * 42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParseDivisionConstant () =
+    member this.TestInterpretDivisionConstant () =
         let result = parseFormulaString "1 / 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Arithmetic(Constant(Number(1.0)), Divide, Constant(Number(42.0)))
-            Assert.AreEqual(expected, ast);
+            let value = interpretFormula ast Map.empty
+            Assert.AreEqual(1.0 / 42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParsePowerConstant () =
+    member this.TestInterpretPowerConstant () =
         let result = parseFormulaString "1 ^ 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Arithmetic(Constant(Number(1.0)), Power, Constant(Number(42.0)))
-            Assert.AreEqual(expected, ast);
+            let value = interpretFormula ast Map.empty
+            Assert.AreEqual(1.0 ** 42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParseOrderOfOperations1 () =
+    member this.TestInterpretOrderOfOperations1 () =
         let result = parseFormulaString "1 + 42 * 2"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Arithmetic(Constant(Number(1.0)), Add, Arithmetic(Constant(Number(42.0)), Multiply, Constant(Number(2.0))))
-            Assert.AreEqual(expected, ast);
+            let value = interpretFormula ast Map.empty
+            Assert.AreEqual(1.0 + 42.0 * 2.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParseOrderOfOperations2 () =
+    member this.TestInterpretOrderOfOperations2 () =
         let result = parseFormulaString "(1 + 42) * 2"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Arithmetic(Arithmetic(Constant(Number(1.0)), Add, Constant(Number(42.0))), Multiply, Constant(Number(2.0)))
-            Assert.AreEqual(expected, ast);
+            let value = interpretFormula ast Map.empty
+            Assert.AreEqual((1.0 + 42.0) * 2.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParseOrderOfOperations3 () =
+    member this.TestInterpretOrderOfOperations3 () =
         let result = parseFormulaString "(1 + 42) * 2^3"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Arithmetic(Arithmetic(Constant(Number(1.0)), Add, Constant(Number(42.0))), Multiply, Arithmetic(Constant(Number(2.0)), Power, Constant(Number(3.0))))
-            Assert.AreEqual(expected, ast);
+            let value = interpretFormula ast Map.empty
+            Assert.AreEqual((1.0 + 42.0) * 2.0 ** 3.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParseVariable () =
+    member this.TestInterpretVariable () =
         let result = parseFormulaString "MyVar"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Variable(Identifier("MyVar"))
-            Assert.AreEqual(expected, ast);
+            let value = interpretFormula ast varMap
+            Assert.AreEqual(varMap.["MyVar"], value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParseFunction () =
+    member this.TestInterpretFunction () =
         let result = parseFormulaString "COUNT[]"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Function(Identifier("COUNT"), [])
-            Assert.AreEqual(expected, ast);
+            let value = interpretFormula ast Map.empty
+            Assert.AreEqual(functions.["COUNT"] [], value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParseFunctionWithParameters () =
+    member this.TestInterpretFunctionWithParameters () =
         let result = parseFormulaString "COUNT[1 + 42, MyVar]"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Function(Identifier("COUNT"), [ Arithmetic(Constant(Number(1.0)), Add, Constant(Number(42.0))); Variable(Identifier("MyVar")) ])
-            Assert.AreEqual(expected, ast);
+            let value = interpretFormula ast varMap
+            Assert.AreEqual(functions.["COUNT"] [1.0 + 42.0; varMap.["MyVar"]], value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParseFunctionOfFunction () =
+    member this.TestInterpretFunctionOfFunction () =
         let result = parseFormulaString "COUNT[COUNT[]]"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Function(Identifier("COUNT"), [ Function(Identifier("COUNT"), []) ])
-            Assert.AreEqual(expected, ast);
+            let value = interpretFormula ast Map.empty
+            Assert.AreEqual(functions.["COUNT"] [functions.["COUNT"] []], value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+
