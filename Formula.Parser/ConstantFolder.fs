@@ -40,6 +40,8 @@ module ConstantFolder =
                     Constant(Number(valueA * valueB))
                 | Divide ->
                     Constant(Number(valueA / valueB))
+                | Power ->
+                    Constant(Number(valueA ** valueB))
             | _ -> Arithmetic(resA, op, resB)
         | Function (f, args) ->
             let res = args |> List.map foldConstants

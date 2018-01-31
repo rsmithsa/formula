@@ -16,8 +16,9 @@ module Interpreter =
     // Hardcoded for now
     let functions: Map<string, float list -> float> =
         Map.empty.
-            Add("SQRT", fun(args: float list) -> sqrt args.Head).
-            Add("PI", fun(args: float list) -> System.Math.PI)
+            Add("SQRT", fun(args: float list) -> sqrt args.[0]).
+            Add("PI", fun(args: float list) -> System.Math.PI).
+            Add("POW", fun(args: float list) -> args.[0] ** args.[1])
 
     let rec interpretFormula ast (vars: VariableMap) =
         let interpretConstant constant =
@@ -41,6 +42,8 @@ module Interpreter =
                 interpretFormula a vars * interpretFormula b vars
             | Divide ->
                 interpretFormula a vars / interpretFormula b vars
+            | Power ->
+                interpretFormula a vars ** interpretFormula b vars
 
         let interpretFunction f args =
             match f with

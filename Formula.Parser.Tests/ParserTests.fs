@@ -77,6 +77,16 @@ type ParserTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
+    member this.TestParsePowerConstant () =
+        let result = parseFormulaString "1 ^ 42"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Arithmetic(Constant(Number(1.0)), Power, Constant(Number(42.0)))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
     member this.TestParseOrderOfOperations1 () =
         let result = parseFormulaString "1 + 42 * 2"
         match result with
