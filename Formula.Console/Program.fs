@@ -12,6 +12,8 @@ open FParsec.CharParsers
 open Formula.Parser.Parser
 open Formula.Parser.ConstantFolder
 open Formula.Parser.Interpreter
+open Formula.Parser
+open Formula.Parser.Integration
 
 let waitToClose (returnCode: int) =
     match System.Diagnostics.Debugger.IsAttached with  
@@ -49,10 +51,10 @@ let main argv =
             |> Map.ofSeq
 
         // Interpret and print result
-        let evalResult = interpretFormula v variableMap
+        let evalResult = interpretFormula v variableMap DefaultFunctionProvider.Instance
         printfn "Function result:\n%f\n" evalResult
 
-        let evalFoldResult = interpretFormula fold variableMap
+        let evalFoldResult = interpretFormula fold variableMap DefaultFunctionProvider.Instance
         printfn "Folded function result:\n%f\n" evalFoldResult
 
         waitToClose 0

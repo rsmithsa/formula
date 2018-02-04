@@ -10,6 +10,7 @@ namespace Formula.Parser.CsTests
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Text;
+    using Formula.Parser;
     using Formula.Parser.Integration;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -21,7 +22,7 @@ namespace Formula.Parser.CsTests
         {
             var input = "42";
 
-            var result = CsWrapper.InterpretFormula(input, new Dictionary<string, double>());
+            var result = CsWrapper.InterpretFormula(input, new Dictionary<string, double>(), DefaultFunctionProvider.Instance);
 
             Assert.AreEqual(42, result);
         }
@@ -50,7 +51,7 @@ namespace Formula.Parser.CsTests
 
             var inputStr = input.ToString();
             var sw = Stopwatch.StartNew();
-            var result = CsWrapper.InterpretFormula(inputStr, new Dictionary<string, double>() { { "Test", 1 } });
+            var result = CsWrapper.InterpretFormula(inputStr, new Dictionary<string, double>() { { "Test", 1 } }, DefaultFunctionProvider.Instance);
             sw.Stop();
 
             Console.WriteLine($"Depth: {depth}, Time: {sw.ElapsedMilliseconds}ms");
