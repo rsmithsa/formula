@@ -117,11 +117,31 @@ type ParserTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParseVariable () =
+    member this.TestParseVariable1 () =
         let result = parseFormulaString "MyVar"
         match result with
         | Success (ast, userState, endPos) ->
             let expected = Variable(Identifier("MyVar"))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariable2 () =
+        let result = parseFormulaString "MyVar1"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Variable(Identifier("MyVar1"))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariable3 () =
+        let result = parseFormulaString "_MyVar_1"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Variable(Identifier("_MyVar_1"))
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -152,6 +172,116 @@ type ParserTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let expected = Function(Identifier("COUNT"), [ Function(Identifier("COUNT"), []) ])
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseLogicalTrue () =
+        let result = parseFormulaString "true"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Constant(Boolean(true))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseLogicalFalse () =
+        let result = parseFormulaString "false"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Constant(Boolean(false))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseInversion () =
+        let result = parseFormulaString "!false"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Inversion(Constant(Boolean(false)))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseLogicalAnd () =
+        let result = parseFormulaString "true && false"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Logical(Constant(Boolean(true)), And, Constant(Boolean(false)))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseLogicalOr () =
+        let result = parseFormulaString "true || false"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Logical(Constant(Boolean(true)), Or, Constant(Boolean(false)))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseComparisonEqual () =
+        let result = parseFormulaString "42 = 1"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Comparison(Constant(Number(42.0)), Equal, Constant(Number(1.0)))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseComparisonNotEqual () =
+        let result = parseFormulaString "42 <> 1"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Comparison(Constant(Number(42.0)), NotEqual, Constant(Number(1.0)))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseComparisonGreaterThan () =
+        let result = parseFormulaString "42 > 1"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Comparison(Constant(Number(42.0)), GreaterThan, Constant(Number(1.0)))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseComparisonLessThan () =
+        let result = parseFormulaString "42 < 1"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Comparison(Constant(Number(42.0)), LessThan, Constant(Number(1.0)))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseComparisonGreaterThanEqual () =
+        let result = parseFormulaString "42 >= 1"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Comparison(Constant(Number(42.0)), GreaterThanEqual, Constant(Number(1.0)))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseComparisonLessThanEqual () =
+        let result = parseFormulaString "42 <= 1"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Comparison(Constant(Number(42.0)), LessThanEqual, Constant(Number(1.0)))
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
