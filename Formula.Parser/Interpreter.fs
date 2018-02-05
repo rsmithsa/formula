@@ -22,9 +22,25 @@ module Interpreter =
             Add("COUNT", fun(args: float list) -> float(args.Length))
 
     let rec interpretFormula ast (vars: VariableMap) =
+
+        let castToBool value =
+            match value with
+            | 0.0 -> 
+                false
+            | _ ->
+                true
+
+        let castToDouble value =
+            match value with
+            | true ->
+                1.0
+            | false ->
+                0.0
+
         let interpretConstant constant =
             match constant with
             | Number n -> n
+            | Boolean b -> castToDouble b
 
         let interpetVariable variable =
             match variable with
@@ -46,6 +62,36 @@ module Interpreter =
             | Power ->
                 interpretFormula a vars ** interpretFormula b vars
 
+        let interpretInversion inversion =
+            let value = castToBool (interpretFormula inversion vars)
+            castToDouble (not value)
+
+        let interpretComparison a op b =
+            let valueA = interpretFormula a vars
+            let valueB = interpretFormula b vars
+            match op with
+            | Equal ->
+                castToDouble (valueA = valueB)
+            | NotEqual ->
+                castToDouble (valueA <> valueB)
+            | GreaterThan ->
+                castToDouble (valueA > valueB)
+            | LessThan ->
+                castToDouble (valueA < valueB)
+            | GreaterThanEqual ->
+                castToDouble (valueA >= valueB)
+            | LessThanEqual ->
+                castToDouble (valueA <= valueB)
+
+        let interpretLogical a op b =
+            let valueA = castToBool (interpretFormula a vars)
+            let valueB = lazy (castToBool (interpretFormula b vars))
+            match op with
+            | And ->
+                castToDouble (valueA && valueB.Force())
+            | Or ->
+                castToDouble (valueA || valueB.Force())
+
         let interpretFunction f args =
             match f with
             | Identifier id ->
@@ -62,5 +108,11 @@ module Interpreter =
             interpretNegation n
         | Arithmetic (a, op, b) ->
             interpretArtithmetic a op b
+        | Inversion i ->
+            interpretInversion i
+        | Comparison (a, op, b) ->
+            interpretComparison a op b
+        | Logical (a, op, b) ->
+            interpretLogical a op b
         | Function (f, args) ->
             interpretFunction f args
