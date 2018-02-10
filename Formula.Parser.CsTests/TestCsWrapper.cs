@@ -58,5 +58,57 @@ namespace Formula.Parser.CsTests
 
             Assert.AreEqual(1, result);
         }
+
+        class CustomFunctionProvider: IFunctionProvider
+        {
+            class MyFuncImplementation : IFunctionImplementation
+            {
+                public double Execute(double[] input)
+                {
+                    return 42.0;
+                }
+
+                public bool Validate(double[] input, out string message)
+                {
+                    if (input.Length == 0)
+                    {
+                        message = String.Empty;
+                        return true;
+                    }
+                    else
+                    {
+                        message = "Expected no arguments";
+                        return false;
+                    }
+                }
+
+                public string Name => "MyFunc";
+            }
+
+            public bool IsDefined(string name)
+            {
+                return name == "MyFunc";
+            }
+
+            public IFunctionImplementation Lookup(string name)
+            {
+                if (name == "MyFunc")
+                {
+                    return new MyFuncImplementation();
+                }
+
+                return null;
+            }
+        }
+
+        [TestMethod]
+        public void TestCustomFunctionProvider()
+        {
+            var input = "MyFunc[]";
+
+            var result = CsWrapper.InterpretFormula(input, new Dictionary<string, double>(), new CustomFunctionProvider());
+
+            Assert.AreEqual(42, result);
+        }
     }
 }
