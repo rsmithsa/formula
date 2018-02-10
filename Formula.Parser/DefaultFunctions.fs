@@ -35,6 +35,15 @@ type PowFunction() =
         member this.Validate (input, message) =
             true
 
+type ModFunction() =
+    interface IFunctionImplementation with
+        member this.Name =
+            "MOD"
+        member this.Execute input =
+            input.[0] % input.[1]
+        member this.Validate (input, message) =
+            true
+
 type CountFunction() =
     interface IFunctionImplementation with
         member this.Name =
@@ -53,6 +62,7 @@ type DefaultFunctionProvider() =
             Add("SQRT", SqrtFunction() :> IFunctionImplementation).
             Add("PI", PiFunction() :> IFunctionImplementation).
             Add("POW", PowFunction() :> IFunctionImplementation).
+            Add("MOD", ModFunction() :> IFunctionImplementation).
             Add("COUNT", CountFunction() :> IFunctionImplementation)
 
     static member Instance = instance

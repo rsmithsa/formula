@@ -93,6 +93,16 @@ type InterpreterTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
+    member this.TestInterpretModulusConstant () =
+        let result = parseFormulaString "1 % 42"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast emptyVarMap DefaultFunctionProvider.Instance
+            Assert.AreEqual(1.0 % 42.0, value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
     member this.TestInterpretOrderOfOperations1 () =
         let result = parseFormulaString "1 + 42 * 2"
         match result with

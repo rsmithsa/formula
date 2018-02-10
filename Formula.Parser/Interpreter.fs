@@ -32,6 +32,8 @@ module Interpreter =
                 interpretFormula a vars functions * interpretFormula b vars functions
             | Divide ->
                 interpretFormula a vars functions / interpretFormula b vars functions
+            | Modulus ->
+                interpretFormula a vars functions % interpretFormula b vars functions
             | Power ->
                 interpretFormula a vars functions ** interpretFormula b vars functions
 

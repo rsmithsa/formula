@@ -9,7 +9,7 @@ namespace Formula.Parser
 module Ast = 
 
     type identifier = Identifier of string
-    type arithmetic = Add | Subtract | Multiply | Divide | Power
+    type arithmetic = Add | Subtract | Multiply | Divide | Modulus | Power
     type value = Number of double
 
     type expr   =
