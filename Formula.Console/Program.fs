@@ -50,11 +50,13 @@ let main argv =
             |> Seq.map (fun a -> a.[0], float a.[1])
             |> Map.ofSeq
 
+        let variableProvider = MapVariableProvider(variableMap)
+
         // Interpret and print result
-        let evalResult = interpretFormula v variableMap DefaultFunctionProvider.Instance
+        let evalResult = interpretFormula v variableProvider DefaultFunctionProvider.Instance
         printfn "Function result:\n%f\n" evalResult
 
-        let evalFoldResult = interpretFormula fold variableMap DefaultFunctionProvider.Instance
+        let evalFoldResult = interpretFormula fold variableProvider DefaultFunctionProvider.Instance
         printfn "Folded function result:\n%f\n" evalFoldResult
 
         waitToClose 0

@@ -10,17 +10,14 @@ module Interpreter =
 
     open Formula.Parser.Ast
 
-    // Would be nice to be Map<string, expr>
-    type VariableMap = Map<string, float>
-
-    let rec interpretFormula ast (vars: VariableMap) (functions: IFunctionProvider) =
+    let rec interpretFormula ast (vars: IVariableProvider) (functions: IFunctionProvider) =
         let interpretConstant constant =
             match constant with
             | Number n -> n
 
         let interpetVariable variable =
             match variable with
-            | Identifier id -> vars.[id]
+            | Identifier id -> vars.Lookup id
 
         let interpretNegation negation = 
             -interpretFormula negation vars functions

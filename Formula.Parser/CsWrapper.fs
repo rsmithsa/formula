@@ -31,6 +31,6 @@ module CsWrapper =
         let result = parseFormulaString input
         match result with
         | Success (ast, userState, endPos) ->
-            interpretFormula ast (dictionaryToMap variables) functionProvider
+            interpretFormula ast (MapVariableProvider(dictionaryToMap variables)) functionProvider
         | Failure (msg, error, userState) ->
             raise (ArgumentException(msg, "input"))
