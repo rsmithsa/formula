@@ -44,6 +44,7 @@ module Parser =
     oppa.AddOperator(InfixOperator("-", ws, 1, Associativity.Left, fun x y -> Arithmetic(x, Subtract, y)))
     oppa.AddOperator(InfixOperator("*", ws, 2, Associativity.Left, fun x y -> Arithmetic(x, Multiply, y)))
     oppa.AddOperator(InfixOperator("/", ws, 2, Associativity.Left, fun x y -> Arithmetic(x, Divide, y)))
+    oppa.AddOperator(InfixOperator("%", ws, 2, Associativity.Left, fun x y -> Arithmetic(x, Modulus, y)))
     oppa.AddOperator(InfixOperator("^", ws, 3, Associativity.Left, fun x y -> Arithmetic(x, Power, y)))
     oppa.AddOperator(PrefixOperator("-", ws, 3, true, fun x -> Negation(x)))
 

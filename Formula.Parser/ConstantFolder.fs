@@ -40,6 +40,8 @@ module ConstantFolder =
                     Constant(Number(valueA * valueB))
                 | Divide ->
                     Constant(Number(valueA / valueB))
+                | Modulus ->
+                    Constant(Number(valueA % valueB))
                 | Power ->
                     Constant(Number(valueA ** valueB))
             | _ -> Arithmetic(resA, op, resB)
