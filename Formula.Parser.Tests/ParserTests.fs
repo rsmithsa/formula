@@ -87,6 +87,16 @@ type ParserTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
+    member this.TestParseModulusConstant () =
+        let result = parseFormulaString "1 % 42"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Arithmetic(Constant(Number(1.0)), Modulus, Constant(Number(42.0)))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
     member this.TestParseOrderOfOperations1 () =
         let result = parseFormulaString "1 + 42 * 2"
         match result with
@@ -117,6 +127,16 @@ type ParserTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
+    member this.TestParseOrderOfOperations4 () =
+        let result = parseFormulaString "1 + 42 % 2"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Arithmetic(Constant(Number(1.0)), Add, Arithmetic(Constant(Number(42.0)), Modulus, Constant(Number(2.0))))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
     member this.TestParseVariable1 () =
         let result = parseFormulaString "MyVar"
         match result with
@@ -142,6 +162,46 @@ type ParserTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let expected = Variable(Identifier("_MyVar_1"))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariableOrderOfOperations1 () =
+        let result = parseFormulaString "V1 + V42 * V2"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Arithmetic(Variable(Identifier("V1")), Add, Arithmetic(Variable(Identifier("V42")), Multiply, Variable(Identifier("V2"))))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariableOrderOfOperations2 () =
+        let result = parseFormulaString "(V1 + V42) * V2"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Arithmetic(Arithmetic(Variable(Identifier("V1")), Add, Variable(Identifier("V42"))), Multiply, Variable(Identifier("V2")))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariableOrderOfOperations3 () =
+        let result = parseFormulaString "(V1 + V42) * V2^V3"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Arithmetic(Arithmetic(Variable(Identifier("V1")), Add, Variable(Identifier("V42"))), Multiply, Arithmetic(Variable(Identifier("V2")), Power, Variable(Identifier("V3"))))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariableOrderOfOperations4 () =
+        let result = parseFormulaString "V1 + V42 % V2"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Arithmetic(Variable(Identifier("V1")), Add, Arithmetic(Variable(Identifier("V42")), Modulus, Variable(Identifier("V2"))))
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

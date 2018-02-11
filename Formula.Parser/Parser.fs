@@ -17,14 +17,14 @@ module Parser =
 
     let pnumber = pfloat |>> Number
     let pboolean: Parser<value, unit> = (str_ws "true" >>% Boolean(true)) <|> (str_ws "false" >>% Boolean(false))
-    let pconstant = (pnumber |>> (fun x -> Constant(x))) <|> (pboolean |>> (fun x -> Constant(x)))
+    let pconstant = (pnumber |>> Constant) <|> (pboolean |>> Constant)
 
     let pidentifier: Parser<identifier, unit> =
         let isIdentifierFirstChar c = isLetter c || c = '_'
         let isIdentifierChar c = isLetter c || isDigit c || c = '_'
         many1Satisfy2L isIdentifierFirstChar isIdentifierChar "identifier" |>> Identifier
 
-    let pvariable = pidentifier |>> (fun x -> Variable(x))
+    let pvariable = pidentifier |>> Variable
 
     let pexpr, pexprImpl = createParserForwardedToRef()
 
