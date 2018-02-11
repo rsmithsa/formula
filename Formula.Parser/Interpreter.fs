@@ -10,18 +10,7 @@ module Interpreter =
 
     open Formula.Parser.Ast
 
-    // Would be nice to be Map<string, expr>
-    type VariableMap = Map<string, float>
-
-    // Hardcoded for now
-    let functions: Map<string, float list -> float> =
-        Map.empty.
-            Add("SQRT", fun(args: float list) -> sqrt args.[0]).
-            Add("PI", fun(args: float list) -> System.Math.PI).
-            Add("POW", fun(args: float list) -> args.[0] ** args.[1]).
-            Add("COUNT", fun(args: float list) -> float(args.Length))
-
-    let rec interpretFormula ast (vars: VariableMap) =
+    let rec interpretFormula ast (vars: IVariableProvider) (functions: IFunctionProvider) =
 
         let castToBool value =
             match value with
@@ -44,31 +33,33 @@ module Interpreter =
 
         let interpetVariable variable =
             match variable with
-            | Identifier id -> vars.[id]
+            | Identifier id -> vars.Lookup id
 
         let interpretNegation negation = 
-            -interpretFormula negation vars
+            -interpretFormula negation vars functions
 
         let interpretArtithmetic a op b =
             match op with
             | Add ->
-                interpretFormula a vars + interpretFormula b vars
+                interpretFormula a vars functions + interpretFormula b vars functions
             | Subtract ->
-                interpretFormula a vars - interpretFormula b vars
+                interpretFormula a vars functions - interpretFormula b vars functions
             | Multiply ->
-                interpretFormula a vars * interpretFormula b vars
+                interpretFormula a vars functions * interpretFormula b vars functions
             | Divide ->
-                interpretFormula a vars / interpretFormula b vars
+                interpretFormula a vars functions / interpretFormula b vars functions
+            | Modulus ->
+                interpretFormula a vars functions % interpretFormula b vars functions
             | Power ->
-                interpretFormula a vars ** interpretFormula b vars
+                interpretFormula a vars functions ** interpretFormula b vars functions
 
         let interpretInversion inversion =
-            let value = castToBool (interpretFormula inversion vars)
+            let value = castToBool (interpretFormula inversion vars functions)
             castToDouble (not value)
 
         let interpretComparison a op b =
-            let valueA = interpretFormula a vars
-            let valueB = interpretFormula b vars
+            let valueA = interpretFormula a vars functions
+            let valueB = interpretFormula b vars functions
             match op with
             | Equal ->
                 castToDouble (valueA = valueB)
@@ -84,8 +75,8 @@ module Interpreter =
                 castToDouble (valueA <= valueB)
 
         let interpretLogical a op b =
-            let valueA = castToBool (interpretFormula a vars)
-            let valueB = lazy (castToBool (interpretFormula b vars))
+            let valueA = castToBool (interpretFormula a vars functions)
+            let valueB = lazy (castToBool (interpretFormula b vars functions))
             match op with
             | And ->
                 castToDouble (valueA && valueB.Force())
@@ -95,9 +86,10 @@ module Interpreter =
         let interpretFunction f args =
             match f with
             | Identifier id ->
-                let interpretArg arg = interpretFormula arg vars
+                let interpretArg arg = interpretFormula arg vars functions
                 let interpretedArgs = args |> List.map interpretArg
-                functions.[id] interpretedArgs
+                let imp = functions.Lookup id
+                imp.Execute (List.toArray interpretedArgs)
 
         match ast with
         | Constant c ->

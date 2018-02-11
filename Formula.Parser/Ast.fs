@@ -13,7 +13,7 @@ module Ast =
                 |Number of double
                 |Boolean of bool
 
-    type arithmetic = Add | Subtract | Multiply | Divide | Power
+    type arithmetic = Add | Subtract | Multiply | Divide | Modulus | Power
     type comparison = Equal | NotEqual | GreaterThan | LessThan | GreaterThanEqual | LessThanEqual
     type logical = And | Or
 
