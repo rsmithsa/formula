@@ -114,3 +114,17 @@ module ConstantFolder =
         | Function (f, args) ->
             let res = args |> List.map foldConstants
             Function(f, res)
+        | Branch (cond, a, b) ->
+            let resCond  = foldConstants cond
+            match resCond with
+            | Constant cCond ->
+                let condVal = castToBool cCond
+                match condVal with
+                | true ->
+                    foldConstants a
+                | false ->
+                    foldConstants b
+            | _ ->
+                let resA = foldConstants a
+                let resB = foldConstants b
+                Branch(cond, resA, resB)

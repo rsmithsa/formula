@@ -91,6 +91,14 @@ module Interpreter =
                 let imp = functions.Lookup id
                 imp.Execute (List.toArray interpretedArgs)
 
+        let interpretBranch cond a b =
+            let valueCond = castToBool (interpretFormula cond vars functions)
+            match valueCond with
+            | true ->
+                interpretFormula a vars functions
+            | false ->
+                interpretFormula b vars functions
+
         match ast with
         | Constant c ->
             interpretConstant c
@@ -108,3 +116,5 @@ module Interpreter =
             interpretLogical a op b
         | Function (f, args) ->
             interpretFunction f args
+        | Branch (cond, a, b) ->
+            interpretBranch cond a b

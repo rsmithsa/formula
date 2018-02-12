@@ -37,9 +37,11 @@ module Parser =
                 | Some args -> Function(id, args)
                 | None -> Variable(id))
 
+    let branchExpr = pipe3 (str_ws "IF" >>. pexpr .>> ws)  (str_ws "THEN" >>. pexpr .>> ws) (str_ws "ELSE" >>. pexpr .>> ws) (fun cond a b -> Branch(cond, a, b))
+
     let oppa = new OperatorPrecedenceParser<expr,unit,unit>()
     do pexprImpl := oppa.ExpressionParser
-    let terma = (pconstant .>> ws) <|> (identWithOptArgs .>> ws) <|> between (str_ws "(") (str_ws ")") pexpr
+    let terma = (branchExpr .>> ws) <|> (pconstant .>> ws) <|> (identWithOptArgs .>> ws) <|> between (str_ws "(") (str_ws ")") pexpr
     oppa.TermParser <- terma
     oppa.AddOperator(InfixOperator("||", ws, 1, Associativity.Left, fun x y -> Logical(x, Or, y)))
     oppa.AddOperator(InfixOperator("&&", ws, 2, Associativity.Left, fun x y -> Logical(x, And, y)))
