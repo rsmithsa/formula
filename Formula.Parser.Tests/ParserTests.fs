@@ -345,3 +345,23 @@ type ParserTests () =
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseBranch1 () =
+        let result = parseFormulaString "IF true THEN 42 ELSE 1"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Branch(Constant(Boolean(true)), Constant(Number(42.0)), Constant(Number(1.0)))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseBranch2 () =
+        let result = parseFormulaString "IF(42>=1)THEN(42)ELSE(1)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Branch(Comparison(Constant(Number(42.0)), GreaterThanEqual, Constant(Number(1.0))), Constant(Number(42.0)), Constant(Number(1.0)))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
