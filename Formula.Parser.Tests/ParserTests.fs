@@ -6,7 +6,6 @@
 
 namespace Formula.Parser.Tests
 
-open System
 open FParsec.CharParsers
 open Microsoft.VisualStudio.TestTools.UnitTesting
 
@@ -358,10 +357,10 @@ type ParserTests () =
 
     [<TestMethod>]
     member this.TestParseBranch2 () =
-        let result = parseFormulaString "IF(42>=1)THEN(42)ELSE(1)"
+        let result = parseFormulaString "IF(42<=1)THEN(42)ELSE(1)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Branch(Comparison(Constant(Number(42.0)), GreaterThanEqual, Constant(Number(1.0))), Constant(Number(42.0)), Constant(Number(1.0)))
+            let expected = Branch(Comparison(Constant(Number(42.0)), LessThanEqual, Constant(Number(1.0))), Constant(Number(42.0)), Constant(Number(1.0)))
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
