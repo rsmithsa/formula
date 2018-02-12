@@ -8,7 +8,18 @@ namespace Formula.Parser.Integration
 
 open Formula.Parser
 
-type MapVariableProvider(map) =
+type MapVariableProvider(map: Map<string, float>) =
+
+    static let empty = MapVariableProvider(Map.empty) :> IVariableProvider
+
+    static let dictionaryToMap (dictionary : System.Collections.Generic.IDictionary<_,_>) = 
+        dictionary 
+        |> Seq.map (|KeyValue|)  
+        |> Map.ofSeq
+    
+    static member Empty = empty
+
+    new(variables: System.Collections.Generic.IDictionary<string,double>) = MapVariableProvider(dictionaryToMap variables)
 
     member this.KnownVariables: Map<string, float> = map
 

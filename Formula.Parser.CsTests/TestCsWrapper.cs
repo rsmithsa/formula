@@ -18,12 +18,19 @@ namespace Formula.Parser.CsTests
     public class TestCsWrapper : TestBase
     {
         [TestMethod]
-        public void TestInterpetConstant()
+        public void TestInterpetUsage()
         {
             var input = "42";
 
-            var result = CsWrapper.InterpretFormula(input, new Dictionary<string, double>(), DefaultFunctionProvider.Instance);
+            var result = CsWrapper.InterpretFormula(input);
+            Assert.AreEqual(42, result);
 
+            var ast = CsWrapper.ParseFormula(input);
+            result = CsWrapper.InterpretExpression(ast);
+            Assert.AreEqual(42, result);
+
+            var folded = CsWrapper.ConstantFoldExpression(ast);
+            result = CsWrapper.InterpretExpression(folded);
             Assert.AreEqual(42, result);
         }
 
@@ -51,7 +58,7 @@ namespace Formula.Parser.CsTests
 
             var inputStr = input.ToString();
             var sw = Stopwatch.StartNew();
-            var result = CsWrapper.InterpretFormula(inputStr, new Dictionary<string, double>() { { "Test", 1 } }, DefaultFunctionProvider.Instance);
+            var result = CsWrapper.InterpretFormula(inputStr, new MapVariableProvider(new Dictionary<string, double>() { { "Test", 1 } }), DefaultFunctionProvider.Instance);
             sw.Stop();
 
             Console.WriteLine($"Depth: {depth}, Time: {sw.ElapsedMilliseconds}ms");
@@ -106,7 +113,7 @@ namespace Formula.Parser.CsTests
         {
             var input = "MyFunc[]";
 
-            var result = CsWrapper.InterpretFormula(input, new Dictionary<string, double>(), new CustomFunctionProvider());
+            var result = CsWrapper.InterpretFormula(input, new CustomFunctionProvider());
 
             Assert.AreEqual(42, result);
         }
