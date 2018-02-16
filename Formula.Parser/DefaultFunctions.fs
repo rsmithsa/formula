@@ -15,7 +15,16 @@ type SqrtFunction() =
         member this.Execute input =
             sqrt input.[0]
         member this.Validate (input, message) =
-            true
+            match isNull input with
+            | true ->
+                message <- "SQRT expects one argument."
+                false
+            | false ->
+                match input.Length with
+                | 1 -> true
+                | _ ->
+                    message <- "SQRT expects one argument."
+                    false
 
 type PiFunction() =
     interface IFunctionImplementation with
@@ -24,7 +33,14 @@ type PiFunction() =
         member this.Execute input =
             System.Math.PI
         member this.Validate (input, message) =
-            true
+            match isNull input with
+            | true -> true
+            | false ->
+                match input.Length with
+                | 0 -> true
+                | _ ->
+                    message <- "PI expects no arguments."
+                    false
 
 type PowFunction() =
     interface IFunctionImplementation with
@@ -33,7 +49,16 @@ type PowFunction() =
         member this.Execute input =
             input.[0] ** input.[1]
         member this.Validate (input, message) =
-            true
+            match isNull input with
+            | true ->
+                message <- "POW expects two arguments."
+                false
+            | false ->
+                match input.Length with
+                | 2 -> true
+                | _ ->
+                    message <- "POW expects two arguments."
+                    false
 
 type ModFunction() =
     interface IFunctionImplementation with
@@ -42,14 +67,25 @@ type ModFunction() =
         member this.Execute input =
             input.[0] % input.[1]
         member this.Validate (input, message) =
-            true
+            match isNull input with
+            | true ->
+                message <- "MOD expects two arguments."
+                false
+            | false ->
+                match input.Length with
+                | 2 -> true
+                | _ ->
+                    message <- "MOD expects two arguments."
+                    false
 
 type CountFunction() =
     interface IFunctionImplementation with
         member this.Name =
             "COUNT"
         member this.Execute input =
-            float(input.Length)
+            match isNull input with
+            | true -> 0.0
+            | false -> float(input.Length)
         member this.Validate (input, message) =
             true
 
