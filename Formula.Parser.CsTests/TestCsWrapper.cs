@@ -123,5 +123,22 @@ namespace Formula.Parser.CsTests
 
             Assert.AreEqual(84, result);
         }
+
+        [TestMethod]
+        public void TestExpressionVariableProvider()
+        {
+            var input = new Dictionary<string, string>()
+            {
+                { "A", "B*C" },
+                { "B", "C * 10" },
+                { "C", "SQRT[4] * 5" }
+            };
+
+            var variableProvider = new ExpressionVariableProvider(input, DefaultFunctionProvider.Instance);
+
+            var result = variableProvider.Lookup("A");
+
+            Assert.AreEqual(1000, result);
+        }
     }
 }

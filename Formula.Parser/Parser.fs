@@ -7,6 +7,7 @@
 namespace Formula.Parser
 
 module Parser =
+    open System
 
     open FParsec
     open Formula.Parser.Ast
@@ -63,3 +64,10 @@ module Parser =
     let formula = ws >>. pexpr .>> ws .>> eof
 
     let parseFormulaString str = run formula str
+
+    let parseFormula str =
+        match parseFormulaString str with
+        | Success (ast, a, b) ->
+            ast
+        | Failure (msg, a, b) ->
+            raise (ArgumentException(msg, "input"))

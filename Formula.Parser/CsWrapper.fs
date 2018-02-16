@@ -6,24 +6,19 @@
 
 namespace Formula.Parser.Integration
 
-open System
 open FParsec.CharParsers
 
 open Formula.Parser.Parser
 open Formula.Parser.ConstantFolder
 open Formula.Parser.Interpreter
+open Formula.Parser.Compiler
 open Formula.Parser
 
 [<AbstractClass; Sealed>]
 type CsWrapper private() =
 
     static member ParseFormula input =
-        let result = parseFormulaString input
-        match result with
-        | Success (ast, a, b) ->
-            ast
-        | Failure (msg, a, b) ->
-            raise (ArgumentException(msg, "input"))
+        parseFormula input
 
     static member ConstantFoldExpression ast =
         foldConstants ast
@@ -40,6 +35,9 @@ type CsWrapper private() =
     static member InterpretExpression (ast, (variableProvider: IVariableProvider), (functionProvider: IFunctionProvider)) =
         interpretFormula ast variableProvider functionProvider
 
+    static member CompileExpression ast =
+        compileFormula ast
+
     static member InterpretFormula (input) =
         CsWrapper.InterpretFormula(input, MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
 
@@ -50,9 +48,5 @@ type CsWrapper private() =
         CsWrapper.InterpretFormula(input, MapVariableProvider.Empty, functionProvider)
 
     static member InterpretFormula (input, (variableProvider: IVariableProvider), (functionProvider: IFunctionProvider)) =
-        let result = parseFormulaString input
-        match result with
-        | Success (ast, userState, endPos) ->
-            interpretFormula ast variableProvider functionProvider
-        | Failure (msg, error, userState) ->
-            raise (ArgumentException(msg, "input"))
+        let ast = parseFormula input
+        interpretFormula ast variableProvider functionProvider
