@@ -103,7 +103,9 @@ type DefaultFunctionProvider() =
 
     static member Instance = instance
 
-    interface IFunctionProvider with 
+    interface IFunctionProvider with
+        member this.KnownFunctions =
+            knownFunctions |> Map.toSeq |> Seq.map fst
         member this.IsDefined name = 
             knownFunctions.ContainsKey name
         member this.Lookup name =

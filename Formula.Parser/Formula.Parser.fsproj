@@ -23,6 +23,7 @@
     <Compile Include="Interpreter.fs" />
 	<Compile Include="MapVariableProvider.fs" />
 	<Compile Include="DefaultFunctions.fs" />
+	<Compile Include="CompositeFunctionProvider.fs" />
 	<Compile Include="CsWrapper.fs" />
   </ItemGroup>
 

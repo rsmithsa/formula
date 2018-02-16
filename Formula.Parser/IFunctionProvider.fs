@@ -14,5 +14,6 @@ type IFunctionImplementation =
     abstract member Validate: input: float[] * [<Out>] message: string byref -> bool
 
 type IFunctionProvider =
+    abstract member KnownFunctions: seq<string>
     abstract member IsDefined: name: string -> bool
     abstract member Lookup: name: string -> IFunctionImplementation
