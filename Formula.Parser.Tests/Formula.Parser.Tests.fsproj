@@ -4,12 +4,14 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="DefaultFunctionsTests.fs" />
     <Compile Include="InterpreterTests.fs" />
     <Compile Include="ParserTests.fs" />
-    <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>

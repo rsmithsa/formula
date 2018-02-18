@@ -18,12 +18,19 @@ namespace Formula.Parser.CsTests
     public class TestCsWrapper : TestBase
     {
         [TestMethod]
-        public void TestInterpetConstant()
+        public void TestInterpetUsage()
         {
             var input = "42";
 
-            var result = CsWrapper.InterpretFormula(input, new Dictionary<string, double>(), DefaultFunctionProvider.Instance);
+            var result = CsWrapper.InterpretFormula(input);
+            Assert.AreEqual(42, result);
 
+            var ast = CsWrapper.ParseFormula(input);
+            result = CsWrapper.InterpretExpression(ast);
+            Assert.AreEqual(42, result);
+
+            var folded = CsWrapper.ConstantFoldExpression(ast);
+            result = CsWrapper.InterpretExpression(folded);
             Assert.AreEqual(42, result);
         }
 
@@ -51,7 +58,7 @@ namespace Formula.Parser.CsTests
 
             var inputStr = input.ToString();
             var sw = Stopwatch.StartNew();
-            var result = CsWrapper.InterpretFormula(inputStr, new Dictionary<string, double>() { { "Test", 1 } }, DefaultFunctionProvider.Instance);
+            var result = CsWrapper.InterpretFormula(inputStr, new MapVariableProvider(new Dictionary<string, double>() { { "Test", 1 } }), DefaultFunctionProvider.Instance);
             sw.Stop();
 
             Console.WriteLine($"Depth: {depth}, Time: {sw.ElapsedMilliseconds}ms");
@@ -63,10 +70,7 @@ namespace Formula.Parser.CsTests
         {
             class MyFuncImplementation : IFunctionImplementation
             {
-                public double Execute(double[] input)
-                {
-                    return 42.0;
-                }
+                public double Execute(double[] input) => 42.0;
 
                 public bool Validate(double[] input, out string message)
                 {
@@ -85,10 +89,9 @@ namespace Formula.Parser.CsTests
                 public string Name => "MyFunc";
             }
 
-            public bool IsDefined(string name)
-            {
-                return name == "MyFunc";
-            }
+            public IEnumerable<string> KnownFunctions => new[] { "MyFunc" };
+
+            public bool IsDefined(string name) => name == "MyFunc";
 
             public IFunctionImplementation Lookup(string name)
             {
@@ -106,9 +109,36 @@ namespace Formula.Parser.CsTests
         {
             var input = "MyFunc[]";
 
-            var result = CsWrapper.InterpretFormula(input, new Dictionary<string, double>(), new CustomFunctionProvider());
+            var result = CsWrapper.InterpretFormula(input, new CustomFunctionProvider());
 
             Assert.AreEqual(42, result);
+        }
+
+        [TestMethod]
+        public void TestCompositeFunctionProvider()
+        {
+            var input = "MyFunc[] * SQRT[4]";
+
+            var result = CsWrapper.InterpretFormula(input, new CompositeFunctionProvider(new [] {new CustomFunctionProvider(), DefaultFunctionProvider.Instance }));
+
+            Assert.AreEqual(84, result);
+        }
+
+        [TestMethod]
+        public void TestExpressionVariableProvider()
+        {
+            var input = new Dictionary<string, string>()
+            {
+                { "A", "B*C" },
+                { "B", "C * 10" },
+                { "C", "SQRT[4] * 5" }
+            };
+
+            var variableProvider = new ExpressionVariableProvider(input, DefaultFunctionProvider.Instance);
+
+            var result = variableProvider.Lookup("A");
+
+            Assert.AreEqual(1000, result);
         }
     }
 }
