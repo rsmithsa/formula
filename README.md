@@ -5,6 +5,8 @@ A simple extensible formula language for .NET
 - Arithmetic: + - * % / ^ ( )
 - Functions: FunctionName[Parameter, Parameter, ...]
 - Variables: VariableName
+- Branching: IF Expr THEN Expr ELSE Expr
+- Logical: = <> > < >= <= ! && ||
 
 ### Examples
 - (1 + 2) * 3
@@ -20,6 +22,12 @@ A simple extensible formula language for .NET
   - Formula.Parser.Interpreter.interpretFormula
 
 ## Version History
+
+### 0.3.0
+- Expression compiler
+- Branching & logical operators
+- Expression based IVariableProvider
+- Composite IFunctionProvider
 
 ### 0.2.0
 - Extension points for functions and variables
