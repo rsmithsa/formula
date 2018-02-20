@@ -11,6 +11,7 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/rsmithsa/formula/master/LICENSE</PackageLicenseUrl>
     <Description>A simple extensible formula language for .NET</Description>
     <Company />
+    <PackageIconUrl>https://raw.githubusercontent.com/rsmithsa/formula/master/logo.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
