@@ -119,7 +119,7 @@ namespace Formula.Parser.CsTests
         {
             var input = "MyFunc[] * SQRT[4]";
 
-            var result = CsWrapper.InterpretFormula(input, new CompositeFunctionProvider(new [] {new CustomFunctionProvider(), DefaultFunctionProvider.Instance }));
+            var result = CsWrapper.InterpretFormula(input, new CompositeFunctionProvider(new IFunctionProvider[] {new CustomFunctionProvider(), DefaultFunctionProvider.Instance }));
 
             Assert.AreEqual(84, result);
         }

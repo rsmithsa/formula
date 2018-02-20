@@ -24,7 +24,7 @@ type InterpreterTests () =
                                         .Add("V1", 1.0)
                                         .Add("V2", 2.0)
                                         .Add("V3", 3.0)
-                                        .Add("V42", 42.0)) :> IVariableProvider
+                                        .Add("V42", 42.0))
 
     [<TestMethod>]
     member this.TestInterpretConstant () =
