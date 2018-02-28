@@ -1,0 +1,6 @@
+Name,Expression,Expected
+A,10 * B / C,1.25
+B,C /E,2.5
+C,10 + D  + E,20
+D,2,2
+E,8,8
