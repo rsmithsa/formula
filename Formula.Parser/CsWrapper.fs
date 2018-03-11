@@ -8,7 +8,9 @@ namespace Formula.Parser.Integration
 
 open FParsec.CharParsers
 
+open Formula.Parser.Ast
 open Formula.Parser.Parser
+open Formula.Parser.DependencyExtractor
 open Formula.Parser.ConstantFolder
 open Formula.Parser.Interpreter
 open Formula.Parser.Compiler
@@ -20,6 +22,15 @@ type CsWrapper private() =
     static member ParseFormula input =
         parseFormula input
 
+    static member ExtractExpressionDependencies ast =
+        let deps =
+            extractDependencies ast []
+            |> List.map (fun x ->
+                match x with
+                | Identifier i -> i
+            )
+        new System.Collections.Generic.HashSet<string>(deps)
+    
     static member ConstantFoldExpression ast =
         foldConstants ast
 
