@@ -67,6 +67,23 @@ type FinancialFunctionsTests () =
         Assert.AreEqual(-20124.909521, functionImplementation.Execute (List.toArray [0.1; 10.0; 1000.0; 1000.0; 1.0]), 0.000001)
 
     [<TestMethod>]
+    member this.TestFinancialFunctionIpmt () =
+        let functionImplementation = FinancialFunctionProvider.Instance.Lookup "IPMT"
+        Assert.AreEqual("IPMT", functionImplementation.Name)
+
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [0.1; 3.0; 10.0; 1000.0]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [0.1; 3.0; 10.0; 1000.0; 1000.0]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [0.1; 3.0; 10.0; 1000.0; 1000.0; 0.0]))
+        Assert.AreEqual((false, "IPMT expects four, five or six arguments."), functionImplementation.Validate (List.toArray []))
+        Assert.AreEqual((false, "IPMT expects four, five or six arguments."), functionImplementation.Validate (List.toArray [0.1; 10.0;]))
+        Assert.AreEqual((false, "IPMT expects four, five or six arguments."), functionImplementation.Validate (null))
+
+        Assert.AreEqual(-86.823467, functionImplementation.Execute (List.toArray [0.1; 3.0; 10.0; 1000.0]), 0.000001)
+        Assert.AreEqual(-78.930425, functionImplementation.Execute (List.toArray [0.1; 3.0; 10.0; 1000.0; 0.0; 1.0]), 0.000001)
+        Assert.AreEqual(-73.646934, functionImplementation.Execute (List.toArray [0.1; 3.0; 10.0; 1000.0; 1000.0]), 0.000001)
+        Assert.AreEqual(-66.951758, functionImplementation.Execute (List.toArray [0.1; 3.0; 10.0; 1000.0; 1000.0; 1.0]), 0.000001)
+
+    [<TestMethod>]
     member this.TestFinancialFunctionNpv () =
         let functionImplementation = FinancialFunctionProvider.Instance.Lookup "NPV"
         Assert.AreEqual("NPV", functionImplementation.Name)
@@ -81,6 +98,40 @@ type FinancialFunctionsTests () =
         Assert.AreEqual(-90909.090909, functionImplementation.Execute (List.toArray [0.1; -100000.0]), 0.000001)
         Assert.AreEqual(-82644.628099, functionImplementation.Execute (List.toArray [0.1; -100000.0; 10000.0]), 0.000001)
         Assert.AreEqual(-75131.480090, functionImplementation.Execute (List.toArray [0.1; -100000.0; 10000.0; 10000.0]), 0.000001)
+
+    [<TestMethod>]
+    member this.TestFinancialFunctionPmt () =
+        let functionImplementation = FinancialFunctionProvider.Instance.Lookup "PMT"
+        Assert.AreEqual("PMT", functionImplementation.Name)
+
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [0.1; 10.0; 1000.0]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [0.1; 10.0; 1000.0; 1000.0]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [0.1; 10.0; 1000.0; 1000.0; 0.0]))
+        Assert.AreEqual((false, "PMT expects three, four or five arguments."), functionImplementation.Validate (List.toArray []))
+        Assert.AreEqual((false, "PMT expects three, four or five arguments."), functionImplementation.Validate (List.toArray [0.1; 10.0;]))
+        Assert.AreEqual((false, "PMT expects three, four or five arguments."), functionImplementation.Validate (null))
+
+        Assert.AreEqual(-162.745395, functionImplementation.Execute (List.toArray [0.1; 10.0; 1000.0]), 0.000001)
+        Assert.AreEqual(-147.950359, functionImplementation.Execute (List.toArray [0.1; 10.0; 1000.0; 0.0; 1.0]), 0.000001)
+        Assert.AreEqual(-225.490790, functionImplementation.Execute (List.toArray [0.1; 10.0; 1000.0; 1000.0]), 0.000001)
+        Assert.AreEqual(-204.991627, functionImplementation.Execute (List.toArray [0.1; 10.0; 1000.0; 1000.0; 1.0]), 0.000001)
+
+    [<TestMethod>]
+    member this.TestFinancialFunctionPpmt () =
+        let functionImplementation = FinancialFunctionProvider.Instance.Lookup "PPMT"
+        Assert.AreEqual("PPMT", functionImplementation.Name)
+
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [0.1; 3.0; 10.0; 1000.0]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [0.1; 3.0; 10.0; 1000.0; 1000.0]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [0.1; 3.0; 10.0; 1000.0; 1000.0; 0.0]))
+        Assert.AreEqual((false, "PPMT expects four, five or six arguments."), functionImplementation.Validate (List.toArray []))
+        Assert.AreEqual((false, "PPMT expects four, five or six arguments."), functionImplementation.Validate (List.toArray [0.1; 10.0;]))
+        Assert.AreEqual((false, "PPMT expects four, five or six arguments."), functionImplementation.Validate (null))
+
+        Assert.AreEqual(-75.921928, functionImplementation.Execute (List.toArray [0.1; 3.0; 10.0; 1000.0]), 0.000001)
+        Assert.AreEqual(-69.019934, functionImplementation.Execute (List.toArray [0.1; 3.0; 10.0; 1000.0; 0.0; 1.0]), 0.000001)
+        Assert.AreEqual(-151.843856, functionImplementation.Execute (List.toArray [0.1; 3.0; 10.0; 1000.0; 1000.0]), 0.000001)
+        Assert.AreEqual(-138.039869, functionImplementation.Execute (List.toArray [0.1; 3.0; 10.0; 1000.0; 1000.0; 1.0]), 0.000001)
 
     [<TestMethod>]
     member this.TestFinancialFunctionPv () =
