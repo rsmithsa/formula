@@ -14,6 +14,7 @@
     <Compile Include="InterpreterTests.fs" />
     <Compile Include="CompilerTests.fs" />
     <Compile Include="DefaultFunctionsTests.fs" />
+    <Compile Include="FinancialFunctionsTests.fs" />
   </ItemGroup>
 
   <ItemGroup>

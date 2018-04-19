@@ -13,8 +13,10 @@ open Formula.Parser
 type SqrtFunction() =
     member this.Name =
         "SQRT"
+
     member this.Execute (input: float[]) =
         sqrt input.[0]
+
     member this.Validate (input: float[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
@@ -35,8 +37,10 @@ type SqrtFunction() =
 type PiFunction() =
     member this.Name =
         "PI"
+
     member this.Execute (input: float[]) =
         System.Math.PI
+
     member this.Validate (input: float[], [<Out>]message: string byref) =
         match isNull input with
         | true -> true
@@ -55,8 +59,10 @@ type PiFunction() =
 type PowFunction() =
     member this.Name =
         "POW"
+
     member this.Execute (input: float[]) =
         input.[0] ** input.[1]
+
     member this.Validate (input: float[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
@@ -77,8 +83,10 @@ type PowFunction() =
 type ModFunction() =
     member this.Name =
         "MOD"
+
     member this.Execute (input: float[]) =
         input.[0] % input.[1]
+
     member this.Validate (input: float[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
@@ -99,10 +107,12 @@ type ModFunction() =
 type CountFunction() =
     member this.Name =
         "COUNT"
+
     member this.Execute (input: float[]) =
         match isNull input with
         | true -> 0.0
         | false -> float(input.Length)
+
     member this.Validate (input: float[], [<Out>]message: string byref) =
         true
 
