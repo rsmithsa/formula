@@ -54,6 +54,7 @@ namespace Formula.Parser.CsTests
                             }
                             
                             Assert.AreEqual(assertion.Item2, variableProvider.Lookup(assertion.Item1));
+                            Assert.AreEqual(assertion.Item2, CsWrapper.InterpretFormula(expressions[assertion.Item1], variableProvider));
                         }
 
                         Console.WriteLine($"Validated {assertions.Count} entries from {sourceFile}");
