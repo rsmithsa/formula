@@ -18,6 +18,8 @@
     <Compile Include="AssemblyInfo.fs" />
 	<Compile Include="IVariableProvider.fs" />
 	<Compile Include="IFunctionProvider.fs" />
+    <Compile Include="Helpers.fs" />
+    <Compile Include="Newton.fs" />
     <Compile Include="Ast.fs" />
     <Compile Include="Parser.fs" />
 	<Compile Include="DependencyExtractor.fs" />
@@ -27,6 +29,7 @@
 	<Compile Include="MapVariableProvider.fs" />
 	<Compile Include="ExpressionVariableProvider.fs" />
 	<Compile Include="DefaultFunctions.fs" />
+	<Compile Include="FinancialFunctions.fs" />
 	<Compile Include="CompositeFunctionProvider.fs" />
 	<Compile Include="CsWrapper.fs" />
   </ItemGroup>

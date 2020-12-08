@@ -14,25 +14,13 @@ module ConstantFolder =
 
         let castToBool value =
             match value with
-            | Number n ->
-                match n with
-                | 0.0 -> 
-                    false
-                | _ ->
-                    true
-            | Boolean b ->
-                b
+            | Number n -> Helpers.castToBool n
+            | Boolean b -> b
 
         let castToDouble value =
             match value with
-            | Number n ->
-                n
-            | Boolean b ->
-                match b with
-                | true ->
-                    1.0
-                | false ->
-                    0.0
+            | Number n -> n
+            | Boolean b -> Helpers.castToDouble b
 
         match ast with
         | Constant c ->
