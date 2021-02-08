@@ -28,6 +28,8 @@
 	<Compile Include="Compiler.fs" />
 	<Compile Include="MapVariableProvider.fs" />
 	<Compile Include="ExpressionVariableProvider.fs" />
+	<Compile Include="MutableVariableProvider.fs" />
+	<Compile Include="CompositeVariableProvider.fs" />
 	<Compile Include="DefaultFunctions.fs" />
 	<Compile Include="FinancialFunctions.fs" />
 	<Compile Include="CompositeFunctionProvider.fs" />

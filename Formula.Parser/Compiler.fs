@@ -36,7 +36,7 @@ module Compiler =
 
             let compileVariable variable =
                 match variable with
-                | Identifier id -> Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("Lookup"), Expression.Constant(id)) :> Expression
+                | Identifier id -> Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("Lookup", [| typeof<String> |]), Expression.Constant(id)) :> Expression
 
             let compileNegation negation = 
                 Expression.Negate(compileInternal negation) :> Expression

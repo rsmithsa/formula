@@ -12,23 +12,27 @@ open Formula.Parser.Parser
 open Formula.Parser.ConstantFolder
 open Formula.Parser.Compiler
 
-type ExpressionVariableProvider(expressionMap: Map<string, expr>, functionProvider: IFunctionProvider) =
+type ExpressionVariableProvider(expressionMap: Map<string, expr>, functionProvider: IFunctionProvider, ?variableProvider: IVariableProvider) =
 
     static let dictionaryToMap (dictionary : System.Collections.Generic.IDictionary<_, _>) = 
         dictionary 
         |> Seq.map (|KeyValue|)  
         |> Map.ofSeq
     
-    new(expressions: System.Collections.Generic.IDictionary<string, expr>, functionProvider: IFunctionProvider) = ExpressionVariableProvider(dictionaryToMap expressions, functionProvider)
+    new(expressions: System.Collections.Generic.IDictionary<string, expr>, functionProvider: IFunctionProvider, variableProvider: IVariableProvider) = ExpressionVariableProvider(dictionaryToMap expressions, functionProvider, variableProvider)
 
-    new(expressions: System.Collections.Generic.IDictionary<string, string>, functionProvider: IFunctionProvider) =
+    new(expressions: System.Collections.Generic.IDictionary<string, string>, functionProvider: IFunctionProvider, variableProvider: IVariableProvider) =
         let expressionMap =
             dictionaryToMap expressions
             |> Map.toSeq
             |> Seq.map (fun (x, y) -> (x, parseFormula y))
             |> Map.ofSeq
 
-        ExpressionVariableProvider(expressionMap, functionProvider)
+        ExpressionVariableProvider(expressionMap, functionProvider, variableProvider)
+
+    new(expressions: System.Collections.Generic.IDictionary<string, expr>, functionProvider: IFunctionProvider) = ExpressionVariableProvider(expressions, functionProvider, null)
+
+    new(expressions: System.Collections.Generic.IDictionary<string, string>, functionProvider: IFunctionProvider) = ExpressionVariableProvider(expressions, functionProvider, null)
 
     member this.KnownExpressions: Map<string, expr> = expressionMap
 
@@ -38,11 +42,24 @@ type ExpressionVariableProvider(expressionMap: Map<string, expr>, functionProvid
         |> Seq.map (fun (x, y) -> (x, foldConstants y |> compileFormula))
         |> Map.ofSeq
 
-    member this.IsDefined name = 
-        this.KnownExpressions.ContainsKey name
+    member this.IsDefined name =
+        match variableProvider with
+        | None -> this.KnownExpressions.ContainsKey name
+        | Some v ->
+            match this.KnownExpressions.ContainsKey name with
+            | true -> true
+            | false -> v.IsDefined (name, this)
     member this.Lookup name =
-        this.CompiledExpressions.[name].Invoke(this, functionProvider)
+        match variableProvider with
+        | None -> this.CompiledExpressions.[name].Invoke(this, functionProvider)
+        | Some v ->
+            match this.CompiledExpressions.TryGetValue name with
+            | (true, f) -> f.Invoke(this, functionProvider)
+            | (false, f) -> v.Lookup (name, this)
+            
 
     interface IVariableProvider with 
-        member this.IsDefined name = this.IsDefined name
-        member this.Lookup name = this.Lookup name
+        member this.IsDefined (name) = this.IsDefined name
+        member this.IsDefined (name, sender) = this.IsDefined name
+        member this.Lookup (name) = this.Lookup name
+        member this.Lookup (name, sender) = this.Lookup name
