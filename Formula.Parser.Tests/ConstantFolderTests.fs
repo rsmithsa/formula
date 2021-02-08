@@ -227,7 +227,7 @@ type ConstantFolderTests () =
 
     [<TestMethod>]
     member this.TestFoldFunction () =
-        let result = parseFormulaString "COUNT[]"
+        let result = parseFormulaString "COUNT()"
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
@@ -238,7 +238,7 @@ type ConstantFolderTests () =
 
     [<TestMethod>]
     member this.TestFoldFunctionWithParameters () =
-        let result = parseFormulaString "COUNT[1 + 42, MyVar]"
+        let result = parseFormulaString "COUNT(1 + 42, MyVar)"
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
@@ -249,7 +249,7 @@ type ConstantFolderTests () =
 
     [<TestMethod>]
     member this.TestFoldFunctionOfFunction () =
-        let result = parseFormulaString "COUNT[COUNT[]]"
+        let result = parseFormulaString "COUNT(COUNT())"
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast

@@ -217,7 +217,7 @@ type CompilerTests () =
 
     [<TestMethod>]
     member this.TestCompileFunction () =
-        let result = parseFormulaString "COUNT[]"
+        let result = parseFormulaString "COUNT()"
         match result with
         | Success (ast, userState, endPos) ->
             let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
@@ -227,7 +227,7 @@ type CompilerTests () =
 
     [<TestMethod>]
     member this.TestCompileFunctionWithParameters () =
-        let result = parseFormulaString "COUNT[1 + 42, MyVar]"
+        let result = parseFormulaString "COUNT(1 + 42, MyVar)"
         match result with
         | Success (ast, userState, endPos) ->
             let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
@@ -237,7 +237,7 @@ type CompilerTests () =
 
     [<TestMethod>]
     member this.TestCompileFunctionOfFunction () =
-        let result = parseFormulaString "COUNT[COUNT[]]"
+        let result = parseFormulaString "COUNT(COUNT())"
         match result with
         | Success (ast, userState, endPos) ->
             let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)

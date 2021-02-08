@@ -30,7 +30,7 @@ module Parser =
     let pexpr, pexprImpl = createParserForwardedToRef()
 
     let argList = sepBy pexpr (str_ws ",")
-    let argListInParens = between (str_ws "[") (str_ws "]") argList
+    let argListInParens = between (str_ws "(") (str_ws ")") argList
     let identWithOptArgs = 
         pipe2 pidentifier (opt argListInParens) 
             (fun id optArgs ->

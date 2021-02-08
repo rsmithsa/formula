@@ -43,7 +43,7 @@ namespace Formula.Parser.CsTests
             Console.WriteLine("RELEASE");
 #endif
             var depth = 500;
-            var function = "SQRT[Test]";
+            var function = "SQRT(Test)";
             var input = new StringBuilder();
 
             for (int i = 0; i < depth; i++)
@@ -107,7 +107,7 @@ namespace Formula.Parser.CsTests
         [TestMethod]
         public void TestCustomFunctionProvider()
         {
-            var input = "MyFunc[]";
+            var input = "MyFunc()";
 
             var result = CsWrapper.InterpretFormula(input, new CustomFunctionProvider());
 
@@ -117,7 +117,7 @@ namespace Formula.Parser.CsTests
         [TestMethod]
         public void TestCompositeFunctionProvider()
         {
-            var input = "MyFunc[] * SQRT[4]";
+            var input = "MyFunc() * SQRT(4)";
 
             var result = CsWrapper.InterpretFormula(input, new CompositeFunctionProvider(new IFunctionProvider[] {new CustomFunctionProvider(), DefaultFunctionProvider.Instance }));
 
@@ -131,7 +131,7 @@ namespace Formula.Parser.CsTests
             {
                 { "A", "B*C" },
                 { "B", "C * 10" },
-                { "C", "SQRT[4] * 5" }
+                { "C", "SQRT(4) * 5" }
             };
 
             var variableProvider = new ExpressionVariableProvider(input, DefaultFunctionProvider.Instance);
@@ -148,7 +148,7 @@ namespace Formula.Parser.CsTests
             {
                 { "A", "B*C" },
                 { "B", "C * D" },
-                { "C", "SQRT[E] * 5" }
+                { "C", "SQRT(E) * 5" }
             };
 
             var input2 = new Dictionary<string, double>()

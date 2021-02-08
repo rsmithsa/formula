@@ -207,7 +207,7 @@ type ParserTests () =
 
     [<TestMethod>]
     member this.TestParseFunction () =
-        let result = parseFormulaString "COUNT[]"
+        let result = parseFormulaString "COUNT()"
         match result with
         | Success (ast, userState, endPos) ->
             let expected = Function(Identifier("COUNT"), [])
@@ -217,7 +217,7 @@ type ParserTests () =
 
     [<TestMethod>]
     member this.TestParseFunctionWithParameters () =
-        let result = parseFormulaString "COUNT[1 + 42, MyVar]"
+        let result = parseFormulaString "COUNT(1 + 42, MyVar)"
         match result with
         | Success (ast, userState, endPos) ->
             let expected = Function(Identifier("COUNT"), [ Arithmetic(Constant(Number(1.0)), Add, Constant(Number(42.0))); Variable(Identifier("MyVar")) ])
@@ -227,7 +227,7 @@ type ParserTests () =
 
     [<TestMethod>]
     member this.TestParseFunctionOfFunction () =
-        let result = parseFormulaString "COUNT[COUNT[]]"
+        let result = parseFormulaString "COUNT(COUNT())"
         match result with
         | Success (ast, userState, endPos) ->
             let expected = Function(Identifier("COUNT"), [ Function(Identifier("COUNT"), []) ])
