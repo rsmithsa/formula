@@ -16,10 +16,14 @@ type CompositeFunctionProvider(providers: seq<IFunctionProvider>) =
         |> Seq.concat
         |> Map.ofSeq
 
+    member this.KnownFunctions =
+        knownFunctions |> Map.toSeq |> Seq.map fst
+    member this.IsDefined name = 
+        knownFunctions.ContainsKey name
+    member this.Lookup name =
+        knownFunctions.[name].Lookup name
+
     interface IFunctionProvider with 
-        member this.KnownFunctions =
-            knownFunctions |> Map.toSeq |> Seq.map fst
-        member this.IsDefined name = 
-            knownFunctions.ContainsKey name
-        member this.Lookup name =
-            knownFunctions.[name].Lookup name
+        member this.KnownFunctions = this.KnownFunctions
+        member this.IsDefined name = this.IsDefined name
+        member this.Lookup name = this.Lookup name

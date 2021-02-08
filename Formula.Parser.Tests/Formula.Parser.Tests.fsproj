@@ -9,9 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="DefaultFunctionsTests.fs" />
-    <Compile Include="InterpreterTests.fs" />
     <Compile Include="ParserTests.fs" />
+    <Compile Include="ConstantFolderTests.fs" />
+    <Compile Include="InterpreterTests.fs" />
+    <Compile Include="CompilerTests.fs" />
+    <Compile Include="DefaultFunctionsTests.fs" />
+    <Compile Include="FinancialFunctionsTests.fs" />
   </ItemGroup>
 
   <ItemGroup>

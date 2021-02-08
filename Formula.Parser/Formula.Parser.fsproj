@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
     <Authors>Richard Smith</Authors>
     <Copyright>Richard Smith</Copyright>
     <RepositoryUrl>https://github.com/rsmithsa/formula</RepositoryUrl>
@@ -11,20 +11,27 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/rsmithsa/formula/master/LICENSE</PackageLicenseUrl>
     <Description>A simple extensible formula language for .NET</Description>
     <Company />
+    <PackageIconUrl>https://raw.githubusercontent.com/rsmithsa/formula/master/logo.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
 	<Compile Include="IVariableProvider.fs" />
 	<Compile Include="IFunctionProvider.fs" />
+    <Compile Include="Helpers.fs" />
+    <Compile Include="Newton.fs" />
     <Compile Include="Ast.fs" />
     <Compile Include="Parser.fs" />
+	<Compile Include="DependencyExtractor.fs" />
 	<Compile Include="ConstantFolder.fs" />
     <Compile Include="Interpreter.fs" />
 	<Compile Include="Compiler.fs" />
 	<Compile Include="MapVariableProvider.fs" />
 	<Compile Include="ExpressionVariableProvider.fs" />
+	<Compile Include="MutableVariableProvider.fs" />
+	<Compile Include="CompositeVariableProvider.fs" />
 	<Compile Include="DefaultFunctions.fs" />
+	<Compile Include="FinancialFunctions.fs" />
 	<Compile Include="CompositeFunctionProvider.fs" />
 	<Compile Include="CsWrapper.fs" />
   </ItemGroup>

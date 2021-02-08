@@ -12,24 +12,10 @@ module Interpreter =
 
     let rec interpretFormula ast (vars: IVariableProvider) (functions: IFunctionProvider) =
 
-        let castToBool value =
-            match value with
-            | 0.0 -> 
-                false
-            | _ ->
-                true
-
-        let castToDouble value =
-            match value with
-            | true ->
-                1.0
-            | false ->
-                0.0
-
         let interpretConstant constant =
             match constant with
             | Number n -> n
-            | Boolean b -> castToDouble b
+            | Boolean b -> Helpers.castToDouble b
 
         let interpetVariable variable =
             match variable with
@@ -54,34 +40,34 @@ module Interpreter =
                 interpretFormula a vars functions ** interpretFormula b vars functions
 
         let interpretInversion inversion =
-            let value = castToBool (interpretFormula inversion vars functions)
-            castToDouble (not value)
+            let value = Helpers.castToBool (interpretFormula inversion vars functions)
+            Helpers.castToDouble (not value)
 
         let interpretComparison a op b =
             let valueA = interpretFormula a vars functions
             let valueB = interpretFormula b vars functions
             match op with
             | Equal ->
-                castToDouble (valueA = valueB)
+                Helpers.castToDouble (valueA = valueB)
             | NotEqual ->
-                castToDouble (valueA <> valueB)
+                Helpers.castToDouble (valueA <> valueB)
             | GreaterThan ->
-                castToDouble (valueA > valueB)
+                Helpers.castToDouble (valueA > valueB)
             | LessThan ->
-                castToDouble (valueA < valueB)
+                Helpers.castToDouble (valueA < valueB)
             | GreaterThanEqual ->
-                castToDouble (valueA >= valueB)
+                Helpers.castToDouble (valueA >= valueB)
             | LessThanEqual ->
-                castToDouble (valueA <= valueB)
+                Helpers.castToDouble (valueA <= valueB)
 
         let interpretLogical a op b =
-            let valueA = castToBool (interpretFormula a vars functions)
-            let valueB = lazy (castToBool (interpretFormula b vars functions))
+            let valueA = Helpers.castToBool (interpretFormula a vars functions)
+            let valueB = lazy (Helpers.castToBool (interpretFormula b vars functions))
             match op with
             | And ->
-                castToDouble (valueA && valueB.Force())
+                Helpers.castToDouble (valueA && valueB.Force())
             | Or ->
-                castToDouble (valueA || valueB.Force())
+                Helpers.castToDouble (valueA || valueB.Force())
 
         let interpretFunction f args =
             match f with
@@ -92,7 +78,7 @@ module Interpreter =
                 imp.Execute (List.toArray interpretedArgs)
 
         let interpretBranch cond a b =
-            let valueCond = castToBool (interpretFormula cond vars functions)
+            let valueCond = Helpers.castToBool (interpretFormula cond vars functions)
             match valueCond with
             | true ->
                 interpretFormula a vars functions

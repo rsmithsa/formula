@@ -23,6 +23,13 @@ A simple extensible formula language for .NET
 
 ## Version History
 
+### 0.4.0
+- Financial functions
+- Dependency extractor
+- Composite IVariableProvider
+- Mutable IVariableProvider
+- Testing enhancements
+
 ### 0.3.0
 - Expression compiler
 - Branching & logical operators

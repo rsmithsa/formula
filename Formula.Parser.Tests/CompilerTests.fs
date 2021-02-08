@@ -1,5 +1,4 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="InterpreterTests.fs" company="Richard Smith">
+﻿// <copyright file="CompilerTests.fs" company="Richard Smith">
 //     Copyright (c) Richard Smith. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,11 +10,11 @@ open Microsoft.VisualStudio.TestTools.UnitTesting
 
 open Formula.Parser
 open Formula.Parser.Parser
-open Formula.Parser.Interpreter
+open Formula.Parser.Compiler
 open Formula.Parser.Integration
 
 [<TestClass>]
-type InterpreterTests () =
+type CompilerTests () =
 
     let varMap = MapVariableProvider(Map.empty
                                         .Add("MyVar", 42.0)
@@ -27,351 +26,352 @@ type InterpreterTests () =
                                         .Add("V42", 42.0))
 
     [<TestMethod>]
-    member this.TestInterpretConstant () =
+    member this.TestCompileConstant () =
         let result = parseFormulaString "42"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretNegationConstant () =
+    member this.TestCompileNegationConstant () =
         let result = parseFormulaString "-42"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(-42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretAdditionConstant () =
+    member this.TestCompileAdditionConstant () =
         let result = parseFormulaString "1 + 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0 + 42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretSubtractionConstant () =
+    member this.TestCompileSubtractionConstant () =
         let result = parseFormulaString "1 - 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0 - 42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretMultiplicationConstant () =
+    member this.TestCompileMultiplicationConstant () =
         let result = parseFormulaString "1 * 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0 * 42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretDivisionConstant () =
+    member this.TestCompileDivisionConstant () =
         let result = parseFormulaString "1 / 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0 / 42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretPowerConstant () =
+    member this.TestCompilePowerConstant () =
         let result = parseFormulaString "1 ^ 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0 ** 42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretModulusConstant () =
+    member this.TestCompileModulusConstant () =
         let result = parseFormulaString "1 % 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0 % 42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretOrderOfOperations1 () =
+    member this.TestCompileOrderOfOperations1 () =
         let result = parseFormulaString "1 + 42 * 2"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0 + 42.0 * 2.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretOrderOfOperations2 () =
+    member this.TestCompileOrderOfOperations2 () =
         let result = parseFormulaString "(1 + 42) * 2"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual((1.0 + 42.0) * 2.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretOrderOfOperations3 () =
+    member this.TestCompileOrderOfOperations3 () =
         let result = parseFormulaString "(1 + 42) * 2^3"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual((1.0 + 42.0) * 2.0 ** 3.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretOrderOfOperations4 () =
+    member this.TestCompileOrderOfOperations4 () =
         let result = parseFormulaString "1 + 42 % 2"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0 + 42.0 % 2.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretVariable1 () =
+    member this.TestCompileVariable1 () =
         let result = parseFormulaString "MyVar"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
             Assert.AreEqual(varMap.Lookup "MyVar", value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretVariable2 () =
+    member this.TestCompileVariable2 () =
         let result = parseFormulaString "MyVar1"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
             Assert.AreEqual(varMap.Lookup "MyVar1", value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretVariable3 () =
+    member this.TestCompileVariable3 () =
         let result = parseFormulaString "_MyVar_1"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
             Assert.AreEqual(varMap.Lookup "_MyVar_1", value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretVariableOrderOfOperations1 () =
+    member this.TestCompileVariableOrderOfOperations1 () =
         let result = parseFormulaString "V1 + V42 * V2"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
             Assert.AreEqual(varMap.Lookup "V1" + varMap.Lookup "V42" * varMap.Lookup "V2", value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretVariableOrderOfOperations2 () =
+    member this.TestCompileVariableOrderOfOperations2 () =
         let result = parseFormulaString "(V1 + V42) * V2"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
             Assert.AreEqual((varMap.Lookup "V1" + varMap.Lookup "V42") * varMap.Lookup "V2", value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretVariableOrderOfOperations3 () =
+    member this.TestCompileVariableOrderOfOperations3 () =
         let result = parseFormulaString "(V1 + V42) * V2^V3"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
             Assert.AreEqual((varMap.Lookup "V1" + varMap.Lookup "V42") * varMap.Lookup "V2" ** varMap.Lookup "V3", value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretVariableOrderOfOperations4 () =
+    member this.TestCompileVariableOrderOfOperations4 () =
         let result = parseFormulaString "V1 + V42 % V2"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
             Assert.AreEqual(varMap.Lookup "V1" + varMap.Lookup "V42" % varMap.Lookup "V2", value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretFunction () =
+    member this.TestCompileFunction () =
         let result = parseFormulaString "COUNT[]"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray []), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretFunctionWithParameters () =
+    member this.TestCompileFunctionWithParameters () =
         let result = parseFormulaString "COUNT[1 + 42, MyVar]"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
             Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [1.0 + 42.0; varMap.Lookup "MyVar"]), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretFunctionOfFunction () =
+    member this.TestCompileFunctionOfFunction () =
         let result = parseFormulaString "COUNT[COUNT[]]"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [(DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [])]), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretLogicalTrue () =
+    member this.TestCompileLogicalTrue () =
         let result = parseFormulaString "true"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretLogicalFalse () =
+    member this.TestCompileLogicalFalse () =
         let result = parseFormulaString "false"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(0.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretInversion () =
+    member this.TestCompileInversion () =
         let result = parseFormulaString "!false"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretLogicalAnd () =
+    member this.TestCompileLogicalAnd () =
         let result = parseFormulaString "true && false"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(0.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretLogicalOr () =
+    member this.TestCompileLogicalOr () =
         let result = parseFormulaString "true || false"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretComparisonEqual () =
+    member this.TestCompileComparisonEqual () =
         let result = parseFormulaString "42 = 1"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(0.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretComparisonNotEqual () =
+    member this.TestCompileComparisonNotEqual () =
         let result = parseFormulaString "42 <> 1"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretComparisonGreaterThan () =
+    member this.TestCompileComparisonGreaterThan () =
         let result = parseFormulaString "42 > 1"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretComparisonLessThan () =
+    member this.TestCompileComparisonLessThan () =
         let result = parseFormulaString "42 < 1"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(0.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretComparisonGreaterThanEqual () =
+    member this.TestCompileComparisonGreaterThanEqual () =
         let result = parseFormulaString "42 >= 1"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretComparisonLessThanEqual () =
+    member this.TestCompileComparisonLessThanEqual () =
         let result = parseFormulaString "42 <= 1"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(0.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretBranch1 () =
+    member this.TestCompileBranch1 () =
         let result = parseFormulaString "IF true THEN 42 ELSE 1"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(42.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestInterpretBranch2 () =
+    member this.TestCompileBranch2 () =
         let result = parseFormulaString "IF(42<=1)THEN(42)ELSE(1)"
         match result with
         | Success (ast, userState, endPos) ->
-            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
             Assert.AreEqual(1.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+

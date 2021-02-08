@@ -119,7 +119,7 @@ namespace Formula.Parser.CsTests
         {
             var input = "MyFunc[] * SQRT[4]";
 
-            var result = CsWrapper.InterpretFormula(input, new CompositeFunctionProvider(new [] {new CustomFunctionProvider(), DefaultFunctionProvider.Instance }));
+            var result = CsWrapper.InterpretFormula(input, new CompositeFunctionProvider(new IFunctionProvider[] {new CustomFunctionProvider(), DefaultFunctionProvider.Instance }));
 
             Assert.AreEqual(84, result);
         }
@@ -139,6 +139,43 @@ namespace Formula.Parser.CsTests
             var result = variableProvider.Lookup("A");
 
             Assert.AreEqual(1000, result);
+        }
+
+        [TestMethod]
+        public void TestMixedVariableProvider()
+        {
+            var input = new Dictionary<string, string>()
+            {
+                { "A", "B*C" },
+                { "B", "C * D" },
+                { "C", "SQRT[E] * 5" }
+            };
+
+            var input2 = new Dictionary<string, double>()
+            {
+                { "D", 10.0 },
+                { "E", 4.0 }
+            };
+
+            var variableProvider = new CompositeVariableProvider(new Func<IVariableProvider, IVariableProvider>[]
+            {
+                x => new ExpressionVariableProvider(input, DefaultFunctionProvider.Instance, x),
+                x => new MutableVariableProvider(input2)
+            });
+
+            var result = variableProvider.Lookup("A", null);
+
+            Assert.AreEqual(1000.0, result);
+
+            result = CsWrapper.InterpretFormula("A", variableProvider);
+
+            Assert.AreEqual(1000.0, result);
+
+            input2["D"] = 1.0;
+
+            result = CsWrapper.InterpretFormula("A", variableProvider);
+
+            Assert.AreEqual(100.0, result);
         }
     }
 }

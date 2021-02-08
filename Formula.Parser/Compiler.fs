@@ -21,20 +21,6 @@ module Compiler =
         let functionProvider =
             Expression.Parameter(typeof<IFunctionProvider>, "functionProvider")
 
-        let castToBool value =
-            match value with
-            | 0.0 -> 
-                false
-            | _ ->
-                true
-
-        let castToDouble value =
-            match value with
-            | true ->
-                1.0
-            | false ->
-                0.0
-
         let castToBoolExpression value =
             Expression.Condition(Expression.Equal(value, Expression.Constant(0.0)), Expression.Constant(false), Expression.Constant(true)) :> Expression
 
@@ -46,11 +32,11 @@ module Compiler =
             let compileConstant constant =
                 match constant with
                 | Number n -> Expression.Constant(n) :> Expression
-                | Boolean b -> Expression.Constant(castToDouble b) :> Expression
+                | Boolean b -> Expression.Constant(Helpers.castToDouble b) :> Expression
 
             let compileVariable variable =
                 match variable with
-                | Identifier id -> Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("Lookup"), Expression.Constant(id)) :> Expression
+                | Identifier id -> Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("Lookup", [| typeof<String> |]), Expression.Constant(id)) :> Expression
 
             let compileNegation negation = 
                 Expression.Negate(compileInternal negation) :> Expression

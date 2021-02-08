@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="MapVariableProvider.fs" company="Richard Smith">
+// <copyright file="MutableVariableProvider.fs" company="Richard Smith">
 //     Copyright (c) Richard Smith. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -8,20 +8,9 @@ namespace Formula.Parser.Integration
 
 open Formula.Parser
 
-type MapVariableProvider(map: Map<string, float>) =
-
-    static let empty = MapVariableProvider(Map.empty)
-
-    static let dictionaryToMap (dictionary : System.Collections.Generic.IDictionary<_, _>) = 
-        dictionary 
-        |> Seq.map (|KeyValue|)  
-        |> Map.ofSeq
+type MutableVariableProvider(map: System.Collections.Generic.IDictionary<string, double>) =
     
-    static member Empty = empty
-
-    new(variables: System.Collections.Generic.IDictionary<string, double>) = MapVariableProvider(dictionaryToMap variables)
-
-    member this.KnownVariables: Map<string, float> = map
+    member this.KnownVariables: System.Collections.Generic.IDictionary<string, double> = map
 
     member this.IsDefined name = 
         this.KnownVariables.ContainsKey name
