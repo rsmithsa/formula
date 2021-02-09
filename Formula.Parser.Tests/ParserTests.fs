@@ -166,6 +166,26 @@ type ParserTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
+    member this.TestParseVariable4 () =
+        let result = parseFormulaString "[My Long Variable]"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Variable(Identifier("My Long Variable"))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariable5 () =
+        let result = parseFormulaString "[My Long @$#% Variable 2]"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Variable(Identifier("My Long @$#% Variable 2"))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
     member this.TestParseVariableOrderOfOperations1 () =
         let result = parseFormulaString "V1 + V42 * V2"
         match result with

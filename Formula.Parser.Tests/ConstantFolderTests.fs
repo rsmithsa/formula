@@ -182,6 +182,28 @@ type ConstantFolderTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
+    member this.TestFoldVariable4 () =
+        let result = parseFormulaString "[My Long Variable]"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = Variable(Identifier("My Long Variable"))
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestFoldVariable5 () =
+        let result = parseFormulaString "[My Long @$#% Variable 2]"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = Variable(Identifier("My Long @$#% Variable 2"))
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
     member this.TestFoldVariableOrderOfOperations1 () =
         let result = parseFormulaString "V1 + V42 * V2"
         match result with

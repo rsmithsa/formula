@@ -20,6 +20,8 @@ type CompilerTests () =
                                         .Add("MyVar", 42.0)
                                         .Add("MyVar1", 4.2)
                                         .Add("_MyVar_1", 0.42)
+                                        .Add("My Long Variable", 0.42)
+                                        .Add("My Long @$#% Variable 2", 0.42)
                                         .Add("V1", 1.0)
                                         .Add("V2", 2.0)
                                         .Add("V3", 3.0)
@@ -172,6 +174,26 @@ type CompilerTests () =
         | Success (ast, userState, endPos) ->
             let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
             Assert.AreEqual(varMap.Lookup "_MyVar_1", value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestCompileVariable4 () =
+        let result = parseFormulaString "[My Long Variable]"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
+            Assert.AreEqual(varMap.Lookup "My Long Variable", value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestCompileVariable5 () =
+        let result = parseFormulaString "[My Long @$#% Variable 2]"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
+            Assert.AreEqual(varMap.Lookup "My Long @$#% Variable 2", value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 

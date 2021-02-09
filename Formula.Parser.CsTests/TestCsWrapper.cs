@@ -146,14 +146,14 @@ namespace Formula.Parser.CsTests
         {
             var input = new Dictionary<string, string>()
             {
-                { "A", "B*C" },
-                { "B", "C * D" },
+                { "A", "[B Test]*C" },
+                { "B Test", "C * [D Test]" },
                 { "C", "SQRT(E) * 5" }
             };
 
             var input2 = new Dictionary<string, double>()
             {
-                { "D", 10.0 },
+                { "D Test", 10.0 },
                 { "E", 4.0 }
             };
 
@@ -171,7 +171,7 @@ namespace Formula.Parser.CsTests
 
             Assert.AreEqual(1000.0, result);
 
-            input2["D"] = 1.0;
+            input2["D Test"] = 1.0;
 
             result = CsWrapper.InterpretFormula("A", variableProvider);
 
