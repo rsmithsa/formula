@@ -23,6 +23,9 @@ A simple extensible formula language for .NET
 
 ## Version History
 
+### 0.5.1
+- Target .NETStandard 2.0
+
 ### 0.5.0
 - Syntax changes
   - Support for escaping identifiers between []
