@@ -21,6 +21,8 @@ type InterpreterTests () =
                                         .Add("MyVar", 42.0)
                                         .Add("MyVar1", 4.2)
                                         .Add("_MyVar_1", 0.42)
+                                        .Add("My Long Variable", 0.42)
+                                        .Add("My Long @$#% Variable 2", 0.42)
                                         .Add("V1", 1.0)
                                         .Add("V2", 2.0)
                                         .Add("V3", 3.0)
@@ -177,6 +179,26 @@ type InterpreterTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
+    member this.TestInterpretVariable4 () =
+        let result = parseFormulaString "[My Long Variable]"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
+            Assert.AreEqual(varMap.Lookup "My Long Variable", value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestInterpretVariable5 () =
+        let result = parseFormulaString "[My Long @$#% Variable 2]"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
+            Assert.AreEqual(varMap.Lookup "My Long @$#% Variable 2", value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
     member this.TestInterpretVariableOrderOfOperations1 () =
         let result = parseFormulaString "V1 + V42 * V2"
         match result with
@@ -218,7 +240,7 @@ type InterpreterTests () =
 
     [<TestMethod>]
     member this.TestInterpretFunction () =
-        let result = parseFormulaString "COUNT[]"
+        let result = parseFormulaString "COUNT()"
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
@@ -228,7 +250,7 @@ type InterpreterTests () =
 
     [<TestMethod>]
     member this.TestInterpretFunctionWithParameters () =
-        let result = parseFormulaString "COUNT[1 + 42, MyVar]"
+        let result = parseFormulaString "COUNT(1 + 42, MyVar)"
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
@@ -238,7 +260,7 @@ type InterpreterTests () =
 
     [<TestMethod>]
     member this.TestInterpretFunctionOfFunction () =
-        let result = parseFormulaString "COUNT[COUNT[]]"
+        let result = parseFormulaString "COUNT(COUNT())"
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance

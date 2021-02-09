@@ -20,17 +20,20 @@ module Parser =
     let pboolean: Parser<value, unit> = (str_ws "true" >>% Boolean(true)) <|> (str_ws "false" >>% Boolean(false))
     let pconstant = (pnumber |>> Constant) <|> (pboolean |>> Constant)
 
-    let pidentifier: Parser<identifier, unit> =
+    let psimpleidentifier: Parser<identifier, unit> =
         let isIdentifierFirstChar c = isLetter c || c = '_'
         let isIdentifierChar c = isLetter c || isDigit c || c = '_'
         many1Satisfy2L isIdentifierFirstChar isIdentifierChar "identifier" |>> Identifier
 
-    let pvariable = pidentifier |>> Variable
+    let pescapedidentifier: Parser<identifier, unit> =
+        between (str_ws "[") (str_ws "]") (many1Satisfy ((<>) ']')) <?> "identifier" |>> Identifier
+
+    let pidentifier = (psimpleidentifier) <|> (pescapedidentifier)
 
     let pexpr, pexprImpl = createParserForwardedToRef()
 
     let argList = sepBy pexpr (str_ws ",")
-    let argListInParens = between (str_ws "[") (str_ws "]") argList
+    let argListInParens = between (str_ws "(") (str_ws ")") argList
     let identWithOptArgs = 
         pipe2 pidentifier (opt argListInParens) 
             (fun id optArgs ->

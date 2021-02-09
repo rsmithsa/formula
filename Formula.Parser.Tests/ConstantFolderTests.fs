@@ -182,6 +182,28 @@ type ConstantFolderTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
+    member this.TestFoldVariable4 () =
+        let result = parseFormulaString "[My Long Variable]"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = Variable(Identifier("My Long Variable"))
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestFoldVariable5 () =
+        let result = parseFormulaString "[My Long @$#% Variable 2]"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = Variable(Identifier("My Long @$#% Variable 2"))
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
     member this.TestFoldVariableOrderOfOperations1 () =
         let result = parseFormulaString "V1 + V42 * V2"
         match result with
@@ -227,7 +249,7 @@ type ConstantFolderTests () =
 
     [<TestMethod>]
     member this.TestFoldFunction () =
-        let result = parseFormulaString "COUNT[]"
+        let result = parseFormulaString "COUNT()"
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
@@ -238,7 +260,7 @@ type ConstantFolderTests () =
 
     [<TestMethod>]
     member this.TestFoldFunctionWithParameters () =
-        let result = parseFormulaString "COUNT[1 + 42, MyVar]"
+        let result = parseFormulaString "COUNT(1 + 42, MyVar)"
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
@@ -249,7 +271,7 @@ type ConstantFolderTests () =
 
     [<TestMethod>]
     member this.TestFoldFunctionOfFunction () =
-        let result = parseFormulaString "COUNT[COUNT[]]"
+        let result = parseFormulaString "COUNT(COUNT())"
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast

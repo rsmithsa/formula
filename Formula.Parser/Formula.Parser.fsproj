@@ -3,18 +3,21 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.4.0</Version>
+    <Version>0.5.0</Version>
     <Authors>Richard Smith</Authors>
     <Copyright>Richard Smith</Copyright>
     <RepositoryUrl>https://github.com/rsmithsa/formula</RepositoryUrl>
     <PackageProjectUrl>https://github.com/rsmithsa/formula</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/rsmithsa/formula/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>A simple extensible formula language for .NET</Description>
     <Company />
-    <PackageIconUrl>https://raw.githubusercontent.com/rsmithsa/formula/master/logo.png</PackageIconUrl>
+    <PackageIcon>logo.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\logo.png" Link="logo.png" Pack="true" PackagePath=""/>
+    <None Include="..\LICENSE" Link="LICENSE" Pack="true" PackagePath=""/>
+    <None Include="..\README.md" Link="README.md" Pack="true" PackagePath=""/>
     <Compile Include="AssemblyInfo.fs" />
 	<Compile Include="IVariableProvider.fs" />
 	<Compile Include="IFunctionProvider.fs" />
