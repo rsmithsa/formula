@@ -23,6 +23,9 @@ A simple extensible formula language for .NET
 
 ## Version History
 
+### 0.6.0
+- Typing changes to allow for typed function parameters - number, boolean, text
+
 ### 0.5.1
 - Target .NETStandard 2.0
 
