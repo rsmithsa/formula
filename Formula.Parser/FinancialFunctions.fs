@@ -60,7 +60,7 @@ type FvFunction() =
         "FV"
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
+        let values = Helpers.asDoubles(input.[0..3])
 
         let pv =
             match values.Length with
@@ -215,7 +215,7 @@ type NperFunction() =
         "NPER"
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
+        let values = Helpers.asDoubles(input.[0..3])
 
         let rate = values.[0]
         let pmt = values.[1]
@@ -261,7 +261,7 @@ type PmtFunction() =
         "PMT"
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
+        let values = Helpers.asDoubles(input.[0..3])
 
         let fv =
             match values.Length with
@@ -306,7 +306,7 @@ type IpmtFunction() =
         "IPMT"
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
+        let values = Helpers.asDoubles(input.[0..4])
 
         let annuityDue =
             match input.Length with
@@ -369,7 +369,7 @@ type PvFunction() =
         "PV"
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
+        let values = Helpers.asDoubles(input.[0..3])
 
         let fv =
             match values.Length with
@@ -409,7 +409,7 @@ type RateFunction() =
         "RATE"
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
+        let values = Helpers.asDoubles(Array.append input.[0..3] input.[5..5])
 
         let nper = values.[0]
         let pmt = values.[1]
