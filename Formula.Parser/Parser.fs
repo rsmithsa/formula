@@ -18,7 +18,9 @@ module Parser =
 
     let pnumber = pfloat |>> Number
     let pboolean: Parser<value, unit> = (str_ws "true" >>% Boolean(true)) <|> (str_ws "false" >>% Boolean(false))
-    let pconstant = (pnumber |>> Constant) <|> (pboolean |>> Constant)
+    let ptext: Parser<value, unit> =
+        between (str_ws "\"") (str_ws "\"") (many1Satisfy ((<>) '\"')) <?> "text" |>> Text
+    let pconstant = (pnumber |>> Constant) <|> (pboolean |>> Constant) <|> (ptext |>> Constant)
 
     let psimpleidentifier: Parser<identifier, unit> =
         let isIdentifierFirstChar c = isLetter c || c = '_'

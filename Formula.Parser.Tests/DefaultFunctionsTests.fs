@@ -9,7 +9,7 @@ namespace Formula.Parser.Tests
 open System
 open Microsoft.VisualStudio.TestTools.UnitTesting
 
-open Formula.Parser
+open Formula.Parser.Ast
 open Formula.Parser.Integration
 
 [<TestClass>]
@@ -28,18 +28,18 @@ type DefaultFunctionsTests () =
         let functionImplementation = DefaultFunctionProvider.Instance.Lookup "SQRT"
         Assert.AreEqual("SQRT", functionImplementation.Name)
 
-        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [4.0]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(4.0)]))
         Assert.AreEqual((false, "SQRT expects one argument."), functionImplementation.Validate (List.toArray []))
-        Assert.AreEqual((false, "SQRT expects one argument."), functionImplementation.Validate (List.toArray [4.0; 4.0]))
+        Assert.AreEqual((false, "SQRT expects one argument."), functionImplementation.Validate (List.toArray [Number(4.0); Number(4.0)]))
         Assert.AreEqual((false, "SQRT expects one argument."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [4.0]))
-        Assert.AreEqual(3.0, functionImplementation.Execute (List.toArray [9.0]))
-        Assert.AreEqual(4.0, functionImplementation.Execute (List.toArray [16.0]))
+        Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [Number(4.0)]))
+        Assert.AreEqual(3.0, functionImplementation.Execute (List.toArray [Number(9.0)]))
+        Assert.AreEqual(4.0, functionImplementation.Execute (List.toArray [Number(16.0)]))
 
         let rand = Random(42)
         let a = rand.NextDouble();
-        Assert.AreEqual(sqrt a, functionImplementation.Execute (List.toArray [a]))
+        Assert.AreEqual(sqrt a, functionImplementation.Execute (List.toArray [Number(a)]))
 
     [<TestMethod>]
     member this.TestDefaultFunctionPi () =
@@ -48,8 +48,8 @@ type DefaultFunctionsTests () =
 
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray []))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (null))
-        Assert.AreEqual((false, "PI expects no arguments."), functionImplementation.Validate (List.toArray [4.0]))
-        Assert.AreEqual((false, "PI expects no arguments."), functionImplementation.Validate (List.toArray [4.0; 4.0]))
+        Assert.AreEqual((false, "PI expects no arguments."), functionImplementation.Validate (List.toArray [Number(4.0)]))
+        Assert.AreEqual((false, "PI expects no arguments."), functionImplementation.Validate (List.toArray [Number(4.0); Number(4.0)]))
 
         Assert.AreEqual(Math.PI, functionImplementation.Execute (List.toArray []))
 
@@ -58,38 +58,38 @@ type DefaultFunctionsTests () =
         let functionImplementation = DefaultFunctionProvider.Instance.Lookup "POW"
         Assert.AreEqual("POW", functionImplementation.Name)
 
-        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [2.0; 1.0]))
-        Assert.AreEqual((false, "POW expects two arguments."), functionImplementation.Validate (List.toArray [2.0]))
-        Assert.AreEqual((false, "POW expects two arguments."), functionImplementation.Validate (List.toArray [2.0; 1.0; 1.0]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(2.0); Number(1.0)]))
+        Assert.AreEqual((false, "POW expects two arguments."), functionImplementation.Validate (List.toArray [Number(2.0)]))
+        Assert.AreEqual((false, "POW expects two arguments."), functionImplementation.Validate (List.toArray [Number(2.0); Number(1.0); Number(1.0)]))
         Assert.AreEqual((false, "POW expects two arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [2.0; 1.0]))
-        Assert.AreEqual(4.0, functionImplementation.Execute (List.toArray [2.0; 2.0]))
-        Assert.AreEqual(8.0, functionImplementation.Execute (List.toArray [2.0; 3.0]))
+        Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0)]))
+        Assert.AreEqual(4.0, functionImplementation.Execute (List.toArray [Number(2.0); Number(2.0)]))
+        Assert.AreEqual(8.0, functionImplementation.Execute (List.toArray [Number(2.0); Number(3.0)]))
 
         let rand = Random(42)
         let a = rand.NextDouble();
         let b = rand.NextDouble();
-        Assert.AreEqual(a ** b, functionImplementation.Execute (List.toArray [a; b]))
+        Assert.AreEqual(a ** b, functionImplementation.Execute (List.toArray [Number(a); Number(b)]))
 
     [<TestMethod>]
     member this.TestDefaultFunctionMod () =
         let functionImplementation = DefaultFunctionProvider.Instance.Lookup "MOD"
         Assert.AreEqual("MOD", functionImplementation.Name)
 
-        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [2.0; 1.0]))
-        Assert.AreEqual((false, "MOD expects two arguments."), functionImplementation.Validate (List.toArray [2.0]))
-        Assert.AreEqual((false, "MOD expects two arguments."), functionImplementation.Validate (List.toArray [2.0; 1.0; 1.0]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(2.0); Number(1.0)]))
+        Assert.AreEqual((false, "MOD expects two arguments."), functionImplementation.Validate (List.toArray [Number(2.0)]))
+        Assert.AreEqual((false, "MOD expects two arguments."), functionImplementation.Validate (List.toArray [Number(2.0); Number(1.0); Number(1.0)]))
         Assert.AreEqual((false, "MOD expects two arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(0.0, functionImplementation.Execute (List.toArray [2.0; 1.0]))
-        Assert.AreEqual(0.0, functionImplementation.Execute (List.toArray [2.0; 2.0]))
-        Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [2.0; 3.0]))
+        Assert.AreEqual(0.0, functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0)]))
+        Assert.AreEqual(0.0, functionImplementation.Execute (List.toArray [Number(2.0); Number(2.0)]))
+        Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [Number(2.0); Number(3.0)]))
 
         let rand = Random(42)
         let a = rand.NextDouble();
         let b = rand.NextDouble();
-        Assert.AreEqual(a % b, functionImplementation.Execute (List.toArray [a; b]))
+        Assert.AreEqual(a % b, functionImplementation.Execute (List.toArray [Number(a); Number(b)]))
 
     [<TestMethod>]
     member this.TestDefaultFunctionCount () =
@@ -98,12 +98,12 @@ type DefaultFunctionsTests () =
 
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (null))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray []))
-        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [1.0; 1.0]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
 
         Assert.AreEqual(0.0, functionImplementation.Execute (null))
         Assert.AreEqual(0.0, functionImplementation.Execute (List.toArray []))
-        Assert.AreEqual(1.0, functionImplementation.Execute (List.toArray [1.0]))
-        Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [1.0; 1.0]))
+        Assert.AreEqual(1.0, functionImplementation.Execute (List.toArray [Number(1.0)]))
+        Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [Number(1.0); Number(1.0)]))
 
         let rand = Random(42)
         let a = rand.Next();

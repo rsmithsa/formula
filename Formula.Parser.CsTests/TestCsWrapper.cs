@@ -70,9 +70,9 @@ namespace Formula.Parser.CsTests
         {
             class MyFuncImplementation : IFunctionImplementation
             {
-                public double Execute(double[] input) => 42.0;
+                public double Execute(Ast.value[] input) => 42.0;
 
-                public bool Validate(double[] input, out string message)
+                public bool Validate(Ast.value[] input, out string message)
                 {
                     if (input.Length == 0)
                     {
