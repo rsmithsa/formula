@@ -9,15 +9,17 @@ namespace Formula.Parser.Integration
 open System.Runtime.InteropServices
 
 open Formula.Parser
+open Formula.Parser.Ast
 
 type SqrtFunction() =
     member this.Name =
         "SQRT"
 
-    member this.Execute (input: float[]) =
-        sqrt input.[0]
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input)
+        sqrt values.[0]
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "SQRT expects one argument."
@@ -38,10 +40,10 @@ type PiFunction() =
     member this.Name =
         "PI"
 
-    member this.Execute (input: float[]) =
+    member this.Execute (input: value[]) =
         System.Math.PI
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true -> true
         | false ->
@@ -60,10 +62,11 @@ type PowFunction() =
     member this.Name =
         "POW"
 
-    member this.Execute (input: float[]) =
-        input.[0] ** input.[1]
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input)
+        values.[0] ** values.[1]
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "POW expects two arguments."
@@ -84,10 +87,11 @@ type ModFunction() =
     member this.Name =
         "MOD"
 
-    member this.Execute (input: float[]) =
-        input.[0] % input.[1]
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input)
+        values.[0] % values.[1]
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "MOD expects two arguments."
@@ -108,12 +112,12 @@ type CountFunction() =
     member this.Name =
         "COUNT"
 
-    member this.Execute (input: float[]) =
+    member this.Execute (input: value[]) =
         match isNull input with
         | true -> 0.0
         | false -> float(input.Length)
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         true
 
     interface IFunctionImplementation with

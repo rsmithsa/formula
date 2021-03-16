@@ -8,7 +8,7 @@ namespace Formula.Parser.Tests
 open FParsec.CharParsers
 open Microsoft.VisualStudio.TestTools.UnitTesting
 
-open Formula.Parser
+open Formula.Parser.Ast
 open Formula.Parser.Parser
 open Formula.Parser.Compiler
 open Formula.Parser.Integration
@@ -253,7 +253,7 @@ type CompilerTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
-            Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [1.0 + 42.0; varMap.Lookup "MyVar"]), value);
+            Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [Number(1.0 + 42.0); Number(varMap.Lookup "MyVar")]), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -263,7 +263,7 @@ type CompilerTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
-            Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [(DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [])]), value);
+            Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [Number((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray []))]), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 

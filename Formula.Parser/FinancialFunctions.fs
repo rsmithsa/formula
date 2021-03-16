@@ -9,6 +9,7 @@ namespace Formula.Parser.Integration
 open System.Runtime.InteropServices
 
 open Formula.Parser
+open Formula.Parser.Ast
 
 type DdbFunction() =
     let rec depreciate balance salvage rate count =
@@ -26,16 +27,18 @@ type DdbFunction() =
     member this.Name =
         "DDB"
 
-    member this.Execute (input: float[]) =
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input)
+
         let factor =
-            match input.Length with
-            | 5 -> input.[4]
+            match values.Length with
+            | 5 -> values.[4]
             | _ -> 2.0
 
-        let rate = 1.0 / input.[2] * factor;
-        depreciate input.[0] input.[1] rate (int input.[3])
+        let rate = 1.0 / values.[2] * factor;
+        depreciate values.[0] values.[1] rate (int values.[3])
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "DDB expects four or five arguments."
@@ -56,24 +59,26 @@ type FvFunction() =
     member this.Name =
         "FV"
 
-    member this.Execute (input: float[]) =
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input.[0..3])
+
         let pv =
-            match input.Length with
-            | 4 | 5 -> (1.0 + input.[0]) ** input.[1] * input.[3]
+            match values.Length with
+            | 4 | 5 -> (1.0 + values.[0]) ** values.[1] * values.[3]
             | _ -> 0.0
 
         let annuityDue =
             match input.Length with
             | 5 -> input.[4]
-            | _ -> 0.0
+            | _ -> Boolean(false)
 
-        let fv = input.[2] * ((1.0 + input.[0]) ** input.[1] - 1.0) / input.[0]
+        let fv = values.[2] * ((1.0 + values.[0]) ** values.[1] - 1.0) / values.[0]
 
         match Helpers.castToBool annuityDue with
-        | true -> -(pv + (1.0 + input.[0]) * fv)
+        | true -> -(pv + (1.0 + values.[0]) * fv)
         | false -> -(pv + fv)
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "FV expects three, four or five arguments."
@@ -94,12 +99,14 @@ type NpvFunction() =
     member this.Name =
         "NPV"
 
-    member this.Execute (input: float[]) =
-        input.[1..]
-        |> Array.fold (fun (rate, npv) flow -> (rate * (1.0 + input.[0]), npv + (flow / rate))) (1.0 + input.[0], 0.0)
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input)
+
+        values.[1..]
+        |> Array.fold (fun (rate, npv) flow -> (rate * (1.0 + values.[0]), npv + (flow / rate))) (1.0 + values.[0], 0.0)
         |> snd
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "NPV expects at least two arguments."
@@ -121,18 +128,20 @@ type IrrFunction() =
     member this.Name =
         "IRR"
 
-    member this.Execute (input: float[]) =
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input)
+
         let delta = 0.01
-        let guess = input.[0]
+        let guess = values.[0]
 
         let workingInput = Array.copy input
         let fx irr =
-            workingInput.[0] <- irr
+            workingInput.[0] <- Number(irr)
             npvImplementation.Execute(workingInput)
         
         Newton.newtonsMethod fx guess delta
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "IRR expects at least three arguments."
@@ -154,17 +163,19 @@ type MirrFunction() =
     member this.Name =
         "MIRR"
 
-    member this.Execute (input: float[]) =
-        let financeRate = input.[0]
-        let reinvestmentRate = input.[1]
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input)
+
+        let financeRate = values.[0]
+        let reinvestmentRate = values.[1]
 
         let negativeFlows =
-            input.[2..]
+            values.[2..]
             |> Seq.where(fun x -> x < 0.0)
             |> Seq.toArray
 
         let positiveFlows =
-            input.[2..]
+            values.[2..]
             |> Seq.where(fun x -> x >= 0.0)
             |> Seq.rev
             |> Seq.toArray
@@ -182,7 +193,7 @@ type MirrFunction() =
         let root = (1.0 / ((float)input.Length - 3.0))
         ((positive / -negative) ** root) - 1.0
         
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "MIRR expects at least four arguments."
@@ -203,21 +214,23 @@ type NperFunction() =
     member this.Name =
         "NPER"
 
-    member this.Execute (input: float[]) =
-        let rate = input.[0]
-        let pmt = input.[1]
-        let pv = input.[2]
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input.[0..3])
+
+        let rate = values.[0]
+        let pmt = values.[1]
+        let pv = values.[2]
         let fv =
-            match input.Length with
-            | 4 | 5 -> input.[3]
+            match values.Length with
+            | 4 | 5 -> values.[3]
             | _ -> 0.0
 
         let annuityDue =
             match input.Length with
             | 5 -> input.[4]
-            | _ -> 0.0
+            | _ -> Boolean(false)
 
-        match input.[0] with
+        match values.[0] with
         | 0.0 -> (-fv - pv) / pmt
         | _ ->
             match Helpers.castToBool annuityDue with
@@ -226,7 +239,7 @@ type NperFunction() =
             | false ->
                 log((-rate * fv + pmt) / (rate * pv + pmt)) / log(1.0 + rate)
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "NPER expects three, four or five arguments."
@@ -247,27 +260,29 @@ type PmtFunction() =
     member this.Name =
         "PMT"
 
-    member this.Execute (input: float[]) =
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input.[0..3])
+
         let fv =
-            match input.Length with
-            | 4 | 5 -> input.[3]
+            match values.Length with
+            | 4 | 5 -> values.[3]
             | _ -> 0.0
 
         let annuityDue =
             match input.Length with
             | 5 -> input.[4]
-            | _ -> 0.0
+            | _ -> Boolean(false)
 
-        let pvPmt = input.[0] * input.[2] / (1.0 - (1.0 + input.[0]) ** -input.[1])
-        let fvPmt = input.[0] * fv / ((1.0 + input.[0]) ** input.[1] - 1.0)
+        let pvPmt = values.[0] * values.[2] / (1.0 - (1.0 + values.[0]) ** -values.[1])
+        let fvPmt = values.[0] * fv / ((1.0 + values.[0]) ** values.[1] - 1.0)
 
         match Helpers.castToBool annuityDue with
         | true ->
-            -(pvPmt * 1.0 / (1.0 + input.[0]) + fvPmt * 1.0 / (1.0 + input.[0]))
+            -(pvPmt * 1.0 / (1.0 + values.[0]) + fvPmt * 1.0 / (1.0 + values.[0]))
         | false ->
             -(pvPmt + fvPmt)
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "PMT expects three, four or five arguments."
@@ -290,21 +305,23 @@ type IpmtFunction() =
     member this.Name =
         "IPMT"
 
-    member this.Execute (input: float[]) =
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input.[0..4])
+
         let annuityDue =
             match input.Length with
             | 6 -> input.[5]
-            | _ -> 0.0
+            | _ -> Boolean(false)
         let pmt = pmtImplementation.Execute(Array.append input.[0..0] input.[2..])
-        let fv = fvImplementation.Execute(List.toArray [input.[0]; input.[1] - 1.0; pmt; input.[3]; annuityDue])
+        let fv = fvImplementation.Execute(List.toArray [input.[0]; Number(values.[1] - 1.0); Number(pmt); input.[3]; annuityDue])
 
         match Helpers.castToBool annuityDue with
         | true ->
-            fv * input.[0] / (1.0 + input.[0])
+            fv * values.[0] / (1.0 + values.[0])
         | false ->
-            fv * input.[0]
+            fv * values.[0]
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "IPMT expects four, five or six arguments."
@@ -327,10 +344,10 @@ type PpmtFunction() =
     member this.Name =
         "PPMT"
 
-    member this.Execute (input: float[]) =
+    member this.Execute (input: value[]) =
         pmtImplementation.Execute(Array.append input.[0..0] input.[2..]) - ipmtImplementation.Execute(input)
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "PPMT expects four, five or six arguments."
@@ -351,24 +368,26 @@ type PvFunction() =
     member this.Name =
         "PV"
 
-    member this.Execute (input: float[]) =
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input.[0..3])
+
         let fv =
-            match input.Length with
-            | 4 | 5 -> (1.0 + input.[0]) ** -input.[1] * input.[3]
+            match values.Length with
+            | 4 | 5 -> (1.0 + values.[0]) ** -values.[1] * values.[3]
             | _ -> 0.0
 
         let annuityDue =
             match input.Length with
             | 5 -> input.[4]
-            | _ -> 0.0
+            | _ -> Boolean(false)
 
-        let pv = input.[2] * (1.0 - (1.0 + input.[0]) ** -input.[1]) / input.[0]
+        let pv = values.[2] * (1.0 - (1.0 + values.[0]) ** -values.[1]) / values.[0]
 
         match Helpers.castToBool annuityDue with
-        | true -> -(fv + (1.0 + input.[0]) * pv)
+        | true -> -(fv + (1.0 + values.[0]) * pv)
         | false -> -(fv + pv)
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "PV expects three, four or five arguments."
@@ -389,23 +408,25 @@ type RateFunction() =
     member this.Name =
         "RATE"
 
-    member this.Execute (input: float[]) =
-        let nper = input.[0]
-        let pmt = input.[1]
-        let pv = input.[2]
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(Array.append input.[0..3] input.[5..5])
+
+        let nper = values.[0]
+        let pmt = values.[1]
+        let pv = values.[2]
         let fv =
-            match input.Length with
-            | 4 | 5 | 6 -> input.[3]
+            match values.Length with
+            | 4 | 5 | 6 -> values.[3]
             | _ -> 0.0
 
         let annuityDue =
             match input.Length with
             | 5 | 6 -> input.[4]
-            | _ -> 0.0
+            | _ -> Boolean(false)
 
         let guess =
-            match input.Length with
-            | 6 -> input.[5]
+            match values.Length with
+            | 6 -> values.[5]
             | _ -> 0.1
 
         let delta = 0.01
@@ -418,7 +439,7 @@ type RateFunction() =
             let fx rate = fv + pv * (1.0 + rate) ** nper + pmt / rate * ((1.0 + rate) ** nper - 1.0)
             Newton.newtonsMethod fx guess delta
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "RATE expects three, four, five or six arguments."
@@ -439,10 +460,12 @@ type SlnFunction() =
     member this.Name =
         "SLN"
 
-    member this.Execute (input: float[]) =
-        (input.[0] - input.[1]) / input.[2]
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input)
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+        (values.[0] - values.[1]) / values.[2]
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "SLN expects three arguments."
@@ -463,10 +486,12 @@ type SydFunction() =
     member this.Name =
         "SYD"
 
-    member this.Execute (input: float[]) =
-        ((input.[0] - input.[1]) * (input.[2] - input.[3] + 1.0) * 2.0) / (input.[2] * (input.[2] + 1.0))
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input)
 
-    member this.Validate (input: float[], [<Out>]message: string byref) =
+        ((values.[0] - values.[1]) * (values.[2] - values.[3] + 1.0) * 2.0) / (values.[2] * (values.[2] + 1.0))
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
         | true ->
             message <- "SYD expects four arguments."

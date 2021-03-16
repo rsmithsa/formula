@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.5.1</Version>
+    <Version>0.6.0</Version>
     <Authors>Richard Smith</Authors>
     <Copyright>Richard Smith</Copyright>
     <RepositoryUrl>https://github.com/rsmithsa/formula</RepositoryUrl>
@@ -15,15 +15,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\logo.png" Link="logo.png" Pack="true" PackagePath=""/>
-    <None Include="..\LICENSE" Link="LICENSE" Pack="true" PackagePath=""/>
-    <None Include="..\README.md" Link="README.md" Pack="true" PackagePath=""/>
+    <None Include="..\logo.png" Link="logo.png" Pack="true" PackagePath="" />
+    <None Include="..\LICENSE" Link="LICENSE" Pack="true" PackagePath="" />
+    <None Include="..\README.md" Link="README.md" Pack="true" PackagePath="" />
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Ast.fs" />
 	<Compile Include="IVariableProvider.fs" />
 	<Compile Include="IFunctionProvider.fs" />
     <Compile Include="Helpers.fs" />
     <Compile Include="Newton.fs" />
-    <Compile Include="Ast.fs" />
     <Compile Include="Parser.fs" />
 	<Compile Include="DependencyExtractor.fs" />
 	<Compile Include="ConstantFolder.fs" />
