@@ -12,16 +12,6 @@ module ConstantFolder =
 
     let rec foldConstants ast =
 
-        let castToBool value =
-            match value with
-            | Number n -> Helpers.castToBool n
-            | Boolean b -> b
-
-        let castToDouble value =
-            match value with
-            | Number n -> n
-            | Boolean b -> Helpers.castToDouble b
-
         match ast with
         | Constant c ->
             Constant(c)
@@ -31,7 +21,7 @@ module ConstantFolder =
             let res = foldConstants n
             match res with
             | Constant c ->
-                let value = castToDouble c
+                let value = Helpers.castToDouble c
                 Constant(Number(-value))
             | _ -> Negation(res)
         | Arithmetic (a, op, b) ->
@@ -39,8 +29,8 @@ module ConstantFolder =
             let resB = foldConstants b
             match (resA, resB) with
             | (Constant cA, Constant cB) ->
-                let valueA = castToDouble cA
-                let valueB = castToDouble cB
+                let valueA = Helpers.castToDouble cA
+                let valueB = Helpers.castToDouble cB
 
                 match op with
                 | Add ->
@@ -60,7 +50,7 @@ module ConstantFolder =
             let res = foldConstants i
             match res with
             | Constant c ->
-                let value = castToBool c
+                let value = Helpers.castToBool c
                 Constant(Boolean(not value))
             | _ -> Inversion(res)
         | Comparison (a, op, b) ->
@@ -68,8 +58,8 @@ module ConstantFolder =
             let resB = foldConstants b
             match (resA, resB) with
             | (Constant cA, Constant cB) ->
-                let valueA = castToDouble cA
-                let valueB = castToDouble cB
+                let valueA = Helpers.castToDouble cA
+                let valueB = Helpers.castToDouble cB
 
                 match op with
                 | Equal ->
@@ -90,8 +80,8 @@ module ConstantFolder =
             let resB = foldConstants b
             match (resA, resB) with
             | (Constant cA, Constant cB) ->
-                let valueA = castToBool cA
-                let valueB = castToBool cB
+                let valueA = Helpers.castToBool cA
+                let valueB = Helpers.castToBool cB
 
                 match op with
                 | And ->
@@ -106,7 +96,7 @@ module ConstantFolder =
             let resCond  = foldConstants cond
             match resCond with
             | Constant cCond ->
-                let condVal = castToBool cCond
+                let condVal = Helpers.castToBool cCond
                 match condVal with
                 | true ->
                     foldConstants a

@@ -8,10 +8,12 @@ namespace Formula.Parser
 
 open System.Runtime.InteropServices
 
+open Formula.Parser.Ast
+
 type IFunctionImplementation =
     abstract member Name: string
-    abstract member Execute: input: float[] -> float
-    abstract member Validate: input: float[] * [<Out>] message: string byref -> bool
+    abstract member Execute: input: value[] -> float
+    abstract member Validate: input: value[] * [<Out>] message: string byref -> bool
 
 type IFunctionProvider =
     abstract member KnownFunctions: seq<string>
