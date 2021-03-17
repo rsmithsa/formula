@@ -41,7 +41,7 @@ module Parser =
     let range = between (str_ws "|") (str_ws "|") rangeVals
 
     let identWithOptArgs = 
-        pipe3 pidentifier (opt range) (opt argListInParens) 
+        pipe3 pidentifier (opt (attempt range)) (opt argListInParens) 
             (fun id optRange optArgs ->
                 match optArgs with
                 | Some args -> Function(id, args)

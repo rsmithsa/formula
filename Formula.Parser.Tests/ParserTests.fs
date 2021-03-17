@@ -231,6 +231,16 @@ type ParserTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
+    member this.TestParseVariableRange5 () =
+        let result = parseFormulaString "MyVar|A:B|"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Variable(Identifier("MyVar"), Some(Variable(Identifier("A"), None), Variable(Identifier("B"), None)))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
     member this.TestParseVariableOrderOfOperations1 () =
         let result = parseFormulaString "V1 + V42 * V2"
         match result with
