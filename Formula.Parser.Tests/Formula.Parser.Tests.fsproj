@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Compile Include="ParserTests.fs" />
+    <Compile Include="DependencyExtractorTests.fs" />
     <Compile Include="ConstantFolderTests.fs" />
     <Compile Include="InterpreterTests.fs" />
     <Compile Include="CompilerTests.fs" />

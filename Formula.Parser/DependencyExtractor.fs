@@ -18,7 +18,7 @@ module DependencyExtractor =
         | Variable (v, r) ->
             match r with
             | Some (a, b) ->
-                v::(extractDependencies b (extractDependencies a deps))
+                (extractDependencies b (extractDependencies a (v::deps)))
             | None -> v::deps
         | Negation n ->
             extractDependencies n deps
@@ -31,9 +31,7 @@ module DependencyExtractor =
         | Logical (a, op, b) ->
             extractDependencies b (extractDependencies a deps)
         | Function (f, args) ->
-            //let res = args |> List.map foldConstants
-            //Function(f, res)
-            deps
+            args |> List.map (fun a -> extractDependencies a deps) |> List.concat
         | Branch (cond, a, b) ->
             extractDependencies b (extractDependencies a (extractDependencies cond deps))
 
