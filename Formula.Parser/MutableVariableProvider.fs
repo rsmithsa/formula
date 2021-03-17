@@ -7,6 +7,7 @@
 namespace Formula.Parser.Integration
 
 open Formula.Parser
+open Formula.Parser.Ast
 
 type MutableVariableProvider(map: System.Collections.Generic.IDictionary<string, double>) =
     
@@ -20,6 +21,8 @@ type MutableVariableProvider(map: System.Collections.Generic.IDictionary<string,
     interface IVariableProvider with 
         member this.IsDefined (name) = this.IsDefined name
         member this.IsDefined (name, sender) = this.IsDefined name
-        member this.Lookup (name) = this.Lookup name
-        member this.Lookup (name, sender) = this.Lookup name
+        member this.Lookup (name) = Number(this.Lookup name)
+        member this.Lookup (name, sender) = Number(this.Lookup name)
+        member this.LookupRange (name, range) = [| Number(this.Lookup name) |]
+        member this.LookupRange (name, range, sender) = [| Number(this.Lookup name) |]
 

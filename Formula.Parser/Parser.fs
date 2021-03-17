@@ -36,12 +36,16 @@ module Parser =
 
     let argList = sepBy pexpr (str_ws ",")
     let argListInParens = between (str_ws "(") (str_ws ")") argList
+
+    let rangeVals = pexpr .>> str_ws ":" .>>. pexpr
+    let range = between (str_ws "|") (str_ws "|") rangeVals
+
     let identWithOptArgs = 
-        pipe2 pidentifier (opt argListInParens) 
-            (fun id optArgs ->
+        pipe3 pidentifier (opt range) (opt argListInParens) 
+            (fun id optRange optArgs ->
                 match optArgs with
                 | Some args -> Function(id, args)
-                | None -> Variable(id))
+                | None -> Variable(id, optRange))
 
     let branchExpr = pipe3 (str_ws "IF" >>. pexpr .>> ws)  (str_ws "THEN" >>. pexpr .>> ws) (str_ws "ELSE" >>. pexpr .>> ws) (fun cond a b -> Branch(cond, a, b))
 

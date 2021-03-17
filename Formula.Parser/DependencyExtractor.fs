@@ -15,8 +15,11 @@ module DependencyExtractor =
         match ast with
         | Constant c ->
             deps
-        | Variable v ->
-            v::deps
+        | Variable (v, r) ->
+            match r with
+            | Some (a, b) ->
+                v::(extractDependencies b (extractDependencies a deps))
+            | None -> v::deps
         | Negation n ->
             extractDependencies n deps
         | Arithmetic (a, op, b) ->

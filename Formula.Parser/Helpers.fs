@@ -19,6 +19,9 @@ type Helpers =
         | Text x when x.ToLowerInvariant() = "false" -> false
         | _ -> invalidOp $"Unable to cast '{value}' to boolean."
 
+    static member castToBool (value: value[]) =
+        Helpers.castToBool value.[0]
+
     static member castToDouble value =
         match value with
         | Number x -> x
@@ -26,6 +29,9 @@ type Helpers =
         | Boolean x when x = false -> 0.0
         | Text x -> float(x)
         | _ -> invalidOp $"Unable to cast '{value}' to numeric."
+
+    static member castToDouble (value: value[]) =
+        Helpers.castToDouble value.[0]
 
     static member asDoubles values =
         values |> Array.map (

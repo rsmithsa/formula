@@ -154,7 +154,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = Variable(Identifier("MyVar"))
+            let expected = Variable(Identifier("MyVar"), None)
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -165,7 +165,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = Variable(Identifier("MyVar1"))
+            let expected = Variable(Identifier("MyVar1"), None)
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -176,7 +176,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = Variable(Identifier("_MyVar_1"))
+            let expected = Variable(Identifier("_MyVar_1"), None)
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -187,7 +187,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = Variable(Identifier("My Long Variable"))
+            let expected = Variable(Identifier("My Long Variable"), None)
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -198,7 +198,51 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = Variable(Identifier("My Long @$#% Variable 2"))
+            let expected = Variable(Identifier("My Long @$#% Variable 2"), None)
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestFoldVariableRange1 () =
+        let result = parseFormulaString "MyVar|1+2:3*4|"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = Variable(Identifier("MyVar"), Some(Constant(Number(3.0)), Constant(Number(12.0))))
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestFoldVariableRange2 () =
+        let result = parseFormulaString "MyVar|true && false:\"2020/01/01\"|"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = Variable(Identifier("MyVar"), Some(Constant(Boolean(false)), Constant(Text("2020/01/01"))))
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestFoldVariableRange3 () =
+        let result = parseFormulaString "[My Long Variable]| 1 * 0 : 2 / 1 |"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = Variable(Identifier("My Long Variable"), Some(Constant(Number(0.0)), Constant(Number(2.0))))
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestFoldVariableRange4 () =
+        let result = parseFormulaString "[My Long Variable]|\"Test\" : false||true|"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = Variable(Identifier("My Long Variable"), Some(Constant(Text("Test")), Constant(Boolean(true))))
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -209,7 +253,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = Arithmetic(Variable(Identifier("V1")), Add, Arithmetic(Variable(Identifier("V42")), Multiply, Variable(Identifier("V2"))))
+            let expected = Arithmetic(Variable(Identifier("V1"), None), Add, Arithmetic(Variable(Identifier("V42"), None), Multiply, Variable(Identifier("V2"), None)))
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -220,7 +264,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = Arithmetic(Arithmetic(Variable(Identifier("V1")), Add, Variable(Identifier("V42"))), Multiply, Variable(Identifier("V2")))
+            let expected = Arithmetic(Arithmetic(Variable(Identifier("V1"), None), Add, Variable(Identifier("V42"), None)), Multiply, Variable(Identifier("V2"), None))
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -231,7 +275,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = Arithmetic(Arithmetic(Variable(Identifier("V1")), Add, Variable(Identifier("V42"))), Multiply, Arithmetic(Variable(Identifier("V2")), Power, Variable(Identifier("V3"))))
+            let expected = Arithmetic(Arithmetic(Variable(Identifier("V1"), None), Add, Variable(Identifier("V42"), None)), Multiply, Arithmetic(Variable(Identifier("V2"), None), Power, Variable(Identifier("V3"), None)))
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -242,7 +286,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = Arithmetic(Variable(Identifier("V1")), Add, Arithmetic(Variable(Identifier("V42")), Modulus, Variable(Identifier("V2"))))
+            let expected = Arithmetic(Variable(Identifier("V1"), None), Add, Arithmetic(Variable(Identifier("V42"), None), Modulus, Variable(Identifier("V2"), None)))
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -264,7 +308,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = Function(Identifier("COUNT"), [ Constant(Number(1.0 + 42.0)); Variable(Identifier("MyVar")) ])
+            let expected = Function(Identifier("COUNT"), [ Constant(Number(1.0 + 42.0)); Variable(Identifier("MyVar"), None) ])
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

@@ -120,7 +120,7 @@ module Compiler =
             match ast with
             | Constant c ->
                 compileConstant c
-            | Variable v ->
+            | Variable (v, r) ->
                 compileVariable v
             | Negation n ->
                 compileNegation n
