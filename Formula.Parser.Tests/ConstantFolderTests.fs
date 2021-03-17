@@ -39,6 +39,17 @@ type ConstantFolderTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
+    member this.TestFoldNegationVariable () =
+        let result = parseFormulaString "-ABC"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = Negation(Variable(Identifier("ABC"), None))
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
     member this.TestFoldAdditionConstant () =
         let result = parseFormulaString "1 + 42"
         match result with
@@ -358,6 +369,17 @@ type ConstantFolderTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
+    member this.TestFoldInversionVariable () =
+        let result = parseFormulaString "!ABC"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = Inversion(Variable(Identifier("ABC"), None))
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
     member this.TestFoldLogicalAnd () =
         let result = parseFormulaString "true && false"
         match result with
@@ -375,6 +397,28 @@ type ConstantFolderTests () =
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
             let expected = Constant(Boolean(true || false))
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestFoldLogicalVaraible () =
+        let result = parseFormulaString "ABC || DEF"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = Logical(Variable(Identifier("ABC"), None), Or, Variable(Identifier("DEF"), None))
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestFoldComparisonVaraible () =
+        let result = parseFormulaString "ABC = DEF"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = Comparison(Variable(Identifier("ABC"), None), Equal, Variable(Identifier("DEF"), None))
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -463,6 +507,17 @@ type ConstantFolderTests () =
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
             let expected = Constant(Number(1.0))
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestFoldBranch3 () =
+        let result = parseFormulaString "IF(ABC)THEN 41 + 1 ELSE \"Not\""
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = Branch(Variable(Identifier("ABC"), None), Constant(Number(42.0)), Constant(Text("Not")))
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

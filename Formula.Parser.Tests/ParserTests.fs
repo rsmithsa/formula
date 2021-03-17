@@ -6,6 +6,7 @@
 
 namespace Formula.Parser.Tests
 
+open System
 open FParsec.CharParsers
 open Microsoft.VisualStudio.TestTools.UnitTesting
 
@@ -14,6 +15,10 @@ open Formula.Parser.Parser
 
 [<TestClass>]
 type ParserTests () =
+
+    [<TestMethod>]
+    member this.TestParseFailure () =
+        Assert.ThrowsException<ArgumentException>(Action(fun x -> parseFormula "+" |> ignore)) |> ignore
 
     [<TestMethod>]
     member this.TestParseConstant () =
