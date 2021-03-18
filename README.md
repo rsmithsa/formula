@@ -5,6 +5,11 @@ A simple extensible formula language for .NET
 - Arithmetic: + - * % / ^ ( )
 - Functions: FunctionName(Parameter, Parameter, ...)
 - Variables: VariableName OR [Variable Name With Spaces]
+  - Ranges: VariableName|LowerExpr:UpperExpr| OR [Variable Name With Spaces]|LowerExpr:UpperExpr|
+- Constants:
+  - Number: 123.0
+  - Boolean: true/false
+  - Text: "A string"
 - Branching: IF Expr THEN Expr ELSE Expr
 - Logical: = <> > < >= <= ! && ||
 
@@ -22,6 +27,12 @@ A simple extensible formula language for .NET
   - Formula.Parser.Interpreter.interpretFormula
 
 ## Version History
+
+### 0.7.0
+- Syntax support for ranges on variables e.g. MyVar|1:5|
+- Range support for variable providers
+- Range dependency information
+- SUM, AVG functions
 
 ### 0.6.0
 - Typing changes to allow for typed function parameters - number, boolean, text
