@@ -31,7 +31,7 @@ module Ast =
 
     type expr =
               | Constant of value
-              | Variable of identifier
+              | Variable of identifier * option<expr * expr>
               | Negation of expr
               | Arithmetic of expr * arithmetic * expr
               | Inversion of expr

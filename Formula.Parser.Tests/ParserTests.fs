@@ -6,6 +6,7 @@
 
 namespace Formula.Parser.Tests
 
+open System
 open FParsec.CharParsers
 open Microsoft.VisualStudio.TestTools.UnitTesting
 
@@ -14,6 +15,10 @@ open Formula.Parser.Parser
 
 [<TestClass>]
 type ParserTests () =
+
+    [<TestMethod>]
+    member this.TestParseFailure () =
+        Assert.ThrowsException<ArgumentException>(Action(fun x -> parseFormula "+" |> ignore)) |> ignore
 
     [<TestMethod>]
     member this.TestParseConstant () =
@@ -140,7 +145,7 @@ type ParserTests () =
         let result = parseFormulaString "MyVar"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Variable(Identifier("MyVar"))
+            let expected = Variable(Identifier("MyVar"), None)
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -150,7 +155,7 @@ type ParserTests () =
         let result = parseFormulaString "MyVar1"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Variable(Identifier("MyVar1"))
+            let expected = Variable(Identifier("MyVar1"), None)
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -160,7 +165,7 @@ type ParserTests () =
         let result = parseFormulaString "_MyVar_1"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Variable(Identifier("_MyVar_1"))
+            let expected = Variable(Identifier("_MyVar_1"), None)
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -170,7 +175,7 @@ type ParserTests () =
         let result = parseFormulaString "[My Long Variable]"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Variable(Identifier("My Long Variable"))
+            let expected = Variable(Identifier("My Long Variable"), None)
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -180,7 +185,57 @@ type ParserTests () =
         let result = parseFormulaString "[My Long @$#% Variable 2]"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Variable(Identifier("My Long @$#% Variable 2"))
+            let expected = Variable(Identifier("My Long @$#% Variable 2"), None)
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariableRange1 () =
+        let result = parseFormulaString "MyVar|1:2|"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Variable(Identifier("MyVar"), Some(Constant(Number(1.0)), Constant(Number(2.0))))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariableRange2 () =
+        let result = parseFormulaString "MyVar|true:\"2020/01/01\"|"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Variable(Identifier("MyVar"), Some(Constant(Boolean(true)), Constant(Text("2020/01/01"))))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariableRange3 () =
+        let result = parseFormulaString "[My Long Variable]| 1 : 2 |"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Variable(Identifier("My Long Variable"), Some(Constant(Number(1.0)), Constant(Number(2.0))))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariableRange4 () =
+        let result = parseFormulaString "[My Long Variable]|\"Test\" : false|"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Variable(Identifier("My Long Variable"), Some(Constant(Text("Test")), Constant(Boolean(false))))
+            Assert.AreEqual(expected, ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariableRange5 () =
+        let result = parseFormulaString "MyVar|A:B|"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = Variable(Identifier("MyVar"), Some(Variable(Identifier("A"), None), Variable(Identifier("B"), None)))
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -190,7 +245,7 @@ type ParserTests () =
         let result = parseFormulaString "V1 + V42 * V2"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Arithmetic(Variable(Identifier("V1")), Add, Arithmetic(Variable(Identifier("V42")), Multiply, Variable(Identifier("V2"))))
+            let expected = Arithmetic(Variable(Identifier("V1"), None), Add, Arithmetic(Variable(Identifier("V42"), None), Multiply, Variable(Identifier("V2"), None)))
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -200,7 +255,7 @@ type ParserTests () =
         let result = parseFormulaString "(V1 + V42) * V2"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Arithmetic(Arithmetic(Variable(Identifier("V1")), Add, Variable(Identifier("V42"))), Multiply, Variable(Identifier("V2")))
+            let expected = Arithmetic(Arithmetic(Variable(Identifier("V1"), None), Add, Variable(Identifier("V42"), None)), Multiply, Variable(Identifier("V2"), None))
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -210,7 +265,7 @@ type ParserTests () =
         let result = parseFormulaString "(V1 + V42) * V2^V3"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Arithmetic(Arithmetic(Variable(Identifier("V1")), Add, Variable(Identifier("V42"))), Multiply, Arithmetic(Variable(Identifier("V2")), Power, Variable(Identifier("V3"))))
+            let expected = Arithmetic(Arithmetic(Variable(Identifier("V1"), None), Add, Variable(Identifier("V42"), None)), Multiply, Arithmetic(Variable(Identifier("V2"), None), Power, Variable(Identifier("V3"), None)))
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -220,7 +275,7 @@ type ParserTests () =
         let result = parseFormulaString "V1 + V42 % V2"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Arithmetic(Variable(Identifier("V1")), Add, Arithmetic(Variable(Identifier("V42")), Modulus, Variable(Identifier("V2"))))
+            let expected = Arithmetic(Variable(Identifier("V1"), None), Add, Arithmetic(Variable(Identifier("V42"), None), Modulus, Variable(Identifier("V2"), None)))
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -240,7 +295,7 @@ type ParserTests () =
         let result = parseFormulaString "COUNT(1 + 42, MyVar)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = Function(Identifier("COUNT"), [ Arithmetic(Constant(Number(1.0)), Add, Constant(Number(42.0))); Variable(Identifier("MyVar")) ])
+            let expected = Function(Identifier("COUNT"), [ Arithmetic(Constant(Number(1.0)), Add, Constant(Number(42.0))); Variable(Identifier("MyVar"), None) ])
             Assert.AreEqual(expected, ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

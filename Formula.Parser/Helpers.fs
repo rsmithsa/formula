@@ -19,6 +19,9 @@ type Helpers =
         | Text x when x.ToLowerInvariant() = "false" -> false
         | _ -> invalidOp $"Unable to cast '{value}' to boolean."
 
+    static member castToBool (value: value[]) =
+        Helpers.castToBool value.[0]
+
     static member castToDouble value =
         match value with
         | Number x -> x
@@ -27,9 +30,33 @@ type Helpers =
         | Text x -> float(x)
         | _ -> invalidOp $"Unable to cast '{value}' to numeric."
 
+    static member castToDouble (value: value[]) =
+        Helpers.castToDouble value.[0]
+
     static member asDoubles values =
         values |> Array.map (
             function
             | Number x -> x
             | _ -> invalidArg "input" "Numeric input expected."
         )
+
+    static member arrayConcat input =
+        Array.concat input
+
+    static member fsEquality x y =
+        x = y
+
+    static member fsInequality x y =
+        x <> y
+
+    static member fsLessThanOrEqual x y =
+        x <= y
+
+    static member fsGreaterThanOrEqual x y =
+        x >= y
+
+    static member fsLessThan x y =
+        x < y
+
+    static member fsGreaterThan x y =
+        x > y

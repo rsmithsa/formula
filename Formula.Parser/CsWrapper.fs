@@ -6,7 +6,7 @@
 
 namespace Formula.Parser.Integration
 
-open FParsec.CharParsers
+open System
 
 open Formula.Parser.Ast
 open Formula.Parser.Parser
@@ -30,6 +30,18 @@ type CsWrapper private() =
                 | Identifier i -> i
             )
         new System.Collections.Generic.HashSet<string>(deps)
+
+    static member ExtractExpressionDependenciesWithRanges ast =
+        let deps =
+            extractDependenciesWithRanges ast []
+            |> List.map (fun x ->
+                match x with
+                | (Identifier i, r) ->
+                    match r with
+                    | Some (Constant a, Constant b) -> struct (i, a, b)
+                    | _ -> struct (i, Unchecked.defaultof<value>, Unchecked.defaultof<value>)
+            )
+        new System.Collections.Generic.HashSet<ValueTuple<string, value, value>>(deps)
     
     static member ConstantFoldExpression ast =
         foldConstants ast

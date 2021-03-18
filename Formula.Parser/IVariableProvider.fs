@@ -6,11 +6,13 @@
 
 namespace Formula.Parser
 
-open System.Runtime.InteropServices
+open Formula.Parser.Ast
 
 [<AllowNullLiteral>]
 type IVariableProvider =
     abstract member IsDefined: name: string -> bool
     abstract member IsDefined: name: string * sender: IVariableProvider -> bool
-    abstract member Lookup: name: string -> float
-    abstract member Lookup: name: string * sender: IVariableProvider -> float
+    abstract member Lookup: name: string -> value
+    abstract member Lookup: name: string * sender: IVariableProvider -> value
+    abstract member LookupRange: name: string * lower: value * upper: value -> value[]
+    abstract member LookupRange: name: string * lower: value * upper: value * sender: IVariableProvider -> value[]

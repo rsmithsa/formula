@@ -15,8 +15,13 @@ module ConstantFolder =
         match ast with
         | Constant c ->
             Constant(c)
-        | Variable v ->
-            Variable(v)
+        | Variable (v, r) ->
+            match r with
+            | Some (a, b) ->
+                let resA = foldConstants a
+                let resB = foldConstants b
+                Variable(v, Some(resA, resB))
+            | None -> Variable(v, r)
         | Negation n ->
             let res = foldConstants n
             match res with

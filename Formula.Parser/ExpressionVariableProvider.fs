@@ -50,12 +50,29 @@ type ExpressionVariableProvider(expressionMap: Map<string, expr>, functionProvid
             | true -> true
             | false -> v.IsDefined (name, this)
     member this.Lookup name =
+        let result =
+            match variableProvider with
+            | None -> this.CompiledExpressions.[name].Invoke(this, functionProvider)
+            | Some v ->
+                match this.CompiledExpressions.TryGetValue name with
+                | (true, f) -> f.Invoke(this, functionProvider)
+                | (false, f) -> Helpers.castToDouble(v.Lookup (name, this))
+        Number(result)
+    member this.LookupRange name lower upper =
         match variableProvider with
-        | None -> this.CompiledExpressions.[name].Invoke(this, functionProvider)
+        | None ->
+            let value = this.CompiledExpressions.[name].Invoke(this, functionProvider)
+            match (lower, upper) with
+            | (Number a, Number b) -> Array.init (int(b - a) + 1) (fun x -> Number(value))
+            | _ -> invalidArg "range" "Numeric range expected."
         | Some v ->
             match this.CompiledExpressions.TryGetValue name with
-            | (true, f) -> f.Invoke(this, functionProvider)
-            | (false, f) -> v.Lookup (name, this)
+            | (true, f) ->
+                let value = f.Invoke(this, functionProvider)
+                match (lower, upper) with
+                | (Number a, Number b) -> Array.init (int(b - a) + 1) (fun x -> Number(value))
+                | _ -> invalidArg "range" "Numeric range expected."
+            | (false, f) -> v.LookupRange (name, lower, upper, this)
             
 
     interface IVariableProvider with 
@@ -63,3 +80,5 @@ type ExpressionVariableProvider(expressionMap: Map<string, expr>, functionProvid
         member this.IsDefined (name, sender) = this.IsDefined name
         member this.Lookup (name) = this.Lookup name
         member this.Lookup (name, sender) = this.Lookup name
+        member this.LookupRange (name, lower, upper) = this.LookupRange name lower upper
+        member this.LookupRange (name, lower, upper, sender) = this.LookupRange name lower upper

@@ -22,6 +22,8 @@ type DefaultFunctionsTests () =
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "POW")
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "MOD")
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "COUNT")
+        Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "SUM")
+        Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "AVG")
 
     [<TestMethod>]
     member this.TestDefaultFunctionSqrt () =
@@ -103,8 +105,42 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(0.0, functionImplementation.Execute (null))
         Assert.AreEqual(0.0, functionImplementation.Execute (List.toArray []))
         Assert.AreEqual(1.0, functionImplementation.Execute (List.toArray [Number(1.0)]))
-        Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [Number(1.0); Number(1.0)]))
+        Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
 
         let rand = Random(42)
-        let a = rand.Next();
+        let a = rand.Next(500);
         Assert.AreEqual(float a, functionImplementation.Execute (Array.zeroCreate a))
+
+    [<TestMethod>]
+    member this.TestDefaultFunctionSum () =
+        let functionImplementation = DefaultFunctionProvider.Instance.Lookup "SUM"
+        Assert.AreEqual("SUM", functionImplementation.Name)
+
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (null))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray []))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+
+        Assert.AreEqual(0.0, functionImplementation.Execute (null))
+        Assert.AreEqual(0.0, functionImplementation.Execute (List.toArray []))
+        Assert.AreEqual(1.0, functionImplementation.Execute (List.toArray [Number(1.0)]))
+        Assert.AreEqual(3.0, functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
+
+        let rand = Random(42)
+        let a = rand.Next(500);
+        Assert.AreEqual(float a * 2.0, functionImplementation.Execute (Array.init a (fun x -> Number(2.0))))
+
+    [<TestMethod>]
+    member this.TestDefaultFunctionAvg () =
+        let functionImplementation = DefaultFunctionProvider.Instance.Lookup "AVG"
+        Assert.AreEqual("AVG", functionImplementation.Name)
+
+        Assert.AreEqual((false, "AVG expects at least one argument."), functionImplementation.Validate (null))
+        Assert.AreEqual((false, "AVG expects at least one argument."), functionImplementation.Validate (List.toArray []))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+
+        Assert.AreEqual(1.0, functionImplementation.Execute (List.toArray [Number(1.0)]))
+        Assert.AreEqual(1.5, functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
+
+        let rand = Random(42)
+        let a = rand.Next(500);
+        Assert.AreEqual(2.0, functionImplementation.Execute (Array.init a (fun x -> Number(2.0))))

@@ -426,7 +426,7 @@ type RateFunction() =
 
         let guess =
             match values.Length with
-            | 6 -> values.[5]
+            | 5 -> values.[4]
             | _ -> 0.1
 
         let delta = 0.01
