@@ -56,6 +56,14 @@ type ExpressionVariableProvider(expressionMap: Map<string, expr>, functionProvid
             match this.CompiledExpressions.TryGetValue name with
             | (true, f) -> f.Invoke(this, functionProvider)
             | (false, f) -> Helpers.castToDouble(v.Lookup (name, this))
+    // TODO
+    member this.LookupRange name lower upper =
+        match variableProvider with
+        | None -> this.CompiledExpressions.[name].Invoke(this, functionProvider)
+        | Some v ->
+            match this.CompiledExpressions.TryGetValue name with
+            | (true, f) -> f.Invoke(this, functionProvider)
+            | (false, f) -> Helpers.castToDouble(v.Lookup (name, this))
             
 
     interface IVariableProvider with 
@@ -63,5 +71,5 @@ type ExpressionVariableProvider(expressionMap: Map<string, expr>, functionProvid
         member this.IsDefined (name, sender) = this.IsDefined name
         member this.Lookup (name) = Number(this.Lookup name)
         member this.Lookup (name, sender) = Number(this.Lookup name)
-        member this.LookupRange (name, range) = [| Number(this.Lookup name) |]
-        member this.LookupRange (name, range, sender) = [| Number(this.Lookup name) |]
+        member this.LookupRange (name, lower, upper) = [| Number(this.LookupRange name lower upper) |]
+        member this.LookupRange (name, lower, upper, sender) = [| Number(this.LookupRange name lower upper) |]

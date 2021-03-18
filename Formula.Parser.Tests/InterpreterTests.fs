@@ -9,6 +9,7 @@ namespace Formula.Parser.Tests
 open FParsec.CharParsers
 open Microsoft.VisualStudio.TestTools.UnitTesting
 
+open Formula.Parser
 open Formula.Parser.Ast
 open Formula.Parser.Parser
 open Formula.Parser.Interpreter
@@ -29,12 +30,32 @@ type InterpreterTests () =
                                         .Add("V42", 42.0))
 
     [<TestMethod>]
-    member this.TestInterpretConstant () =
+    member this.TestInterpretNumberConstant () =
         let result = parseFormulaString "42"
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
             Assert.AreEqual(42.0, value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestInterpretBooleanConstant () =
+        let result = parseFormulaString "true"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            Assert.AreEqual(1.0, value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestInterpretTextConstant () =
+        let result = parseFormulaString "\"123\""
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            Assert.AreEqual(123.0, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -154,7 +175,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual(varMap.Lookup "MyVar", value);
+            Assert.AreEqual(Helpers.castToDouble(varMap.Lookup "MyVar"), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -164,7 +185,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual(varMap.Lookup "MyVar1", value);
+            Assert.AreEqual(Helpers.castToDouble(varMap.Lookup "MyVar1"), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -174,7 +195,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual(varMap.Lookup "_MyVar_1", value);
+            Assert.AreEqual(Helpers.castToDouble(varMap.Lookup "_MyVar_1"), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -184,7 +205,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual(varMap.Lookup "My Long Variable", value);
+            Assert.AreEqual(Helpers.castToDouble(varMap.Lookup "My Long Variable"), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -194,7 +215,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual(varMap.Lookup "My Long @$#% Variable 2", value);
+            Assert.AreEqual(Helpers.castToDouble(varMap.Lookup "My Long @$#% Variable 2"), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -204,7 +225,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual(varMap.Lookup "V1" + varMap.Lookup "V42" * varMap.Lookup "V2", value);
+            Assert.AreEqual(Helpers.castToDouble(varMap.Lookup "V1") + Helpers.castToDouble(varMap.Lookup "V42") * Helpers.castToDouble(varMap.Lookup "V2"), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -214,7 +235,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual((varMap.Lookup "V1" + varMap.Lookup "V42") * varMap.Lookup "V2", value);
+            Assert.AreEqual((Helpers.castToDouble(varMap.Lookup "V1") + Helpers.castToDouble(varMap.Lookup "V42")) * Helpers.castToDouble(varMap.Lookup "V2"), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -224,7 +245,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual((varMap.Lookup "V1" + varMap.Lookup "V42") * varMap.Lookup "V2" ** varMap.Lookup "V3", value);
+            Assert.AreEqual((Helpers.castToDouble(varMap.Lookup "V1") + Helpers.castToDouble(varMap.Lookup "V42")) * Helpers.castToDouble(varMap.Lookup "V2") ** Helpers.castToDouble(varMap.Lookup "V3"), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -234,7 +255,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual(varMap.Lookup "V1" + varMap.Lookup "V42" % varMap.Lookup "V2", value);
+            Assert.AreEqual(Helpers.castToDouble(varMap.Lookup "V1") + Helpers.castToDouble(varMap.Lookup "V42") % Helpers.castToDouble(varMap.Lookup "V2"), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -254,7 +275,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [Number(1.0 + 42.0); Number(varMap.Lookup "MyVar")]), value);
+            Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [Number(1.0 + 42.0); varMap.Lookup "MyVar"]), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -265,6 +286,16 @@ type InterpreterTests () =
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
             Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [Number((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray []))]), value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestInterpretFunctionWithRange () =
+        let result = parseFormulaString "COUNT(1 + 42, MyVar|1:10|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
+            Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (Array.concat [ [| Number(1.0 + 42.0) |]; varMap.LookupRange "MyVar" (Number(1.0)) (Number(10.0))]), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 

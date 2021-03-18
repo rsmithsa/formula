@@ -39,3 +39,24 @@ type Helpers =
             | Number x -> x
             | _ -> invalidArg "input" "Numeric input expected."
         )
+
+    static member arrayConcat input =
+        Array.concat input
+
+    static member fsEquality x y =
+        x = y
+
+    static member fsInequality x y =
+        x <> y
+
+    static member fsLessThanOrEqual x y =
+        x <= y
+
+    static member fsGreaterThanOrEqual x y =
+        x >= y
+
+    static member fsLessThan x y =
+        x < y
+
+    static member fsGreaterThan x y =
+        x > y

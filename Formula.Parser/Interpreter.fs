@@ -24,7 +24,7 @@ module Interpreter =
                     | Some (a, b) ->
                         let valueA = interpretFormulaInternal a vars functions
                         let valueB = interpretFormulaInternal b vars functions
-                        let t = vars.LookupRange (id, (valueA.[0], valueB.[0]))
+                        let t = vars.LookupRange (id, valueA.[0], valueB.[0])
                         t
                     | None -> [| vars.Lookup id |]
 
