@@ -125,6 +125,50 @@ type CountFunction() =
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
+type SumFunction() =
+    member this.Name =
+        "SUM"
+
+    member this.Execute (input: value[]) =
+        match isNull input with
+        | true -> 0.0
+        | false ->
+            let values = Helpers.asDoubles(input)
+            Array.sum values
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        true
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
+type AvgFunction() =
+    member this.Name =
+        "AVG"
+
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input)
+        Array.average values
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "AVG expects at least one argument."
+            false
+        | false ->
+            match input.Length with
+            | 0 ->
+                message <- "AVG expects at least one argument."
+                false
+            | _ -> true
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
 type DefaultFunctionProvider() =
 
     static let instance = DefaultFunctionProvider()
@@ -135,7 +179,9 @@ type DefaultFunctionProvider() =
             Add("PI", PiFunction()).
             Add("POW", PowFunction()).
             Add("MOD", ModFunction()).
-            Add("COUNT", CountFunction())
+            Add("COUNT", CountFunction()).
+            Add("SUM", SumFunction()).
+            Add("AVG", AvgFunction())
 
     static member Instance = instance
 
