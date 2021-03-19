@@ -79,4 +79,4 @@ module Parser =
         | Success (ast, a, b) ->
             ast
         | Failure (msg, a, b) ->
-            raise (ArgumentException(msg, "input"))
+            raise (ParserException(msg, a))
