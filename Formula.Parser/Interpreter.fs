@@ -96,23 +96,23 @@ module Interpreter =
                     interpretFormulaInternal b vars functions
 
             match ast with
-            | Constant c ->
-                interpretConstant c
-            | Variable (v, r) ->
-                interpetVariable v r
-            | Negation n ->
+            | { item = Constant c } ->
+                interpretConstant c.item
+            | { item = Variable (v, r) } ->
+                interpetVariable v.item r
+            | { item = Negation n } ->
                 interpretNegation n
-            | Arithmetic (a, op, b) ->
-                interpretArithmetic a op b
-            | Inversion i ->
+            | { item = Arithmetic (a, op, b) } ->
+                interpretArithmetic a op.item b
+            | { item = Inversion i } ->
                 interpretInversion i
-            | Comparison (a, op, b) ->
-                interpretComparison a op b
-            | Logical (a, op, b) ->
-                interpretLogical a op b
-            | Function (f, args) ->
-                interpretFunction f args
-            | Branch (cond, a, b) ->
+            | { item = Comparison (a, op, b) } ->
+                interpretComparison a op.item b
+            | { item = Logical (a, op, b) } ->
+                interpretLogical a op.item b
+            | { item = Function (f, args) } ->
+                interpretFunction f.item args
+            | { item = Branch (cond, a, b) } ->
                 interpretBranch cond a b
 
         let result = interpretFormulaInternal ast vars functions

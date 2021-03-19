@@ -6,7 +6,11 @@
 
 namespace Formula.Parser
 
+open FParsec
+
 module Ast = 
+
+    type astItem<'a> = { item: 'a; startPosition: Position; endPosition: Position}
 
     type identifier = Identifier of string
     type value =
@@ -30,12 +34,12 @@ module Ast =
     type logical = And | Or
 
     type expr =
-              | Constant of value
-              | Variable of identifier * option<expr * expr>
-              | Negation of expr
-              | Arithmetic of expr * arithmetic * expr
-              | Inversion of expr
-              | Comparison of expr * comparison * expr
-              | Logical of expr * logical * expr
-              | Function of identifier * expr list
-              | Branch of expr * expr * expr
+              | Constant of astItem<value>
+              | Variable of astItem<identifier> * option<astItem<expr> * astItem<expr>>
+              | Negation of astItem<expr>
+              | Arithmetic of astItem<expr> * astItem<arithmetic> * astItem<expr>
+              | Inversion of astItem<expr>
+              | Comparison of astItem<expr> * astItem<comparison> * astItem<expr>
+              | Logical of astItem<expr> * astItem<logical> * astItem<expr>
+              | Function of astItem<identifier> * astItem<expr> list
+              | Branch of astItem<expr> * astItem<expr> * astItem<expr>

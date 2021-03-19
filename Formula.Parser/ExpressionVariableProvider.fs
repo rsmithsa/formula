@@ -12,14 +12,14 @@ open Formula.Parser.Parser
 open Formula.Parser.ConstantFolder
 open Formula.Parser.Compiler
 
-type ExpressionVariableProvider(expressionMap: Map<string, expr>, functionProvider: IFunctionProvider, ?variableProvider: IVariableProvider) =
+type ExpressionVariableProvider(expressionMap: Map<string, astItem<expr>>, functionProvider: IFunctionProvider, ?variableProvider: IVariableProvider) =
 
     static let dictionaryToMap (dictionary : System.Collections.Generic.IDictionary<_, _>) = 
         dictionary 
         |> Seq.map (|KeyValue|)  
         |> Map.ofSeq
     
-    new(expressions: System.Collections.Generic.IDictionary<string, expr>, functionProvider: IFunctionProvider, variableProvider: IVariableProvider) = ExpressionVariableProvider(dictionaryToMap expressions, functionProvider, variableProvider)
+    new(expressions: System.Collections.Generic.IDictionary<string, astItem<expr>>, functionProvider: IFunctionProvider, variableProvider: IVariableProvider) = ExpressionVariableProvider(dictionaryToMap expressions, functionProvider, variableProvider)
 
     new(expressions: System.Collections.Generic.IDictionary<string, string>, functionProvider: IFunctionProvider, variableProvider: IVariableProvider) =
         let expressionMap =
@@ -30,11 +30,11 @@ type ExpressionVariableProvider(expressionMap: Map<string, expr>, functionProvid
 
         ExpressionVariableProvider(expressionMap, functionProvider, variableProvider)
 
-    new(expressions: System.Collections.Generic.IDictionary<string, expr>, functionProvider: IFunctionProvider) = ExpressionVariableProvider(expressions, functionProvider, null)
+    new(expressions: System.Collections.Generic.IDictionary<string, astItem<expr>>, functionProvider: IFunctionProvider) = ExpressionVariableProvider(expressions, functionProvider, null)
 
     new(expressions: System.Collections.Generic.IDictionary<string, string>, functionProvider: IFunctionProvider) = ExpressionVariableProvider(expressions, functionProvider, null)
 
-    member this.KnownExpressions: Map<string, expr> = expressionMap
+    member this.KnownExpressions: Map<string, astItem<expr>> = expressionMap
 
     member this.CompiledExpressions =
         expressionMap

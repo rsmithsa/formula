@@ -13,51 +13,51 @@ module DependencyExtractor =
     let rec extractDependencies ast deps =
 
         match ast with
-        | Constant c ->
+        | { item = Constant c } ->
             deps
-        | Variable (v, r) ->
+        | { item = Variable (v, r) } ->
             match r with
             | Some (a, b) ->
                 (extractDependencies b (extractDependencies a (v::deps)))
             | None -> v::deps
-        | Negation n ->
+        | { item = Negation n }->
             extractDependencies n deps
-        | Arithmetic (a, op, b) ->
+        | { item = Arithmetic (a, op, b) } ->
             extractDependencies b (extractDependencies a deps)
-        | Inversion i ->
+        | { item = Inversion i } ->
             extractDependencies i deps
-        | Comparison (a, op, b) ->
+        | { item = Comparison (a, op, b) } ->
             extractDependencies b (extractDependencies a deps)
-        | Logical (a, op, b) ->
+        | { item = Logical (a, op, b) } ->
             extractDependencies b (extractDependencies a deps)
-        | Function (f, args) ->
+        | { item = Function (f, args) } ->
             args |> List.map (fun a -> extractDependencies a deps) |> List.concat
-        | Branch (cond, a, b) ->
+        | { item = Branch (cond, a, b) } ->
             extractDependencies b (extractDependencies a (extractDependencies cond deps))
 
     let rec extractDependenciesWithRanges ast deps =
 
         match ast with
-        | Constant c ->
+        | { item = Constant c } ->
             deps
-        | Variable (v, r) ->
+        | { item = Variable (v, r) } ->
             let d = (v, r)
             match r with
             | Some (a, b) ->
                 (extractDependenciesWithRanges b (extractDependenciesWithRanges a (d::deps)))
             | None -> d::deps
-        | Negation n ->
+        | { item = Negation n } ->
             extractDependenciesWithRanges n deps
-        | Arithmetic (a, op, b) ->
+        | { item = Arithmetic (a, op, b) } ->
             extractDependenciesWithRanges b (extractDependenciesWithRanges a deps)
-        | Inversion i ->
+        | { item = Inversion i } ->
             extractDependenciesWithRanges i deps
-        | Comparison (a, op, b) ->
+        | { item = Comparison (a, op, b) } ->
             extractDependenciesWithRanges b (extractDependenciesWithRanges a deps)
-        | Logical (a, op, b) ->
+        | { item = Logical (a, op, b) } ->
             extractDependenciesWithRanges b (extractDependenciesWithRanges a deps)
-        | Function (f, args) ->
+        | { item = Function (f, args) } ->
             args |> List.map (fun a -> extractDependenciesWithRanges a deps) |> List.concat
-        | Branch (cond, a, b) ->
+        | { item = Branch (cond, a, b) } ->
             extractDependenciesWithRanges b (extractDependenciesWithRanges a (extractDependenciesWithRanges cond deps))
 

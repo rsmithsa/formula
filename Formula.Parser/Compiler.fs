@@ -147,23 +147,23 @@ module Compiler =
                 Expression.Condition(valueCond, (compileInternal a), (compileInternal b)) :> Expression
 
             match ast with
-            | Constant c ->
-                compileConstant c
-            | Variable (v, r) ->
-                compileVariable v r
-            | Negation n ->
+            | { item = Constant c } ->
+                compileConstant c.item
+            | { item = Variable (v, r) } ->
+                compileVariable v.item r
+            | { item = Negation n } ->
                 compileNegation n
-            | Arithmetic (a, op, b) ->
-                compileArithmetic a op b
-            | Inversion i ->
+            | { item = Arithmetic (a, op, b) } ->
+                compileArithmetic a op.item b
+            | { item = Inversion i } ->
                 compileInversion i
-            | Comparison (a, op, b) ->
-                compileComparison a op b
-            | Logical (a, op, b) ->
-                compileLogical a op b
-            | Function (f, args) ->
-                compileFunction f args
-            | Branch (cond, a, b) ->
+            | { item = Comparison (a, op, b) } ->
+                compileComparison a op.item b
+            | { item = Logical (a, op, b) } ->
+                compileLogical a op.item b
+            | { item = Function (f, args) } ->
+                compileFunction f.item args
+            | { item = Branch (cond, a, b) } ->
                 compileBranch cond a b
 
         Expression.Lambda(castToDoubleExpression(compileInternal ast), variableProvider, functionProvider).Compile() :?> Func<IVariableProvider, IFunctionProvider, double>

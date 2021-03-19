@@ -7,6 +7,8 @@
 namespace Formula.Parser.Integration
 
 open System
+open System.Linq;
+open FParsec
 
 open Formula.Parser.Ast
 open Formula.Parser.Parser
@@ -25,8 +27,8 @@ type CsWrapper private() =
     static member ExtractExpressionDependencies ast =
         let deps =
             extractDependencies ast []
-            |> List.map (fun x ->
-                match x with
+            |> Seq.map (fun x ->
+                match x.item with
                 | Identifier i -> i
             )
         new System.Collections.Generic.HashSet<string>(deps)
@@ -34,15 +36,25 @@ type CsWrapper private() =
     static member ExtractExpressionDependenciesWithRanges ast =
         let deps =
             extractDependenciesWithRanges ast []
-            |> List.map (fun x ->
+            |> Seq.map (fun x ->
                 match x with
-                | (Identifier i, r) ->
+                | ({ item = Identifier i }, r) ->
                     match r with
-                    | Some (Constant a, Constant b) -> struct (i, a, b)
+                    | Some ({ item = Constant a }, { item = Constant b }) -> struct (i, a.item, b.item)
                     | _ -> struct (i, Unchecked.defaultof<value>, Unchecked.defaultof<value>)
             )
         new System.Collections.Generic.HashSet<ValueTuple<string, value, value>>(deps)
     
+    static member ExtractExpressionDependenciesWithPositions ast =
+        let deps =
+            extractDependencies ast []
+            |> Seq.map (fun x ->
+                match x with
+                | { item = Identifier i } -> (i, struct (x.startPosition, x.endPosition))
+            )
+            |> Seq.groupBy (fun x -> fst x)
+        deps.ToDictionary(fst, fun x -> (snd x |> Seq.map snd).ToList())
+
     static member ConstantFoldExpression ast =
         foldConstants ast
 
