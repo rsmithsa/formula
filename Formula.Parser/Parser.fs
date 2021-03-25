@@ -35,23 +35,23 @@ module Parser =
                                        term)
 
     let getOperatorItem op p =
-        {item = op; startPosition = fst p; endPosition = snd p }
+        { Item = op; StartPosition = fst p; EndPosition = snd p } :> IPositionedAstItem<'a>
 
-    let getInfixOperatorAst kind x y op p =
+    let getInfixOperatorAst (kind: (IAstItem<'a> * IAstItem<'b> * IAstItem<'c> -> 'a0)) x y op p =
         let opItem = getOperatorItem op p
-        { item = kind(x, opItem, y); startPosition = x.startPosition; endPosition = y.endPosition }
+        { Item = kind(x :> IPositionedAstItem<'a>, opItem, y :> IPositionedAstItem<'c>); StartPosition = x.StartPosition; EndPosition = y.EndPosition } :> IPositionedAstItem<'a0>
 
-    let getPrefixOperatorAst kind x p =
-        { item = kind(x); startPosition = fst p; endPosition = x.endPosition }
+    let getPrefixOperatorAst (kind: (IAstItem<'a> -> 'a0)) x p =
+        { Item = kind(x :> IPositionedAstItem<'a>); StartPosition = fst p; EndPosition = x.EndPosition } :> IPositionedAstItem<'a0>
     
     let pnumber = pfloat |>> Number
     let pboolean: Parser<value, unit> = (str_ws "true" >>% Boolean(true)) <|> (str_ws "false" >>% Boolean(false))
     let ptext: Parser<value, unit> =
         between (str_ws "\"") (str_ws "\"") (many1Satisfy ((<>) '\"')) <?> "text" |>> Text
 
-    let wrapPos<'a> (parser: Parser<'a, unit>) = pipe3 getPosition parser getPosition (fun s expr e -> { item = expr; startPosition = s; endPosition = e; })
+    let wrapPos<'a> (parser: Parser<'a, unit>) = pipe3 getPosition parser getPosition (fun s expr e -> { Item = expr; StartPosition = s; EndPosition = e; } :> IPositionedAstItem<'a>) 
 
-    let pconstant = (wrapPos pnumber |>> Constant) <|> (wrapPos pboolean |>> Constant) <|> (wrapPos ptext |>> Constant)
+    let pconstant = (wrapPos pnumber |>> (fun x -> Constant(x :> IAstItem<value>))) <|> (wrapPos pboolean |>> (fun x -> Constant(x :> IAstItem<value>))) <|> (wrapPos ptext |>> (fun x -> Constant(x :> IAstItem<value>)))
 
     let psimpleidentifier: Parser<identifier, unit> =
         let isIdentifierFirstChar c = isLetter c || c = '_'
@@ -75,12 +75,16 @@ module Parser =
         pipe3 pidentifier (opt (attempt range)) (opt argListInParens) 
             (fun id optRange optArgs ->
                 match optArgs with
-                | Some args -> Function(id, args)
-                | None -> Variable(id, optRange))
+                | Some args -> Function(id :> IAstItem<identifier>, args |> List.map (fun x -> x :> IAstItem<expr>))
+                | None ->
+                    match optRange with
+                    | Some range -> Variable(id :> IAstItem<identifier>, Some(((fst range) :> IAstItem<expr>, (snd range) :> IAstItem<expr>)))
+                    | None -> Variable(id :> IAstItem<identifier>, None)
+                )
 
     let branchExpr = pipe3 (str_ws "IF" >>. pexpr .>> ws)  (str_ws "THEN" >>. pexpr .>> ws) (str_ws "ELSE" >>. pexpr .>> ws) (fun cond a b -> Branch(cond, a, b))
 
-    let oppa = new OperatorPrecedenceParser<astItem<expr>,_,_>()
+    let oppa = new OperatorPrecedenceParser<IPositionedAstItem<expr>,_,_>()
     do pexprImpl := oppa.ExpressionParser
     let terma = wrapPos (branchExpr .>> ws) <|> wrapPos (pconstant .>> ws) <|> wrapPos (identWithOptArgs .>> ws) <|> between (str_ws "(") (str_ws ")") pexpr
     oppa.TermParser <- terma

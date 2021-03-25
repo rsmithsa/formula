@@ -12,7 +12,7 @@ module Interpreter =
 
     let interpretFormula ast (vars: IVariableProvider) (functions: IFunctionProvider) =
 
-        let rec interpretFormulaInternal ast (vars: IVariableProvider) (functions: IFunctionProvider): value[] =
+        let rec interpretFormulaInternal (ast: IAstItem<expr>) (vars: IVariableProvider) (functions: IFunctionProvider): value[] =
 
             let interpretConstant constant =
                 [| constant |]
@@ -95,24 +95,24 @@ module Interpreter =
                 | false ->
                     interpretFormulaInternal b vars functions
 
-            match ast with
-            | { item = Constant c } ->
-                interpretConstant c.item
-            | { item = Variable (v, r) } ->
-                interpetVariable v.item r
-            | { item = Negation n } ->
+            match ast.Item with
+            | Constant c ->
+                interpretConstant c.Item
+            | Variable (v, r) ->
+                interpetVariable v.Item r
+            | Negation n ->
                 interpretNegation n
-            | { item = Arithmetic (a, op, b) } ->
-                interpretArithmetic a op.item b
-            | { item = Inversion i } ->
+            | Arithmetic (a, op, b) ->
+                interpretArithmetic a op.Item b
+            | Inversion i ->
                 interpretInversion i
-            | { item = Comparison (a, op, b) } ->
-                interpretComparison a op.item b
-            | { item = Logical (a, op, b) } ->
-                interpretLogical a op.item b
-            | { item = Function (f, args) } ->
-                interpretFunction f.item args
-            | { item = Branch (cond, a, b) } ->
+            | Comparison (a, op, b) ->
+                interpretComparison a op.Item b
+            | Logical (a, op, b) ->
+                interpretLogical a op.Item b
+            | Function (f, args) ->
+                interpretFunction f.Item args
+            | Branch (cond, a, b) ->
                 interpretBranch cond a b
 
         let result = interpretFormulaInternal ast vars functions

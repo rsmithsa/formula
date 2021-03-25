@@ -14,7 +14,7 @@ module Compiler =
     open Formula.Parser
     open Formula.Parser.Ast
 
-    let compileFormula ast =
+    let compileFormula (ast: IAstItem<expr>) =
 
         let variableProvider =
             Expression.Parameter(typeof<IVariableProvider>, "variableProvider")
@@ -50,7 +50,7 @@ module Compiler =
         let greaterThanExpression (left: Expression, right: Expression) =
             Expression.Call(typeof<Helpers>.GetMethod("fsGreaterThan").MakeGenericMethod(typeof<value[]>), left, right) :> Expression
 
-        let rec compileInternal ast: Expression =
+        let rec compileInternal (ast: IAstItem<expr>): Expression =
 
             let compileConstant constant =
                 let result =
@@ -146,24 +146,24 @@ module Compiler =
                 let valueCond = castToBoolExpression(compileInternal cond)
                 Expression.Condition(valueCond, (compileInternal a), (compileInternal b)) :> Expression
 
-            match ast with
-            | { item = Constant c } ->
-                compileConstant c.item
-            | { item = Variable (v, r) } ->
-                compileVariable v.item r
-            | { item = Negation n } ->
+            match ast.Item with
+            | Constant c ->
+                compileConstant c.Item
+            | Variable (v, r) ->
+                compileVariable v.Item r
+            | Negation n ->
                 compileNegation n
-            | { item = Arithmetic (a, op, b) } ->
-                compileArithmetic a op.item b
-            | { item = Inversion i } ->
+            | Arithmetic (a, op, b) ->
+                compileArithmetic a op.Item b
+            | Inversion i ->
                 compileInversion i
-            | { item = Comparison (a, op, b) } ->
-                compileComparison a op.item b
-            | { item = Logical (a, op, b) } ->
-                compileLogical a op.item b
-            | { item = Function (f, args) } ->
-                compileFunction f.item args
-            | { item = Branch (cond, a, b) } ->
+            | Comparison (a, op, b) ->
+                compileComparison a op.Item b
+            | Logical (a, op, b) ->
+                compileLogical a op.Item b
+            | Function (f, args) ->
+                compileFunction f.Item args
+            | Branch (cond, a, b) ->
                 compileBranch cond a b
 
         Expression.Lambda(castToDoubleExpression(compileInternal ast), variableProvider, functionProvider).Compile() :?> Func<IVariableProvider, IFunctionProvider, double>

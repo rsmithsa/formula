@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="TestHelper.fs" />
     <Compile Include="ParserTests.fs" />
     <Compile Include="DependencyExtractorTests.fs" />
     <Compile Include="ConstantFolderTests.fs" />

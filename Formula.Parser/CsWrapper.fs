@@ -28,7 +28,7 @@ type CsWrapper private() =
         let deps =
             extractDependencies ast []
             |> Seq.map (fun x ->
-                match x.item with
+                match x.Item with
                 | Identifier i -> i
             )
         new System.Collections.Generic.HashSet<string>(deps)
@@ -37,20 +37,25 @@ type CsWrapper private() =
         let deps =
             extractDependenciesWithRanges ast []
             |> Seq.map (fun x ->
-                match x with
-                | ({ item = Identifier i }, r) ->
+                let (i, r) = x
+                match (i.Item, r) with
+                | (Identifier i, r) ->
                     match r with
-                    | Some ({ item = Constant a }, { item = Constant b }) -> struct (i, a.item, b.item)
+                    | Some (a, b) ->
+                        match (a.Item, b.Item) with
+                        | (Constant a, Constant b) ->struct (i, a.Item, b.Item)
+                        | _ -> struct (i, Unchecked.defaultof<value>, Unchecked.defaultof<value>)
                     | _ -> struct (i, Unchecked.defaultof<value>, Unchecked.defaultof<value>)
             )
         new System.Collections.Generic.HashSet<ValueTuple<string, value, value>>(deps)
     
-    static member ExtractExpressionDependenciesWithPositions ast =
+    static member ExtractExpressionDependenciesWithPositions (ast: IPositionedAstItem<expr>) =
         let deps =
             extractDependencies ast []
             |> Seq.map (fun x ->
-                match x with
-                | { item = Identifier i } -> (i, struct (x.startPosition, x.endPosition))
+                let t = x :?> IPositionedAstItem<identifier>
+                match t.Item with
+                | Identifier i -> (i, struct (t.StartPosition, t.EndPosition))
             )
             |> Seq.groupBy (fun x -> fst x)
         deps.ToDictionary(fst, fun x -> (snd x |> Seq.map snd).ToList())

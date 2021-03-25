@@ -8,9 +8,27 @@ namespace Formula.Parser
 
 open FParsec
 
-module Ast = 
+type IAstItem<'a> =
+    abstract member Item : 'a
 
-    type astItem<'a> = { item: 'a; startPosition: Position; endPosition: Position}
+type IPositionedAstItem<'a> =
+    inherit IAstItem<'a>
+    abstract member StartPosition : Position
+    abstract member EndPosition : Position
+
+module Ast =
+
+    type astItem<'a> =
+        { Item: 'a }
+        interface IAstItem<'a> with
+            member x.Item = x.Item
+
+    type positionedAstItem<'a> =
+        { Item: 'a; StartPosition: Position; EndPosition: Position }
+        interface IPositionedAstItem<'a> with
+            member x.Item = x.Item
+            member x.StartPosition = x.StartPosition
+            member x.EndPosition = x.EndPosition
 
     type identifier = Identifier of string
     type value =
@@ -34,12 +52,12 @@ module Ast =
     type logical = And | Or
 
     type expr =
-              | Constant of astItem<value>
-              | Variable of astItem<identifier> * option<astItem<expr> * astItem<expr>>
-              | Negation of astItem<expr>
-              | Arithmetic of astItem<expr> * astItem<arithmetic> * astItem<expr>
-              | Inversion of astItem<expr>
-              | Comparison of astItem<expr> * astItem<comparison> * astItem<expr>
-              | Logical of astItem<expr> * astItem<logical> * astItem<expr>
-              | Function of astItem<identifier> * astItem<expr> list
-              | Branch of astItem<expr> * astItem<expr> * astItem<expr>
+              | Constant of IAstItem<value>
+              | Variable of IAstItem<identifier> * option<IAstItem<expr> * IAstItem<expr>>
+              | Negation of IAstItem<expr>
+              | Arithmetic of IAstItem<expr> * IAstItem<arithmetic> * IAstItem<expr>
+              | Inversion of IAstItem<expr>
+              | Comparison of IAstItem<expr> * IAstItem<comparison> * IAstItem<expr>
+              | Logical of IAstItem<expr> * IAstItem<logical> * IAstItem<expr>
+              | Function of IAstItem<identifier> * IAstItem<expr> list
+              | Branch of IAstItem<expr> * IAstItem<expr> * IAstItem<expr>

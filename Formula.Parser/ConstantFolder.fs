@@ -10,98 +10,98 @@ module ConstantFolder =
 
     open Formula.Parser.Ast
 
-    let rec foldConstants ast =
+    let rec foldConstants (ast: IAstItem<expr>) : IAstItem<expr> =
 
-        match ast with
+        match ast.Item with
         | Constant c ->
-            Constant(c)
+            { Item = Constant(c) } :> IAstItem<expr>
         | Variable (v, r) ->
             match r with
             | Some (a, b) ->
                 let resA = foldConstants a
                 let resB = foldConstants b
-                Variable(v, Some(resA, resB))
-            | None -> Variable(v, r)
+                { Item = Variable(v, Some(resA, resB)) } :> IAstItem<expr>
+            | None -> { Item = Variable(v, r) } :> IAstItem<expr>
         | Negation n ->
             let res = foldConstants n
-            match res with
+            match res.Item with
             | Constant c ->
-                let value = Helpers.castToDouble c
-                Constant(Number(-value))
-            | _ -> Negation(res)
+                let value = Helpers.castToDouble c.Item
+                { Item = Constant({ Item = Number(-value) }) } :> IAstItem<expr>
+            | _ -> { Item = Negation(res) } :> IAstItem<expr>
         | Arithmetic (a, op, b) ->
             let resA = foldConstants a
             let resB = foldConstants b
-            match (resA, resB) with
+            match (resA.Item, resB.Item) with
             | (Constant cA, Constant cB) ->
-                let valueA = Helpers.castToDouble cA
-                let valueB = Helpers.castToDouble cB
+                let valueA = Helpers.castToDouble cA.Item
+                let valueB = Helpers.castToDouble cB.Item
 
-                match op with
+                match op.Item with
                 | Add ->
-                    Constant(Number(valueA + valueB))
+                    { Item = Constant({ Item = Number(valueA + valueB) }) } :> IAstItem<expr>
                 | Subtract ->
-                    Constant(Number(valueA - valueB))
+                    { Item = Constant({ Item = Number(valueA - valueB) }) } :> IAstItem<expr>
                 | Multiply ->
-                    Constant(Number(valueA * valueB))
+                    { Item = Constant({ Item = Number(valueA * valueB) }) } :> IAstItem<expr>
                 | Divide ->
-                    Constant(Number(valueA / valueB))
+                    { Item = Constant({ Item = Number(valueA / valueB) }) } :> IAstItem<expr>
                 | Modulus ->
-                    Constant(Number(valueA % valueB))
+                    { Item = Constant({ Item = Number(valueA % valueB) }) } :> IAstItem<expr>
                 | Power ->
-                    Constant(Number(valueA ** valueB))
-            | _ -> Arithmetic(resA, op, resB)
+                    { Item = Constant({ Item = Number(valueA ** valueB) }) } :> IAstItem<expr>
+            | _ -> { Item = Arithmetic(resA, op, resB) } :> IAstItem<expr>
         | Inversion i ->
             let res = foldConstants i
-            match res with
+            match res.Item with
             | Constant c ->
-                let value = Helpers.castToBool c
-                Constant(Boolean(not value))
-            | _ -> Inversion(res)
+                let value = Helpers.castToBool c.Item
+                { Item = Constant({ Item = Boolean(not value) }) } :> IAstItem<expr>
+            | _ -> { Item = Inversion(res) } :> IAstItem<expr>
         | Comparison (a, op, b) ->
             let resA = foldConstants a
             let resB = foldConstants b
-            match (resA, resB) with
+            match (resA.Item, resB.Item) with
             | (Constant cA, Constant cB) ->
-                let valueA = Helpers.castToDouble cA
-                let valueB = Helpers.castToDouble cB
+                let valueA = Helpers.castToDouble cA.Item
+                let valueB = Helpers.castToDouble cB.Item
 
-                match op with
+                match op.Item with
                 | Equal ->
-                    Constant(Boolean(valueA = valueB))
+                    { Item = Constant({ Item = Boolean(valueA = valueB) }) } :> IAstItem<expr>
                 | NotEqual ->
-                    Constant(Boolean(valueA <> valueB))
+                    { Item = Constant({ Item = Boolean(valueA <> valueB) }) } :> IAstItem<expr>
                 | GreaterThan ->
-                    Constant(Boolean(valueA > valueB))
+                    { Item = Constant({ Item = Boolean(valueA > valueB) }) } :> IAstItem<expr>
                 | LessThan ->
-                    Constant(Boolean(valueA < valueB))
+                    { Item = Constant({ Item = Boolean(valueA < valueB) }) } :> IAstItem<expr>
                 | GreaterThanEqual ->
-                    Constant(Boolean(valueA >= valueB))
+                    { Item = Constant({ Item = Boolean(valueA >= valueB) }) } :> IAstItem<expr>
                 | LessThanEqual ->
-                    Constant(Boolean(valueA <= valueB))
-            | _ -> Comparison(resA, op, resB)
+                    { Item = Constant({ Item = Boolean(valueA <= valueB) }) } :> IAstItem<expr>
+            | _ -> { Item = Comparison(resA, op, resB) } :> IAstItem<expr>
         | Logical (a, op, b) ->
             let resA = foldConstants a
             let resB = foldConstants b
-            match (resA, resB) with
+            match (resA.Item, resB.Item) with
             | (Constant cA, Constant cB) ->
-                let valueA = Helpers.castToBool cA
-                let valueB = Helpers.castToBool cB
+                let valueA = Helpers.castToBool cA.Item
+                let valueB = Helpers.castToBool cB.Item
 
-                match op with
+                match op.Item with
                 | And ->
-                    Constant(Boolean(valueA && valueB))
+                    { Item = Constant({ Item = Boolean(valueA && valueB) }) } :> IAstItem<expr>
                 | Or ->
-                    Constant(Boolean(valueA || valueB))
-            | _ -> Logical(resA, op, resB)
+                    { Item = Constant({ Item = Boolean(valueA || valueB) }) } :> IAstItem<expr>
+            | _ -> { Item = Logical(resA, op, resB) } :> IAstItem<expr>
         | Function (f, args) ->
             let res = args |> List.map foldConstants
-            Function(f, res)
+            { Item = Function(f, res) } :> IAstItem<expr>
         | Branch (cond, a, b) ->
             let resCond  = foldConstants cond
-            match resCond with
+            match resCond.Item with
             | Constant cCond ->
-                let condVal = Helpers.castToBool cCond
+                let condVal = Helpers.castToBool cCond.Item
                 match condVal with
                 | true ->
                     foldConstants a
@@ -110,4 +110,4 @@ module ConstantFolder =
             | _ ->
                 let resA = foldConstants a
                 let resB = foldConstants b
-                Branch(cond, resA, resB)
+                { Item = Branch(cond, resA, resB) } :> IAstItem<expr>
