@@ -9,11 +9,11 @@ module AssemblyInfo
 open System.Reflection
 open System.Runtime.InteropServices
 
-[<assembly: AssemblyFileVersionAttribute("0.7.0.0")>]
-[<assembly: AssemblyInformationalVersionAttribute("0.7.0")>]
+[<assembly: AssemblyFileVersionAttribute("0.8.0.0")>]
+[<assembly: AssemblyInformationalVersionAttribute("0.8.0-pre1")>]
 [<assembly: AssemblyProductAttribute("Formula.Parser")>]
 [<assembly: AssemblyTitleAttribute("Formula.Parser")>]
-[<assembly: AssemblyVersionAttribute("0.7.0.0")>]
+[<assembly: AssemblyVersionAttribute("0.8.0.0")>]
 [<assembly: AssemblyDescriptionAttribute("A simple extensible formula language for .NET")>]
 [<assembly: AssemblyCopyrightAttribute("Richard Smith")>]
 do ()
