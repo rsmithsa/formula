@@ -10,9 +10,9 @@ module DependencyExtractor =
 
     open Formula.Parser.Ast
 
-    let rec extractDependencies ast deps =
+    let rec extractDependencies (ast: IAstItem<expr>) deps =
 
-        match ast with
+        match ast.Item with
         | Constant c ->
             deps
         | Variable (v, r) ->
@@ -35,9 +35,9 @@ module DependencyExtractor =
         | Branch (cond, a, b) ->
             extractDependencies b (extractDependencies a (extractDependencies cond deps))
 
-    let rec extractDependenciesWithRanges ast deps =
+    let rec extractDependenciesWithRanges (ast: IAstItem<expr>) deps =
 
-        match ast with
+        match ast.Item with
         | Constant c ->
             deps
         | Variable (v, r) ->

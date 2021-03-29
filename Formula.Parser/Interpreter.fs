@@ -12,7 +12,7 @@ module Interpreter =
 
     let interpretFormula ast (vars: IVariableProvider) (functions: IFunctionProvider) =
 
-        let rec interpretFormulaInternal ast (vars: IVariableProvider) (functions: IFunctionProvider): value[] =
+        let rec interpretFormulaInternal (ast: IAstItem<expr>) (vars: IVariableProvider) (functions: IFunctionProvider): value[] =
 
             let interpretConstant constant =
                 [| constant |]
@@ -95,23 +95,23 @@ module Interpreter =
                 | false ->
                     interpretFormulaInternal b vars functions
 
-            match ast with
+            match ast.Item with
             | Constant c ->
-                interpretConstant c
+                interpretConstant c.Item
             | Variable (v, r) ->
-                interpetVariable v r
+                interpetVariable v.Item r
             | Negation n ->
                 interpretNegation n
             | Arithmetic (a, op, b) ->
-                interpretArithmetic a op b
+                interpretArithmetic a op.Item b
             | Inversion i ->
                 interpretInversion i
             | Comparison (a, op, b) ->
-                interpretComparison a op b
+                interpretComparison a op.Item b
             | Logical (a, op, b) ->
-                interpretLogical a op b
+                interpretLogical a op.Item b
             | Function (f, args) ->
-                interpretFunction f args
+                interpretFunction f.Item args
             | Branch (cond, a, b) ->
                 interpretBranch cond a b
 

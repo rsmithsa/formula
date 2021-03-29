@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.7.0</Version>
+    <Version>0.8.0</Version>
     <Authors>Richard Smith</Authors>
     <Copyright>Richard Smith</Copyright>
     <RepositoryUrl>https://github.com/rsmithsa/formula</RepositoryUrl>
@@ -22,6 +22,7 @@
     <Compile Include="Ast.fs" />
 	<Compile Include="IVariableProvider.fs" />
 	<Compile Include="IFunctionProvider.fs" />
+	<Compile Include="ParserException.fs" />
     <Compile Include="Helpers.fs" />
     <Compile Include="Newton.fs" />
     <Compile Include="Parser.fs" />
@@ -40,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FParsec" Version="1.0.3" />
+    <PackageReference Include="FParsec" Version="1.1.1" />
   </ItemGroup>
 
 </Project>

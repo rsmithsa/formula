@@ -6,7 +6,29 @@
 
 namespace Formula.Parser
 
-module Ast = 
+open FParsec
+
+type IAstItem<'a> =
+    abstract member Item : 'a
+
+type IPositionedAstItem<'a> =
+    inherit IAstItem<'a>
+    abstract member StartPosition : Position
+    abstract member EndPosition : Position
+
+module Ast =
+
+    type astItem<'a> =
+        { Item: 'a }
+        interface IAstItem<'a> with
+            member x.Item = x.Item
+
+    type positionedAstItem<'a> =
+        { Item: 'a; StartPosition: Position; EndPosition: Position }
+        interface IPositionedAstItem<'a> with
+            member x.Item = x.Item
+            member x.StartPosition = x.StartPosition
+            member x.EndPosition = x.EndPosition
 
     type identifier = Identifier of string
     type value =
@@ -30,12 +52,12 @@ module Ast =
     type logical = And | Or
 
     type expr =
-              | Constant of value
-              | Variable of identifier * option<expr * expr>
-              | Negation of expr
-              | Arithmetic of expr * arithmetic * expr
-              | Inversion of expr
-              | Comparison of expr * comparison * expr
-              | Logical of expr * logical * expr
-              | Function of identifier * expr list
-              | Branch of expr * expr * expr
+              | Constant of IAstItem<value>
+              | Variable of IAstItem<identifier> * option<IAstItem<expr> * IAstItem<expr>>
+              | Negation of IAstItem<expr>
+              | Arithmetic of IAstItem<expr> * IAstItem<arithmetic> * IAstItem<expr>
+              | Inversion of IAstItem<expr>
+              | Comparison of IAstItem<expr> * IAstItem<comparison> * IAstItem<expr>
+              | Logical of IAstItem<expr> * IAstItem<logical> * IAstItem<expr>
+              | Function of IAstItem<identifier> * IAstItem<expr> list
+              | Branch of IAstItem<expr> * IAstItem<expr> * IAstItem<expr>

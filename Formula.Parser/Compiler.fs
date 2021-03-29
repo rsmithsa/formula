@@ -14,7 +14,7 @@ module Compiler =
     open Formula.Parser
     open Formula.Parser.Ast
 
-    let compileFormula ast =
+    let compileFormula (ast: IAstItem<expr>) =
 
         let variableProvider =
             Expression.Parameter(typeof<IVariableProvider>, "variableProvider")
@@ -50,7 +50,7 @@ module Compiler =
         let greaterThanExpression (left: Expression, right: Expression) =
             Expression.Call(typeof<Helpers>.GetMethod("fsGreaterThan").MakeGenericMethod(typeof<value[]>), left, right) :> Expression
 
-        let rec compileInternal ast: Expression =
+        let rec compileInternal (ast: IAstItem<expr>): Expression =
 
             let compileConstant constant =
                 let result =
@@ -146,23 +146,23 @@ module Compiler =
                 let valueCond = castToBoolExpression(compileInternal cond)
                 Expression.Condition(valueCond, (compileInternal a), (compileInternal b)) :> Expression
 
-            match ast with
+            match ast.Item with
             | Constant c ->
-                compileConstant c
+                compileConstant c.Item
             | Variable (v, r) ->
-                compileVariable v r
+                compileVariable v.Item r
             | Negation n ->
                 compileNegation n
             | Arithmetic (a, op, b) ->
-                compileArithmetic a op b
+                compileArithmetic a op.Item b
             | Inversion i ->
                 compileInversion i
             | Comparison (a, op, b) ->
-                compileComparison a op b
+                compileComparison a op.Item b
             | Logical (a, op, b) ->
-                compileLogical a op b
+                compileLogical a op.Item b
             | Function (f, args) ->
-                compileFunction f args
+                compileFunction f.Item args
             | Branch (cond, a, b) ->
                 compileBranch cond a b
 

@@ -7,6 +7,8 @@
 namespace Formula.Parser.Integration
 
 open System
+open System.Linq;
+open FParsec
 
 open Formula.Parser.Ast
 open Formula.Parser.Parser
@@ -25,8 +27,8 @@ type CsWrapper private() =
     static member ExtractExpressionDependencies ast =
         let deps =
             extractDependencies ast []
-            |> List.map (fun x ->
-                match x with
+            |> Seq.map (fun x ->
+                match x.Item with
                 | Identifier i -> i
             )
         new System.Collections.Generic.HashSet<string>(deps)
@@ -34,15 +36,30 @@ type CsWrapper private() =
     static member ExtractExpressionDependenciesWithRanges ast =
         let deps =
             extractDependenciesWithRanges ast []
-            |> List.map (fun x ->
-                match x with
+            |> Seq.map (fun x ->
+                let (i, r) = x
+                match (i.Item, r) with
                 | (Identifier i, r) ->
                     match r with
-                    | Some (Constant a, Constant b) -> struct (i, a, b)
+                    | Some (a, b) ->
+                        match (a.Item, b.Item) with
+                        | (Constant a, Constant b) ->struct (i, a.Item, b.Item)
+                        | _ -> struct (i, Unchecked.defaultof<value>, Unchecked.defaultof<value>)
                     | _ -> struct (i, Unchecked.defaultof<value>, Unchecked.defaultof<value>)
             )
         new System.Collections.Generic.HashSet<ValueTuple<string, value, value>>(deps)
     
+    static member ExtractExpressionDependenciesWithPositions (ast: IPositionedAstItem<expr>) =
+        let deps =
+            extractDependencies ast []
+            |> Seq.map (fun x ->
+                let t = x :?> IPositionedAstItem<identifier>
+                match t.Item with
+                | Identifier i -> (i, struct (t.StartPosition, t.EndPosition))
+            )
+            |> Seq.groupBy (fun x -> fst x)
+        deps.ToDictionary(fst, fun x -> (snd x |> Seq.map snd).ToList())
+
     static member ConstantFoldExpression ast =
         foldConstants ast
 
