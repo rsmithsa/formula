@@ -28,6 +28,11 @@ A simple extensible formula language for .NET
 
 ## Version History
 
+### 0.8.0
+- Better parser error reporting - new ParserException
+- Postion information reported from parser
+- Postition information reported by dependency extactor
+
 ### 0.7.0
 - Syntax support for ranges on variables e.g. MyVar|1:5|
 - Range support for variable providers
