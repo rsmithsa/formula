@@ -28,6 +28,10 @@ A simple extensible formula language for .NET
 
 ## Version History
 
+### 0.9.0
+- Support escaped characters in string literals
+- Missing dependencies reported from dependency extactor with function defined ranges
+
 ### 0.8.0
 - Better parser error reporting - new ParserException
 - Postion information reported from parser
