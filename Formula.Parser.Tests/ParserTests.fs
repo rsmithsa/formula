@@ -22,11 +22,51 @@ type ParserTests () =
         Assert.ThrowsException<ParserException>(Action(fun x -> parseFormula "+" |> ignore)) |> ignore
 
     [<TestMethod>]
-    member this.TestParseConstant () =
+    member this.TestParseNumberConstant () =
         let result = parseFormulaString "42"
         match result with
         | Success (ast, userState, endPos) ->
             let expected = { Item = Constant({ Item = Number(42.0) }) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestParseBooleanConstant () =
+        let result = parseFormulaString "true"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Constant({ Item = Boolean(true) }) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+        let result = parseFormulaString "false"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Constant({ Item = Boolean(false) }) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestParseTextConstant () =
+        let result = parseFormulaString "\"123\""
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Constant({ Item = Text("123") }) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestParseTextConstantWithEscaping () =
+        let inp = """ "\' \" \\ \0 \a \b \f \n \r \t \v \u00E7" """.Trim()
+        let expected = "\' \" \\ \u0000 \a \b \f \n \r \t \v \u00E7"
+        let result = parseFormulaString inp
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Constant({ Item = Text(expected) }) }
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

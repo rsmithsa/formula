@@ -16,6 +16,32 @@ module Parser =
     let ws = spaces
     let str_ws s = str s .>> ws
 
+    let pUnicodeHex =
+        (manyMinMaxSatisfy 4 4 isHex <?> "a Unicode scalar value")
+    let toCharOrSurrogatePair p =
+        p |> withSkippedString (fun codePoint _ -> Int32.Parse(codePoint, System.Globalization.NumberStyles.HexNumber) |> Char.ConvertFromUtf32)
+    
+    let pBackslashEscape =
+        anyOf "'\"\\0abfnrtv"
+        |>> function
+            | ''' -> "'"
+            | '"' -> "\""
+            | '\\' -> "\\"
+            | '0' -> "\x00"
+            | 'a' -> "\a"
+            | 'b' -> "\b"
+            | 'f' -> "\f"
+            | 'n' -> "\n"
+            | 'r' -> "\r"
+            | 't' -> "\t"
+            | 'v' -> "\v"
+    
+    let pUnicodeEscape = (pchar 'u' >>. (pUnicodeHex |> toCharOrSurrogatePair))
+    
+    let pEscapedChar = pstring "\\" >>. (pBackslashEscape <|> pUnicodeEscape)
+    let isBasicStrChar c = c <> '\\' && c <> '"' && c > '\u001f' && c <> '\u007f'
+    let pBasicStrChars = manySatisfy isBasicStrChar
+    
     let adjustPosition offset (pos: Position) =
         Position(pos.StreamName, pos.Index + int64 offset,
                  pos.Line, pos.Column + int64 offset)
@@ -47,7 +73,7 @@ module Parser =
     let pnumber = pfloat |>> Number
     let pboolean: Parser<value, unit> = (str_ws "true" >>% Boolean(true)) <|> (str_ws "false" >>% Boolean(false))
     let ptext: Parser<value, unit> =
-        between (str_ws "\"") (str_ws "\"") (many1Satisfy ((<>) '\"')) <?> "text" |>> Text
+        stringsSepBy pBasicStrChars pEscapedChar |> between (str_ws "\"") (str_ws "\"") <?> "text" |>> Text
 
     let wrapPos<'a> (parser: Parser<'a, unit>) = pipe3 getPosition parser getPosition (fun s expr e -> { Item = expr; StartPosition = s; EndPosition = e; } :> IPositionedAstItem<'a>) 
 

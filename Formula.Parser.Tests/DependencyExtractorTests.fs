@@ -65,6 +65,28 @@ type DependencyExtractorTests () =
             Assert.AreEqual(expected, deps);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestVariableRangeDependencies2 () =
+        let result = parseFormulaString "[My Var]|1:1|"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let deps = getSimpleDependencyList (extractDependencies ast [])
+            let expected = [ Identifier("My Var") ]
+            Assert.AreEqual(expected, deps);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestVariableRangeDependencies3 () =
+        let result = parseFormulaString "[My Var]|PI():PI()|"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let deps = getSimpleDependencyList (extractDependencies ast [])
+            let expected = [ Identifier("My Var") ]
+            Assert.AreEqual(expected, deps);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
 
     [<TestMethod>]
     member this.TestFunctionDependencies () =
@@ -76,6 +98,17 @@ type DependencyExtractorTests () =
             Assert.AreEqual(expected, deps);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestFunctionRangeDependencies () =
+        let result = parseFormulaString "POW(SQRT([My Var]|PI():PI()|), [A])"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let deps = getSimpleDependencyList (extractDependencies ast [])
+            let expected = [ Identifier("My Var"); Identifier("A") ]
+            Assert.AreEqual(expected, deps);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)      
 
     [<TestMethod>]
     member this.TestBranchDependencies () =
@@ -183,6 +216,17 @@ type DependencyExtractorTests () =
         | Success (ast, userState, endPos) ->
             let deps = getSimpleRangeDependencyList (extractDependenciesWithRanges (TestHelper.stripPositions ast) [])
             let expected: list<identifier * option<expr * expr>> = [ (Identifier("B"), None); (Identifier("A"), None); (Identifier("My Var"), Some(Variable({ Item = Identifier("A") }, None), Variable({ Item = Identifier("B") }, None))) ]
+            Assert.AreEqual(expected, deps);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestVariableRangeDependenciesWithRanges2 () =
+        let result = parseFormulaString "[My Var]|PI():PI()|"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let deps = getSimpleRangeDependencyList (extractDependenciesWithRanges (TestHelper.stripPositions ast) [])
+            let expected: list<identifier * option<expr * expr>> = [ (Identifier("My Var"), Some(Function({ Item = Identifier("PI") }, []), Function({ Item = Identifier("PI") }, []))) ]
             Assert.AreEqual(expected, deps);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
