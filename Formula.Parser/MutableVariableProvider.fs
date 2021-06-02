@@ -22,6 +22,8 @@ type MutableVariableProvider(map: System.Collections.Generic.IDictionary<string,
         match (lower, upper) with
         | (Number a, Number b) -> Array.init (int(b - a) + 1) (fun x -> Number(value))
         | _ -> invalidArg "range" "Numeric range expected."
+    member this.LookupIndex name index =
+        this.Lookup name
 
     interface IVariableProvider with 
         member this.IsDefined (name) = this.IsDefined name
@@ -30,4 +32,6 @@ type MutableVariableProvider(map: System.Collections.Generic.IDictionary<string,
         member this.Lookup (name, sender) = this.Lookup name
         member this.LookupRange (name, lower, upper) = this.LookupRange name lower upper
         member this.LookupRange (name, lower, upper, sender) = this.LookupRange name lower upper
+        member this.LookupIndex (name, index) = this.LookupIndex name index
+        member this.LookupIndex (name, index, sender) = this.LookupIndex name index
 

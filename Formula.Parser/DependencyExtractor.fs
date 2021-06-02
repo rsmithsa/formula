@@ -15,11 +15,14 @@ module DependencyExtractor =
         match ast.Item with
         | Constant c ->
             deps
-        | Variable (v, r) ->
+        | Variable (v, r, idx) ->
             match r with
             | Some (a, b) ->
                 (extractDependencies b (extractDependencies a (v::deps)))
-            | None -> v::deps
+            | None ->
+                match idx with
+                | Some i -> (extractDependencies i (v::deps))
+                | None -> v::deps
         | Negation n ->
             extractDependencies n deps
         | Arithmetic (a, op, b) ->
@@ -40,12 +43,17 @@ module DependencyExtractor =
         match ast.Item with
         | Constant c ->
             deps
-        | Variable (v, r) ->
+        | Variable (v, r, idx) ->
             let d = (v, r)
             match r with
             | Some (a, b) ->
                 (extractDependenciesWithRanges b (extractDependenciesWithRanges a (d::deps)))
-            | None -> d::deps
+            | None ->
+                match idx with
+                | Some i ->
+                    let r = (v, Some(i, i))
+                    (extractDependenciesWithRanges i (r::deps))
+                | None -> d::deps
         | Negation n ->
             extractDependenciesWithRanges n deps
         | Arithmetic (a, op, b) ->

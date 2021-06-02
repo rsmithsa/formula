@@ -17,7 +17,7 @@ module Interpreter =
             let interpretConstant constant =
                 [| constant |]
 
-            let interpetVariable variable range =
+            let interpretVariable variable range index =
                 match variable with
                 | Identifier id ->
                     match range with
@@ -26,7 +26,12 @@ module Interpreter =
                         let valueB = interpretFormulaInternal b vars functions
                         let t = vars.LookupRange (id, valueA.[0], valueB.[0])
                         t
-                    | None -> [| vars.Lookup id |]
+                    | None ->
+                        match index with
+                        | Some i ->
+                            let value = interpretFormulaInternal i vars functions
+                            [| vars.LookupIndex (id, value.[0]) |]
+                        | None -> [| vars.Lookup id |]
 
             let interpretNegation negation = 
                 let value = Helpers.castToDouble(interpretFormulaInternal negation vars functions)
@@ -98,8 +103,8 @@ module Interpreter =
             match ast.Item with
             | Constant c ->
                 interpretConstant c.Item
-            | Variable (v, r) ->
-                interpetVariable v.Item r
+            | Variable (v, r, i) ->
+                interpretVariable v.Item r i
             | Negation n ->
                 interpretNegation n
             | Arithmetic (a, op, b) ->
