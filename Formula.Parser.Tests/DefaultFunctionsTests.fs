@@ -24,6 +24,8 @@ type DefaultFunctionsTests () =
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "COUNT")
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "SUM")
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "AVG")
+        Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "FIRST")
+        Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "LAST")
 
     [<TestMethod>]
     member this.TestDefaultFunctionSqrt () =
@@ -136,6 +138,7 @@ type DefaultFunctionsTests () =
 
         Assert.AreEqual((false, "AVG expects at least one argument."), functionImplementation.Validate (null))
         Assert.AreEqual((false, "AVG expects at least one argument."), functionImplementation.Validate (List.toArray []))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
 
         Assert.AreEqual(1.0, functionImplementation.Execute (List.toArray [Number(1.0)]))
@@ -144,3 +147,33 @@ type DefaultFunctionsTests () =
         let rand = Random(42)
         let a = rand.Next(500);
         Assert.AreEqual(2.0, functionImplementation.Execute (Array.init a (fun x -> Number(2.0))))
+
+    [<TestMethod>]
+    member this.TestDefaultFunctionFirst () =
+        let functionImplementation = DefaultFunctionProvider.Instance.Lookup "FIRST"
+        Assert.AreEqual("FIRST", functionImplementation.Name)
+
+        Assert.AreEqual((false, "FIRST expects at least one argument."), functionImplementation.Validate (null))
+        Assert.AreEqual((false, "FIRST expects at least one argument."), functionImplementation.Validate (List.toArray []))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+
+        Assert.AreEqual(1.0, functionImplementation.Execute (List.toArray [Number(1.0)]))
+        Assert.AreEqual(1.0, functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
+        Assert.AreEqual(0.0, functionImplementation.Execute (List.toArray [Boolean(false); Number(2.0)]))
+        Assert.AreEqual(123.0, functionImplementation.Execute (List.toArray [Text("123"); Number(2.0)]))
+        
+    [<TestMethod>]
+    member this.TestDefaultFunctionLast () =
+        let functionImplementation = DefaultFunctionProvider.Instance.Lookup "LAST"
+        Assert.AreEqual("LAST", functionImplementation.Name)
+
+        Assert.AreEqual((false, "LAST expects at least one argument."), functionImplementation.Validate (null))
+        Assert.AreEqual((false, "LAST expects at least one argument."), functionImplementation.Validate (List.toArray []))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+
+        Assert.AreEqual(1.0, functionImplementation.Execute (List.toArray [Number(1.0)]))
+        Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
+        Assert.AreEqual(0.0, functionImplementation.Execute (List.toArray [Number(2.0); Boolean(false)]))
+        Assert.AreEqual(123.0, functionImplementation.Execute (List.toArray [Number(2.0); Text("123")]))

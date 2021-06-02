@@ -169,6 +169,54 @@ type AvgFunction() =
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
+type FirstFunction() =
+    member this.Name =
+        "FIRST"
+
+    member this.Execute (input: value[]) =
+        Helpers.castToDouble input.[0]
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "FIRST expects at least one argument."
+            false
+        | false ->
+            match input.Length with
+            | 0 ->
+                message <- "FIRST expects at least one argument."
+                false
+            | _ -> true
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
+type LastFunction() =
+    member this.Name =
+        "LAST"
+
+    member this.Execute (input: value[]) =
+        Helpers.castToDouble input.[input.Length - 1]
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "LAST expects at least one argument."
+            false
+        | false ->
+            match input.Length with
+            | 0 ->
+                message <- "LAST expects at least one argument."
+                false
+            | _ -> true
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
 type DefaultFunctionProvider() =
 
     static let instance = DefaultFunctionProvider()
@@ -181,7 +229,9 @@ type DefaultFunctionProvider() =
             Add("MOD", ModFunction()).
             Add("COUNT", CountFunction()).
             Add("SUM", SumFunction()).
-            Add("AVG", AvgFunction())
+            Add("AVG", AvgFunction()).
+            Add("FIRST", FirstFunction()).
+            Add("LAST", LastFunction())
 
     static member Instance = instance
 
