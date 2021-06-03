@@ -217,6 +217,56 @@ type LastFunction() =
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
+type MinFunction() =
+    member this.Name =
+        "MIN"
+
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input)
+        Array.min values
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "MIN expects at least one argument."
+            false
+        | false ->
+            match input.Length with
+            | 0 ->
+                message <- "MIN expects at least one argument."
+                false
+            | _ -> true
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+        
+type MaxFunction() =
+    member this.Name =
+        "MAX"
+
+    member this.Execute (input: value[]) =
+        let values = Helpers.asDoubles(input)
+        Array.max values
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "MAX expects at least one argument."
+            false
+        | false ->
+            match input.Length with
+            | 0 ->
+                message <- "MAX expects at least one argument."
+                false
+            | _ -> true
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
 type DefaultFunctionProvider() =
 
     static let instance = DefaultFunctionProvider()
@@ -231,7 +281,9 @@ type DefaultFunctionProvider() =
             Add("SUM", SumFunction()).
             Add("AVG", AvgFunction()).
             Add("FIRST", FirstFunction()).
-            Add("LAST", LastFunction())
+            Add("LAST", LastFunction()).
+            Add("MIN", MinFunction()).
+            Add("MAX", MaxFunction())
 
     static member Instance = instance
 

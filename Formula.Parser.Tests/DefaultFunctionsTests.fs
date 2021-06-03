@@ -177,3 +177,33 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
         Assert.AreEqual(0.0, functionImplementation.Execute (List.toArray [Number(2.0); Boolean(false)]))
         Assert.AreEqual(123.0, functionImplementation.Execute (List.toArray [Number(2.0); Text("123")]))
+        
+    [<TestMethod>]
+    member this.TestDefaultFunctionMin () =
+        let functionImplementation = DefaultFunctionProvider.Instance.Lookup "MIN"
+        Assert.AreEqual("MIN", functionImplementation.Name)
+
+        Assert.AreEqual((false, "MIN expects at least one argument."), functionImplementation.Validate (null))
+        Assert.AreEqual((false, "MIN expects at least one argument."), functionImplementation.Validate (List.toArray []))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+
+        Assert.AreEqual(1.0, functionImplementation.Execute (List.toArray [Number(1.0)]))
+        Assert.AreEqual(1.0, functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
+        Assert.AreEqual(0.0, functionImplementation.Execute (List.toArray [Number(2.0); Number(0.0)]))
+        Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [Number(2.0); Number(123.0)]))
+        
+    [<TestMethod>]
+    member this.TestDefaultFunctionMax () =
+        let functionImplementation = DefaultFunctionProvider.Instance.Lookup "MAX"
+        Assert.AreEqual("MAX", functionImplementation.Name)
+
+        Assert.AreEqual((false, "MAX expects at least one argument."), functionImplementation.Validate (null))
+        Assert.AreEqual((false, "MAX expects at least one argument."), functionImplementation.Validate (List.toArray []))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+
+        Assert.AreEqual(1.0, functionImplementation.Execute (List.toArray [Number(1.0)]))
+        Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
+        Assert.AreEqual(2.0, functionImplementation.Execute (List.toArray [Number(2.0); Number(0.0)]))
+        Assert.AreEqual(123.0, functionImplementation.Execute (List.toArray [Number(2.0); Number(123.0)]))
