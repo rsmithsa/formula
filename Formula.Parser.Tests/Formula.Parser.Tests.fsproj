@@ -12,6 +12,7 @@
     <Compile Include="TestHelper.fs" />
     <Compile Include="ParserTests.fs" />
     <Compile Include="DependencyExtractorTests.fs" />
+    <Compile Include="FunctionValidatorTests.fs" />
     <Compile Include="ConstantFolderTests.fs" />
     <Compile Include="InterpreterTests.fs" />
     <Compile Include="CompilerTests.fs" />

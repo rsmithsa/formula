@@ -61,7 +61,9 @@ module FunctionValidator =
                     | :? IPositionedAstItem<identifier> as positionedAstItem -> positionedAstItem
                     | _ -> { Item = f.Item; StartPosition = Position("", -1L, -1L, -1L); EndPosition = Position("", -1L, -1L, -1L) } :> IPositionedAstItem<identifier>
                 match functions.IsDefined id with
-                | true -> errors // TODO Validate parameters? Non-deterministic though?
+                | true ->
+                    // TODO Validate parameter counts? Non-deterministic though?
+                    (args |> List.map (fun a -> validateFunctions a functions errors) |> List.concat) @ errors
                 | false -> ($"Unknown function: {id}", item)::errors
         | Branch (cond, a, b) ->
             validateFunctions b functions (validateFunctions a functions (validateFunctions cond functions errors))
