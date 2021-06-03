@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.9.0</Version>
+    <Version>0.10.0</Version>
     <Authors>Richard Smith</Authors>
     <Copyright>Richard Smith</Copyright>
     <RepositoryUrl>https://github.com/rsmithsa/formula</RepositoryUrl>
@@ -27,6 +27,7 @@
     <Compile Include="Newton.fs" />
     <Compile Include="Parser.fs" />
 	<Compile Include="DependencyExtractor.fs" />
+	<Compile Include="FunctionValidator.fs" />
 	<Compile Include="ConstantFolder.fs" />
     <Compile Include="Interpreter.fs" />
 	<Compile Include="Compiler.fs" />

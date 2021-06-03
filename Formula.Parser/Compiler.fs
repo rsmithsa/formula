@@ -61,7 +61,7 @@ module Compiler =
 
                 Expression.NewArrayInit(typeof<value>, Expression.Convert(result, typeof<value>)) :> Expression
 
-            let compileVariable variable range =
+            let compileVariable variable range index =
                 match variable with
                 | Identifier id ->
                     match range with
@@ -70,7 +70,12 @@ module Compiler =
                         let valueB = Expression.ArrayIndex(compileInternal b, Expression.Constant(0))
                         Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("LookupRange", [| typeof<String>; typeof<value>; typeof<value> |]), Expression.Constant(id), valueA, valueB) :> Expression
                     | None ->
-                        Expression.NewArrayInit(typeof<value>, Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("Lookup", [| typeof<String> |]), Expression.Constant(id))) :> Expression
+                        match index with
+                        | Some i ->
+                            let value = Expression.ArrayIndex(compileInternal i, Expression.Constant(0))
+                            Expression.NewArrayInit(typeof<value>, Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("LookupIndex", [| typeof<String>; typeof<value> |]), Expression.Constant(id), value)) :> Expression
+                        | None ->
+                            Expression.NewArrayInit(typeof<value>, Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("Lookup", [| typeof<String> |]), Expression.Constant(id))) :> Expression
 
             let compileNegation negation = 
                 let value = castToDoubleExpression(compileInternal negation)
@@ -149,8 +154,8 @@ module Compiler =
             match ast.Item with
             | Constant c ->
                 compileConstant c.Item
-            | Variable (v, r) ->
-                compileVariable v.Item r
+            | Variable (v, r, i) ->
+                compileVariable v.Item r i
             | Negation n ->
                 compileNegation n
             | Arithmetic (a, op, b) ->

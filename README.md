@@ -6,6 +6,7 @@ A simple extensible formula language for .NET
 - Functions: FunctionName(Parameter, Parameter, ...)
 - Variables: VariableName OR [Variable Name With Spaces]
   - Ranges: VariableName|LowerExpr:UpperExpr| OR [Variable Name With Spaces]|LowerExpr:UpperExpr|
+  - Indices: VariableName|IndexExpr| OR [Variable Name With Spaces]|IndexExpr|
 - Constants:
   - Number: 123.0
   - Boolean: true/false
@@ -27,6 +28,11 @@ A simple extensible formula language for .NET
   - Formula.Parser.Interpreter.interpretFormula
 
 ## Version History
+
+### 0.10.0
+- Syntax support for offsets/indices on variables e.g. MyVar|1|
+- FIRST, LAST, MIN, MAX functions
+- Added FunctionValidator to validate function calls after parsing
 
 ### 0.9.0
 - Support escaped characters in string literals

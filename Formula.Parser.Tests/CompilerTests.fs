@@ -297,6 +297,16 @@ type CompilerTests () =
             Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (Array.concat [ [| Number(1.0 + 42.0) |]; varMap.LookupRange "MyVar" (Number(1.0)) (Number(10.0))]), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestCompileFunctionWithIndex () =
+        let result = parseFormulaString "COUNT(1 + 42, MyVar|1|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
+            Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute ([| Number(1.0 + 42.0); varMap.LookupIndex "MyVar" (Number(1.0)) |]), value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
 
     [<TestMethod>]
     member this.TestCompileLogicalTrue () =

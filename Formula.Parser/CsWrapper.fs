@@ -13,6 +13,7 @@ open FParsec
 open Formula.Parser.Ast
 open Formula.Parser.Parser
 open Formula.Parser.DependencyExtractor
+open Formula.Parser.FunctionValidator
 open Formula.Parser.ConstantFolder
 open Formula.Parser.Interpreter
 open Formula.Parser.Compiler
@@ -60,6 +61,15 @@ type CsWrapper private() =
             |> Seq.groupBy (fun x -> fst x)
         deps.ToDictionary(fst, fun x -> (snd x |> Seq.map snd).ToList())
 
+    static member ValidateFunctions (ast, (functionProvider: IFunctionProvider)) =
+        let errors =
+            validateFunctions ast functionProvider []
+            |> Seq.map (fun (m, x) ->
+                match x.Item with
+                | Identifier i -> struct (m, i, x.StartPosition, x.EndPosition)
+            )
+        errors.ToList()
+    
     static member ConstantFoldExpression ast =
         foldConstants ast
 

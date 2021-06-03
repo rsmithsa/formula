@@ -15,13 +15,18 @@ module ConstantFolder =
         match ast.Item with
         | Constant c ->
             { Item = Constant(c) } :> IAstItem<expr>
-        | Variable (v, r) ->
+        | Variable (v, r, idx) ->
             match r with
             | Some (a, b) ->
                 let resA = foldConstants a
                 let resB = foldConstants b
-                { Item = Variable(v, Some(resA, resB)) } :> IAstItem<expr>
-            | None -> { Item = Variable(v, r) } :> IAstItem<expr>
+                { Item = Variable(v, Some(resA, resB), None) } :> IAstItem<expr>
+            | None ->
+                    match idx with
+                    | Some i ->
+                        let res = foldConstants i
+                        { Item = Variable(v, None, Some(res)) } :> IAstItem<expr>
+                    | None -> { Item = Variable(v, r, idx) } :> IAstItem<expr>
         | Negation n ->
             let res = foldConstants n
             match res.Item with

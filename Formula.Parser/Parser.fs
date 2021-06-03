@@ -35,6 +35,7 @@ module Parser =
             | 'r' -> "\r"
             | 't' -> "\t"
             | 'v' -> "\v"
+            | _ -> invalidOp "Mismatched escape sequence parser pattern."
     
     let pUnicodeEscape = (pchar 'u' >>. (pUnicodeHex |> toCharOrSurrogatePair))
     
@@ -96,16 +97,21 @@ module Parser =
 
     let rangeVals = pexpr .>> str_ws ":" .>>. pexpr
     let range = between (str_ws "|") (str_ws "|") rangeVals
+    
+    let index = between (str_ws "|") (str_ws "|") pexpr
 
     let identWithOptArgs = 
-        pipe3 pidentifier (opt (attempt range)) (opt argListInParens) 
-            (fun id optRange optArgs ->
+        pipe4 pidentifier (opt (attempt range)) (opt (attempt index)) (opt argListInParens) 
+            (fun id optRange optIndex optArgs ->
                 match optArgs with
                 | Some args -> Function(id :> IAstItem<identifier>, args |> List.map (fun x -> x :> IAstItem<expr>))
                 | None ->
                     match optRange with
-                    | Some range -> Variable(id :> IAstItem<identifier>, Some(((fst range) :> IAstItem<expr>, (snd range) :> IAstItem<expr>)))
-                    | None -> Variable(id :> IAstItem<identifier>, None)
+                    | Some range -> Variable(id :> IAstItem<identifier>, Some(((fst range) :> IAstItem<expr>, (snd range) :> IAstItem<expr>)), None)
+                    | None ->
+                        match optIndex with
+                        | Some index -> Variable(id :> IAstItem<identifier>, None, Some(((index) :> IAstItem<expr>)))
+                        | None -> Variable(id :> IAstItem<identifier>, None, None)
                 )
 
     let branchExpr = pipe3 (str_ws "IF" >>. pexpr .>> ws)  (str_ws "THEN" >>. pexpr .>> ws) (str_ws "ELSE" >>. pexpr .>> ws) (fun cond a b -> Branch(cond, a, b))

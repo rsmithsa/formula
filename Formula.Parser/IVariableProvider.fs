@@ -16,3 +16,5 @@ type IVariableProvider =
     abstract member Lookup: name: string * sender: IVariableProvider -> value
     abstract member LookupRange: name: string * lower: value * upper: value -> value[]
     abstract member LookupRange: name: string * lower: value * upper: value * sender: IVariableProvider -> value[]
+    abstract member LookupIndex: name: string * index: value -> value
+    abstract member LookupIndex: name: string * index: value * sender: IVariableProvider -> value
