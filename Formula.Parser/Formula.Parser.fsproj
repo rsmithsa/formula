@@ -27,6 +27,7 @@
     <Compile Include="Newton.fs" />
     <Compile Include="Parser.fs" />
 	<Compile Include="DependencyExtractor.fs" />
+	<Compile Include="FunctionValidator.fs" />
 	<Compile Include="ConstantFolder.fs" />
     <Compile Include="Interpreter.fs" />
 	<Compile Include="Compiler.fs" />
