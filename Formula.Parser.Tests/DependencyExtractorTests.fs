@@ -28,7 +28,10 @@ type DependencyExtractorTests () =
             fun x ->
             (
                 match snd x with
-                | Some (a, b) -> ((fst x).Item, Some(a.Item, b.Item))
+                | Some (a, b) ->
+                    let stripA = TestHelper.stripPositions a
+                    let stripB = TestHelper.stripPositions b
+                    ((fst x).Item, Some(stripA.Item, stripB.Item))
                 | None -> ((fst x).Item, None)
             )
         )
@@ -370,6 +373,28 @@ type DependencyExtractorTests () =
         | Success (ast, userState, endPos) ->
             let deps = getSimpleRangeDependencyList (extractDependenciesWithRanges ast [])
             let expected: list<identifier * option<expr * expr>> = [ (Identifier("B"), None); (Identifier("A"), None); (Identifier("My Var"), None) ]
+            Assert.AreEqual(expected, deps);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestBranchFunctions () =
+        let result = parseFormulaString "IF SUM([Hours]|YEARSTART():0|) <> 0 THEN SUM([ABC]|YEARSTART():0|) * 1000000 / SUM([Hours]|YEARSTART():0|) ELSE 0"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let deps = getSimpleDependencyList (extractDependencies ast [])
+            let expected = [ Identifier("Hours"); Identifier("ABC"); Identifier("Hours") ]
+            Assert.AreEqual(expected, deps);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestBranchFunctionsWithRanges () =
+        let result = parseFormulaString "IF SUM([Hours]|YEARSTART():0|) <> 0 THEN SUM([ABC]|YEARSTART():0|) * 1000000 / SUM([Hours]|YEARSTART():0|) ELSE 0"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let deps = getSimpleRangeDependencyList (extractDependenciesWithRanges ast [])
+            let expected: list<identifier * option<expr * expr>> = [ (Identifier("Hours"), Some(Function({ Item = Identifier("YEARSTART") }, []), Constant({ Item = Number(0.0) }) )); (Identifier("ABC"), Some(Function({ Item = Identifier("YEARSTART") }, []), Constant({ Item = Number(0.0) }) )); (Identifier("Hours"), Some(Function({ Item = Identifier("YEARSTART") }, []), Constant({ Item = Number(0.0) }) )) ]
             Assert.AreEqual(expected, deps);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
