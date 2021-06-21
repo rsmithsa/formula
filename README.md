@@ -30,7 +30,7 @@ A simple extensible formula language for .NET
 ## Version History
 
 ### 0.10.1
-- Bug fix for duplicate dependencies being return from DependencyExtractor
+- Bug fix for duplicate dependencies being returned from DependencyExtractor
 
 ### 0.10.0
 - Syntax support for offsets/indices on variables e.g. MyVar|1|
