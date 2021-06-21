@@ -379,7 +379,7 @@ type ParserTests () =
             let expected = { Item = Function({ Item = Identifier("COUNT") }, []) }
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
-            Assert.Fail(msg)
+            Assert.Fail $"{msg} {error} {userState}"
 
     [<TestMethod>]
     member this.TestParseFunctionWithParameters () =
@@ -397,6 +397,26 @@ type ParserTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Function({ Item = Identifier("COUNT") }, []) } ]) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestParseFunctionWithRanges () =
+        let result = parseFormulaString "COUNT(1 + 42, MyVar|1:2|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Constant({ Item = Number(42.0) }) }) }; { Item = Variable({ Item = Identifier("MyVar") }, None, None) } ]) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestParseFunctionWithRangesFail () =
+        let result = parseFormulaString "COUNT(1 + 42, MyVar|1:2| + MyVar|1:2|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Constant({ Item = Number(42.0) }) }) }; { Item = Variable({ Item = Identifier("MyVar") }, None, None) } ]) }
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

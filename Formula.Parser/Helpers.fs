@@ -20,7 +20,9 @@ type Helpers =
         | _ -> invalidOp $"Unable to cast '{value}' to boolean."
 
     static member castToBool (value: value[]) =
-        Helpers.castToBool value.[0]
+        match value.Length with
+        | 1 -> Helpers.castToBool value.[0]
+        | _ -> invalidOp $"Unable to cast multiple values to a single value."
 
     static member castToDouble value =
         match value with
@@ -31,7 +33,9 @@ type Helpers =
         | _ -> invalidOp $"Unable to cast '{value}' to numeric."
 
     static member castToDouble (value: value[]) =
-        Helpers.castToDouble value.[0]
+        match value.Length with
+        | 1 -> Helpers.castToDouble value.[0]
+        | _ -> invalidOp $"Unable to cast multiple values to a single value."
 
     static member asDoubles values =
         values |> Array.map (

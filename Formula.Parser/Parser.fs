@@ -12,6 +12,26 @@ module Parser =
     open FParsec
     open Formula.Parser.Ast
 
+    type UserState =
+        { InFunctionParameter: bool; Depth: int; FunctionParameterDepth: int }
+        with
+            static member Default = { InFunctionParameter = false; Depth = 0; FunctionParameterDepth = 0 }
+    
+    let enterFunctionParameter =
+        updateUserState (fun us -> { us with InFunctionParameter = true; FunctionParameterDepth = 0 })
+    
+    let exitFunctionParameter =
+        updateUserState (fun us -> { us with InFunctionParameter = false; FunctionParameterDepth = 0 })
+    
+    let incrementDepth =
+        updateUserState (fun us -> { us with Depth = us.Depth + 1; FunctionParameterDepth = if us.InFunctionParameter then us.FunctionParameterDepth + 1 else us.FunctionParameterDepth })
+        
+    let decrementDepth =
+        updateUserState (fun us -> { us with Depth = us.Depth - 1; FunctionParameterDepth = if us.InFunctionParameter then us.FunctionParameterDepth - 1 else us.FunctionParameterDepth })
+    
+    let isInRootOfFunctionParameter =
+        userStateSatisfies (fun us -> us.InFunctionParameter && us.FunctionParameterDepth = 1 ) 
+    
     let str s = pstring s
     let ws = spaces
     let str_ws s = str s .>> ws
@@ -72,39 +92,44 @@ module Parser =
         { Item = kind(x :> IPositionedAstItem<'a>); StartPosition = fst p; EndPosition = x.EndPosition } :> IPositionedAstItem<'a0>
     
     let pnumber = pfloat |>> Number
-    let pboolean: Parser<value, unit> = (str_ws "true" >>% Boolean(true)) <|> (str_ws "false" >>% Boolean(false))
-    let ptext: Parser<value, unit> =
+    let pboolean: Parser<value, UserState> = (str_ws "true" >>% Boolean(true)) <|> (str_ws "false" >>% Boolean(false))
+    let ptext: Parser<value, UserState> =
         stringsSepBy pBasicStrChars pEscapedChar |> between (str_ws "\"") (str_ws "\"") <?> "text" |>> Text
 
-    let wrapPos<'a> (parser: Parser<'a, unit>) = pipe3 getPosition parser getPosition (fun s expr e -> { Item = expr; StartPosition = s; EndPosition = e; } :> IPositionedAstItem<'a>) 
+    let wrapPos<'a> (parser: Parser<'a, UserState>) = pipe3 getPosition parser getPosition (fun s expr e -> { Item = expr; StartPosition = s; EndPosition = e; } :> IPositionedAstItem<'a>) 
 
     let pconstant = (wrapPos pnumber |>> (fun x -> Constant(x :> IAstItem<value>))) <|> (wrapPos pboolean |>> (fun x -> Constant(x :> IAstItem<value>))) <|> (wrapPos ptext |>> (fun x -> Constant(x :> IAstItem<value>)))
 
-    let psimpleidentifier: Parser<identifier, unit> =
+    let psimpleidentifier: Parser<identifier, UserState> =
         let isIdentifierFirstChar c = isLetter c || c = '_'
         let isIdentifierChar c = isLetter c || isDigit c || c = '_'
         many1Satisfy2L isIdentifierFirstChar isIdentifierChar "identifier" |>> Identifier
 
-    let pescapedidentifier: Parser<identifier, unit> =
+    let pescapedidentifier: Parser<identifier, UserState> =
         between (str_ws "[") (str_ws "]") (many1Satisfy ((<>) ']')) <?> "identifier" |>> Identifier
 
     let pidentifier = (wrapPos psimpleidentifier) <|> (wrapPos pescapedidentifier)
 
     let pexpr, pexprImpl = createParserForwardedToRef()
 
-    let argList = sepBy pexpr (str_ws ",")
+    //let argList = sepBy (enterFunctionParameter >>? pexpr .>>? exitFunctionParameter) (str_ws ",")
+    let argList = sepBy (attempt (between enterFunctionParameter exitFunctionParameter pexpr)) (str_ws ",")
     let argListInParens = between (str_ws "(") (str_ws ")") argList
 
     let rangeVals = pexpr .>> str_ws ":" .>>. pexpr
-    let range = between (str_ws "|") (str_ws "|") rangeVals
+    let range =
+        (isInRootOfFunctionParameter <|> fail "Ranges are not supported outside of function parameters") >>.
+        between (str_ws "|") (str_ws "|") rangeVals
     
     let index = between (str_ws "|") (str_ws "|") pexpr
 
     let identWithOptArgs = 
-        pipe4 pidentifier (opt (attempt range)) (opt (attempt index)) (opt argListInParens) 
+        pipe4 pidentifier (opt (attempt range)) (opt (attempt index)) (opt (argListInParens)) 
             (fun id optRange optIndex optArgs ->
                 match optArgs with
-                | Some args -> Function(id :> IAstItem<identifier>, args |> List.map (fun x -> x :> IAstItem<expr>))
+                | Some args ->
+                    Function(id :> IAstItem<identifier>, args
+                    |> List.map (fun x -> x :> IAstItem<expr>))
                 | None ->
                     match optRange with
                     | Some range -> Variable(id :> IAstItem<identifier>, Some(((fst range) :> IAstItem<expr>, (snd range) :> IAstItem<expr>)), None)
@@ -116,10 +141,10 @@ module Parser =
 
     let branchExpr = pipe3 (str_ws "IF" >>. pexpr .>> ws)  (str_ws "THEN" >>. pexpr .>> ws) (str_ws "ELSE" >>. pexpr .>> ws) (fun cond a b -> Branch(cond, a, b))
 
-    let oppa = new OperatorPrecedenceParser<IPositionedAstItem<expr>,_,_>()
+    let oppa = new OperatorPrecedenceParser<IPositionedAstItem<expr>,_,UserState>()
     do pexprImpl := oppa.ExpressionParser
     let terma = wrapPos (branchExpr .>> ws) <|> wrapPos (pconstant .>> ws) <|> wrapPos (identWithOptArgs .>> ws) <|> between (str_ws "(") (str_ws ")") pexpr
-    oppa.TermParser <- terma
+    oppa.TermParser <- incrementDepth >>. terma .>> decrementDepth
     oppa.AddOperator(getInfixOperator "||" 1 Associativity.Left (fun p x y -> getInfixOperatorAst Logical x y Or p))
     oppa.AddOperator(getInfixOperator "&&" 2 Associativity.Left (fun p x y -> getInfixOperatorAst Logical x y And p))
     oppa.AddOperator(getInfixOperator "=" 3 Associativity.Left (fun p x y -> getInfixOperatorAst Comparison x y Equal p))
@@ -139,11 +164,11 @@ module Parser =
 
     let formula = ws >>. pexpr .>> ws .>> eof
 
-    let parseFormulaString str = run formula str
+    let parseFormulaString str = runParserOnString formula UserState.Default "" str
 
     let parseFormula str =
         match parseFormulaString str with
-        | Success (ast, a, b) ->
+        | Success (ast, us, pos) ->
             ast
-        | Failure (msg, a, b) ->
-            raise (ParserException(msg, a))
+        | Failure (msg, err, us) ->
+            raise (ParserException(msg, err))
