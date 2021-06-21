@@ -34,7 +34,7 @@ module DependencyExtractor =
         | Logical (a, op, b) ->
             extractDependencies b (extractDependencies a deps)
         | Function (f, args) ->
-            (args |> List.map (fun a -> extractDependencies a deps) |> List.concat) @ deps
+            (args |> List.map (fun a -> extractDependencies a []) |> List.concat) @ deps
         | Branch (cond, a, b) ->
             extractDependencies b (extractDependencies a (extractDependencies cond deps))
 
@@ -65,7 +65,7 @@ module DependencyExtractor =
         | Logical (a, op, b) ->
             extractDependenciesWithRanges b (extractDependenciesWithRanges a deps)
         | Function (f, args) ->
-            (args |> List.map (fun a -> extractDependenciesWithRanges a deps) |> List.concat) @ deps
+            (args |> List.map (fun a -> extractDependenciesWithRanges a []) |> List.concat) @ deps
         | Branch (cond, a, b) ->
             extractDependenciesWithRanges b (extractDependenciesWithRanges a (extractDependenciesWithRanges cond deps))
 

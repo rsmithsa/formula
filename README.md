@@ -29,6 +29,9 @@ A simple extensible formula language for .NET
 
 ## Version History
 
+### 0.10.1
+- Bug fix for duplicate dependencies being return from DependencyExtractor
+
 ### 0.10.0
 - Syntax support for offsets/indices on variables e.g. MyVar|1|
 - FIRST, LAST, MIN, MAX functions
@@ -36,12 +39,12 @@ A simple extensible formula language for .NET
 
 ### 0.9.0
 - Support escaped characters in string literals
-- Missing dependencies reported from dependency extactor with function defined ranges
+- Missing dependencies reported from dependency extractor with function defined ranges
 
 ### 0.8.0
 - Better parser error reporting - new ParserException
-- Postion information reported from parser
-- Postition information reported by dependency extactor
+- Position information reported from parser
+- Position information reported by dependency extractor
 
 ### 0.7.0
 - Syntax support for ranges on variables e.g. MyVar|1:5|
