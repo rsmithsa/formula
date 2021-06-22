@@ -17,6 +17,16 @@ module Parser =
         with
             static member Default = { InFunctionParameter = false; Depth = 0; FunctionParameterDepth = 0 }
     
+    let (<!>) (p: Parser<_,UserState>) label : Parser<_,UserState> =
+        fun stream ->
+            let x = stream.UserState
+            printfn "%A: Entering %s" stream.Position label
+            printfn $"InFunc: {x.InFunctionParameter}, Depth: {x.Depth}, FuncDepth: {x.FunctionParameterDepth}"
+            let reply = p stream
+            printfn "%A: Leaving %s (%A)" stream.Position label reply.Status
+            printfn $"InFunc: {x.InFunctionParameter}, Depth: {x.Depth}, FuncDepth: {x.FunctionParameterDepth}"
+            reply
+    
     let enterFunctionParameter =
         updateUserState (fun us -> { us with InFunctionParameter = true; FunctionParameterDepth = 0 })
     
@@ -68,14 +78,14 @@ module Parser =
                  pos.Line, pos.Column + int64 offset)
 
     let getInfixOperator str prec assoc mapping =
-        InfixOperator(str, getPosition .>> ws, prec, assoc, (),
+        InfixOperator(str, incrementDepth >>? getPosition .>> ws, prec, assoc, (),
                                fun opPos leftTerm rightTerm ->
                                    mapping
                                        ((adjustPosition -str.Length opPos), opPos)
                                        leftTerm rightTerm)
 
     let getPrefixOperator str prec isAssoc mapping =
-        PrefixOperator(str, getPosition .>> ws, prec, isAssoc, (),
+        PrefixOperator(str, incrementDepth >>? getPosition .>> ws, prec, isAssoc, (),
                                fun opPos term ->
                                    mapping
                                        ((adjustPosition -str.Length opPos), opPos)
@@ -112,39 +122,40 @@ module Parser =
 
     let pexpr, pexprImpl = createParserForwardedToRef()
 
-    //let argList = sepBy (enterFunctionParameter >>? pexpr .>>? exitFunctionParameter) (str_ws ",")
-    let argList = sepBy (attempt (between enterFunctionParameter exitFunctionParameter pexpr)) (str_ws ",")
-    let argListInParens = between (str_ws "(") (str_ws ")") argList
-
-    let rangeVals = pexpr .>> str_ws ":" .>>. pexpr
-    let range =
-        (isInRootOfFunctionParameter <|> fail "Ranges are not supported outside of function parameters") >>.
-        between (str_ws "|") (str_ws "|") rangeVals
+    let argList = sepBy ((enterFunctionParameter) >>? pexpr .>>? (exitFunctionParameter)) (str_ws ",")
     
-    let index = between (str_ws "|") (str_ws "|") pexpr
+    let argListInParens =
+        (str_ws "(") >>. argList .>> (str_ws ")")
 
+    let rangePart: Parser<IPositionedAstItem<expr> option, UserState> =
+        (opt ((str_ws ":") >>? ((isInRootOfFunctionParameter <|> failFatally "Ranges are not supported outside of function parameters") >>. pexpr)))
+    
+    let indexOrRange =
+        (str_ws "|") >>? pexpr .>>.? rangePart .>>? (str_ws "|")
+    
     let identWithOptArgs = 
-        pipe4 pidentifier (opt (attempt range)) (opt (attempt index)) (opt (argListInParens)) 
-            (fun id optRange optIndex optArgs ->
+        pipe3 pidentifier (opt (argListInParens)) (opt (indexOrRange))
+            (fun id optArgs optIndexOrRange ->
                 match optArgs with
                 | Some args ->
                     Function(id :> IAstItem<identifier>, args
                     |> List.map (fun x -> x :> IAstItem<expr>))
                 | None ->
-                    match optRange with
-                    | Some range -> Variable(id :> IAstItem<identifier>, Some(((fst range) :> IAstItem<expr>, (snd range) :> IAstItem<expr>)), None)
+                    match optIndexOrRange with
+                    | Some (index, optRange) ->
+                        match optRange with
+                        | Some range -> Variable(id :> IAstItem<identifier>, Some(((index) :> IAstItem<expr>, (range) :> IAstItem<expr>)), None)
+                        | None -> Variable(id :> IAstItem<identifier>, None, Some(((index) :> IAstItem<expr>)))
                     | None ->
-                        match optIndex with
-                        | Some index -> Variable(id :> IAstItem<identifier>, None, Some(((index) :> IAstItem<expr>)))
-                        | None -> Variable(id :> IAstItem<identifier>, None, None)
+                        Variable(id :> IAstItem<identifier>, None, None)
                 )
-
+    
     let branchExpr = pipe3 (str_ws "IF" >>. pexpr .>> ws)  (str_ws "THEN" >>. pexpr .>> ws) (str_ws "ELSE" >>. pexpr .>> ws) (fun cond a b -> Branch(cond, a, b))
 
     let oppa = new OperatorPrecedenceParser<IPositionedAstItem<expr>,_,UserState>()
     do pexprImpl := oppa.ExpressionParser
     let terma = wrapPos (branchExpr .>> ws) <|> wrapPos (pconstant .>> ws) <|> wrapPos (identWithOptArgs .>> ws) <|> between (str_ws "(") (str_ws ")") pexpr
-    oppa.TermParser <- incrementDepth >>. terma .>> decrementDepth
+    oppa.TermParser <- incrementDepth >>? terma .>>? decrementDepth
     oppa.AddOperator(getInfixOperator "||" 1 Associativity.Left (fun p x y -> getInfixOperatorAst Logical x y Or p))
     oppa.AddOperator(getInfixOperator "&&" 2 Associativity.Left (fun p x y -> getInfixOperatorAst Logical x y And p))
     oppa.AddOperator(getInfixOperator "=" 3 Associativity.Left (fun p x y -> getInfixOperatorAst Comparison x y Equal p))
