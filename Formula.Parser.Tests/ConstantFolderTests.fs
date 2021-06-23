@@ -216,44 +216,44 @@ type ConstantFolderTests () =
 
     [<TestMethod>]
     member this.TestFoldVariableRange1 () =
-        let result = parseFormulaString "MyVar|1+2:3*4|"
+        let result = parseFormulaString "COUNT(MyVar|1+2:3*4|)"
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Number(3.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(12.0) }) } :> IAstItem<expr>), None) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Number(3.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(12.0) }) } :> IAstItem<expr>), None) } ]) }
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
     member this.TestFoldVariableRange2 () =
-        let result = parseFormulaString "MyVar|true && false:\"2020/01/01\"|"
+        let result = parseFormulaString "COUNT(MyVar|true && false:\"2020/01/01\"|)"
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Boolean(false) }) } :> IAstItem<expr>, { Item = Constant({ Item = Text("2020/01/01") }) } :> IAstItem<expr>), None) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Boolean(false) }) } :> IAstItem<expr>, { Item = Constant({ Item = Text("2020/01/01") }) } :> IAstItem<expr>), None) } ]) }
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
     member this.TestFoldVariableRange3 () =
-        let result = parseFormulaString "[My Long Variable]| 1 * 0 : 2 / 1 |"
+        let result = parseFormulaString "COUNT([My Long Variable]| 1 * 0 : 2 / 1 |)"
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Number(0.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>), None) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Number(0.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>), None) } ]) }
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
     member this.TestFoldVariableRange4 () =
-        let result = parseFormulaString "[My Long Variable]|\"Test\" : false||true|"
+        let result = parseFormulaString "COUNT([My Long Variable]|\"Test\" : false||true|)"
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Text("Test") }) } :> IAstItem<expr>, { Item = Constant({ Item = Boolean(true) }) } :> IAstItem<expr>), None) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Text("Test") }) } :> IAstItem<expr>, { Item = Constant({ Item = Boolean(true) }) } :> IAstItem<expr>), None) } ]) }
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
