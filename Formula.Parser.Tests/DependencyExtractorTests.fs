@@ -60,7 +60,7 @@ type DependencyExtractorTests () =
 
     [<TestMethod>]
     member this.TestVariableRangeDependencies1 () =
-        let result = parseFormulaString "[My Var]|A:B|"
+        let result = parseFormulaString "COUNT([My Var]|A:B|)"
         match result with
         | Success (ast, userState, endPos) ->
             let deps = getSimpleDependencyList (extractDependencies ast [])
@@ -71,7 +71,7 @@ type DependencyExtractorTests () =
             
     [<TestMethod>]
     member this.TestVariableRangeDependencies2 () =
-        let result = parseFormulaString "[My Var]|1:1|"
+        let result = parseFormulaString "COUNT([My Var]|1:1|)"
         match result with
         | Success (ast, userState, endPos) ->
             let deps = getSimpleDependencyList (extractDependencies ast [])
@@ -82,7 +82,7 @@ type DependencyExtractorTests () =
             
     [<TestMethod>]
     member this.TestVariableRangeDependencies3 () =
-        let result = parseFormulaString "[My Var]|PI():PI()|"
+        let result = parseFormulaString "COUNT([My Var]|PI():PI()|)"
         match result with
         | Success (ast, userState, endPos) ->
             let deps = getSimpleDependencyList (extractDependencies ast [])
@@ -225,7 +225,7 @@ type DependencyExtractorTests () =
 
     [<TestMethod>]
     member this.TestConstantRangeDependenciesWithRanges () =
-        let result = parseFormulaString "[My Var]|1:0|"
+        let result = parseFormulaString "COUNT([My Var]|1:0|)"
         match result with
         | Success (ast, userState, endPos) ->
             let deps = getSimpleRangeDependencyList (extractDependenciesWithRanges (TestHelper.stripPositions ast) [])
@@ -258,7 +258,7 @@ type DependencyExtractorTests () =
 
     [<TestMethod>]
     member this.TestVariableRangeDependenciesWithRanges1 () =
-        let result = parseFormulaString "[My Var]|A:B|"
+        let result = parseFormulaString "COUNT([My Var]|A:B|)"
         match result with
         | Success (ast, userState, endPos) ->
             let deps = getSimpleRangeDependencyList (extractDependenciesWithRanges (TestHelper.stripPositions ast) [])
@@ -269,7 +269,7 @@ type DependencyExtractorTests () =
             
     [<TestMethod>]
     member this.TestVariableRangeDependenciesWithRanges2 () =
-        let result = parseFormulaString "[My Var]|PI():PI()|"
+        let result = parseFormulaString "COUNT([My Var]|PI():PI()|)"
         match result with
         | Success (ast, userState, endPos) ->
             let deps = getSimpleRangeDependencyList (extractDependenciesWithRanges (TestHelper.stripPositions ast) [])

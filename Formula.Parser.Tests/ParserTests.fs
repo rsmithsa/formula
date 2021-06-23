@@ -233,51 +233,101 @@ type ParserTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParseVariableRange1 () =
+    member this.TestParseVariableRangeFail1 () =
         let result = parseFormulaString "MyVar|1:2|"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>), None) }
-            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+            let actual = TestHelper.stripPositions ast
+            Assert.Fail($"{actual}")
         | Failure (msg, error, userState) ->
-            Assert.Fail(msg)
+            Assert.AreEqual("Ranges are not supported outside of function parameters and must be used directly as parameters without other operations.", (error.Messages.Head :?> ErrorMessage.Message).String)
 
     [<TestMethod>]
-    member this.TestParseVariableRange2 () =
+    member this.TestParseVariableRangeFail2 () =
         let result = parseFormulaString "MyVar|true:\"2020/01/01\"|"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Boolean(true) }) } :> IAstItem<expr>, { Item = Constant({ Item = Text("2020/01/01") }) } :> IAstItem<expr>), None) }
-            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+            let actual = TestHelper.stripPositions ast
+            Assert.Fail($"{actual}")
         | Failure (msg, error, userState) ->
-            Assert.Fail(msg)
+            Assert.AreEqual("Ranges are not supported outside of function parameters and must be used directly as parameters without other operations.", (error.Messages.Head :?> ErrorMessage.Message).String)
 
     [<TestMethod>]
-    member this.TestParseVariableRange3 () =
+    member this.TestParseVariableRangeFail3 () =
         let result = parseFormulaString "[My Long Variable]| 1 : 2 |"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>), None) }
-            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+            let actual = TestHelper.stripPositions ast
+            Assert.Fail($"{actual}")
         | Failure (msg, error, userState) ->
-            Assert.Fail(msg)
+            Assert.AreEqual("Ranges are not supported outside of function parameters and must be used directly as parameters without other operations.", (error.Messages.Head :?> ErrorMessage.Message).String)
 
     [<TestMethod>]
-    member this.TestParseVariableRange4 () =
+    member this.TestParseVariableRangeFail4 () =
         let result = parseFormulaString "[My Long Variable]|\"Test\" : false|"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Text("Test") }) } :> IAstItem<expr>, { Item = Constant({ Item = Boolean(false) }) } :> IAstItem<expr>), None) }
+            let actual = TestHelper.stripPositions ast
+            Assert.Fail($"{actual}")
+        | Failure (msg, error, userState) ->
+            Assert.AreEqual("Ranges are not supported outside of function parameters and must be used directly as parameters without other operations.", (error.Messages.Head :?> ErrorMessage.Message).String)
+
+    [<TestMethod>]
+    member this.TestParseVariableRangeFail5 () =
+        let result = parseFormulaString "MyVar|A:B|"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let actual = TestHelper.stripPositions ast
+            Assert.Fail($"{actual}")
+        | Failure (msg, error, userState) ->
+            Assert.AreEqual("Ranges are not supported outside of function parameters and must be used directly as parameters without other operations.", (error.Messages.Head :?> ErrorMessage.Message).String)
+            
+    [<TestMethod>]
+    member this.TestParseVariableRangeFunction1 () =
+        let result = parseFormulaString "COUNT(MyVar|1:2|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>), None) } ]) }
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestParseVariableRange5 () =
-        let result = parseFormulaString "MyVar|A:B|"
+    member this.TestParseVariableRangeFunction2 () =
+        let result = parseFormulaString "COUNT(MyVar|true:\"2020/01/01\"|)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Variable({ Item = Identifier("A") }, None, None) } :> IAstItem<expr>, { Item = Variable({ Item = Identifier("B") }, None, None) } :> IAstItem<expr>), None) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Boolean(true) }) } :> IAstItem<expr>, { Item = Constant({ Item = Text("2020/01/01") }) } :> IAstItem<expr>), None) } ]) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariableRangeFunction3 () =
+        let result = parseFormulaString "COUNT([My Long Variable]| 1 : 2 |)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>), None) } ]) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariableRangeFunction4 () =
+        let result = parseFormulaString "COUNT([My Long Variable]|\"Test\" : false|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Text("Test") }) } :> IAstItem<expr>, { Item = Constant({ Item = Boolean(false) }) } :> IAstItem<expr>), None) } ]) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseVariableRangeFunction5 () =
+        let result = parseFormulaString "COUNT(MyVar|A:B|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Variable({ Item = Identifier("A") }, None, None) } :> IAstItem<expr>, { Item = Variable({ Item = Identifier("B") }, None, None) } :> IAstItem<expr>), None) } ]) }
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -420,7 +470,7 @@ type ParserTests () =
             let actual = TestHelper.stripPositions ast
             Assert.Fail($"{actual}")
         | Failure (msg, error, userState) ->
-            Assert.AreEqual("Ranges are not supported outside of function parameters", (error.Messages.Head :?> ErrorMessage.Message).String)
+            Assert.AreEqual("Ranges are not supported outside of function parameters and must be used directly as parameters without other operations.", (error.Messages.Head :?> ErrorMessage.Message).String)
             
 
     [<TestMethod>]

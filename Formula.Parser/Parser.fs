@@ -12,35 +12,52 @@ module Parser =
     open FParsec
     open Formula.Parser.Ast
 
-    type UserState =
-        { InFunctionParameter: bool; Depth: int; FunctionParameterDepth: int }
-        with
-            static member Default = { InFunctionParameter = false; Depth = 0; FunctionParameterDepth = 0 }
+    let push item stack = item :: stack
+
+    let pop stack =
+        match stack with
+        | [] -> None, stack
+        | item :: newStack -> Some item, newStack
+
+    let peek stack =
+        match stack with
+        | [] -> None
+        | item :: newStack -> Some item
     
-    let (<!>) (p: Parser<_,UserState>) label : Parser<_,UserState> =
-        fun stream ->
-            let x = stream.UserState
-            printfn "%A: Entering %s" stream.Position label
-            printfn $"InFunc: {x.InFunctionParameter}, Depth: {x.Depth}, FuncDepth: {x.FunctionParameterDepth}"
-            let reply = p stream
-            printfn "%A: Leaving %s (%A)" stream.Position label reply.Status
-            printfn $"InFunc: {x.InFunctionParameter}, Depth: {x.Depth}, FuncDepth: {x.FunctionParameterDepth}"
-            reply
+    type UserState =
+        { FunctionParameterStack: int list; Depth: int; RangeStack: int list }
+        with
+            static member Default = { FunctionParameterStack = []; Depth = 0; RangeStack = [] }
     
     let enterFunctionParameter =
-        updateUserState (fun us -> { us with InFunctionParameter = true; FunctionParameterDepth = 0 })
+        updateUserState (fun us -> { us with FunctionParameterStack = push us.Depth us.FunctionParameterStack })
     
     let exitFunctionParameter =
-        updateUserState (fun us -> { us with InFunctionParameter = false; FunctionParameterDepth = 0 })
+        updateUserState (fun us -> { us with FunctionParameterStack = snd (pop us.FunctionParameterStack) })
+        
+    let enterRange =
+        updateUserState (fun us -> { us with RangeStack = push us.Depth us.RangeStack })
+    
+    let exitRange =
+        updateUserState (fun us -> { us with RangeStack = snd (pop us.RangeStack) })
     
     let incrementDepth =
-        updateUserState (fun us -> { us with Depth = us.Depth + 1; FunctionParameterDepth = if us.InFunctionParameter then us.FunctionParameterDepth + 1 else us.FunctionParameterDepth })
+        updateUserState (fun us -> { us with Depth = us.Depth + 1 })
         
     let decrementDepth =
-        updateUserState (fun us -> { us with Depth = us.Depth - 1; FunctionParameterDepth = if us.InFunctionParameter then us.FunctionParameterDepth - 1 else us.FunctionParameterDepth })
+        updateUserState (fun us -> { us with Depth = us.Depth - 1 })
     
     let isInRootOfFunctionParameter =
-        userStateSatisfies (fun us -> us.InFunctionParameter && us.FunctionParameterDepth = 1 ) 
+        userStateSatisfies (fun us ->
+            let currentParam = peek us.FunctionParameterStack
+            match currentParam with
+            | None -> false
+            | Some p ->
+                let currentRange = peek us.RangeStack
+                match currentRange with
+                | None -> failwith "Unexpected error in range stack"
+                | Some r -> p = r - 1
+        ) 
     
     let str s = pstring s
     let ws = spaces
@@ -128,10 +145,12 @@ module Parser =
         (str_ws "(") >>. argList .>> (str_ws ")")
 
     let rangePart: Parser<IPositionedAstItem<expr> option, UserState> =
-        (opt ((str_ws ":") >>? ((isInRootOfFunctionParameter <|> failFatally "Ranges are not supported outside of function parameters") >>. pexpr)))
+        (opt ((str_ws ":")
+              >>? ((isInRootOfFunctionParameter <|> failFatally "Ranges are not supported outside of function parameters and must be used directly as parameters without other operations.")
+                   >>. pexpr )))
     
     let indexOrRange =
-        (str_ws "|") >>? pexpr .>>.? rangePart .>>? (str_ws "|")
+        (str_ws "|") >>? (enterRange) >>? pexpr .>>.? rangePart .>>? (exitRange) .>>? (str_ws "|")
     
     let identWithOptArgs = 
         pipe3 pidentifier (opt (argListInParens)) (opt (indexOrRange))
