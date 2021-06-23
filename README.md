@@ -29,6 +29,10 @@ A simple extensible formula language for .NET
 
 ## Version History
 
+### 0.11.0
+- Parser detection of ranges used outside of function parameters
+- Remove implicit use of the first range value in operations
+
 ### 0.10.1
 - Bug fix for duplicate dependencies being returned from DependencyExtractor
 
