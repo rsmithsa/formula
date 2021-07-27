@@ -46,6 +46,11 @@ module Ast =
                static member op_GreaterThanOrEqual(a: value, b: value) = a >= b
                static member op_LessThan(a: value, b: value) = a < b
                static member op_GreaterThan(a: value, b: value) = a > b
+               
+               member x.NumberValue =
+                   match x with
+                   | Number n -> n
+                   | _ -> invalidOp "Not a number value"
 
     type arithmetic = Add | Subtract | Multiply | Divide | Modulus | Power
     type comparison = Equal | NotEqual | GreaterThan | LessThan | GreaterThanEqual | LessThanEqual

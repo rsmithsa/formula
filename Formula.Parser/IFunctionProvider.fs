@@ -12,7 +12,7 @@ open Formula.Parser.Ast
 
 type IFunctionImplementation =
     abstract member Name: string
-    abstract member Execute: input: value[] -> float
+    abstract member Execute: input: value[] -> value
     abstract member Validate: input: value[] * [<Out>] message: string byref -> bool
 
 type IFunctionProvider =

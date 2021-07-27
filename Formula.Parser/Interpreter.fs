@@ -90,7 +90,7 @@ module Interpreter =
                     let interpretArg arg = interpretFormulaInternal arg vars functions
                     let interpretedArgs = args |> List.map interpretArg |> Array.concat
                     let imp = functions.Lookup id
-                    [| Number(imp.Execute(interpretedArgs)) |]
+                    [| imp.Execute(interpretedArgs) |]
 
             let interpretBranch cond a b =
                 let valueCond = Helpers.castToBool(interpretFormulaInternal cond vars functions)
