@@ -6,8 +6,14 @@
 
 module TestHelper
 
+open System
 open Formula.Parser
 open Formula.Parser.Ast
+
+let inline (!!>) (x: 'a option) : 'a =
+    match x with
+    | Some v -> v
+    | _ -> invalidOp "Not a value"
 
 let rec stripPositions (ast: IAstItem<expr>): IAstItem<expr> =
     match ast.Item with

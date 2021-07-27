@@ -31,30 +31,31 @@ module ConstantFolder =
             let res = foldConstants n
             match res.Item with
             | Constant c ->
-                let value = Helpers.castToDouble c.Item
-                { Item = Constant({ Item = Number(-value) }) } :> IAstItem<expr>
+                match Helpers.castToDouble c.Item with
+                | Some value -> { Item = Constant({ Item = Number(-value) }) } :> IAstItem<expr>
+                | None -> { Item = Constant({ Item = Nothing }) } :> IAstItem<expr> 
             | _ -> { Item = Negation(res) } :> IAstItem<expr>
         | Arithmetic (a, op, b) ->
             let resA = foldConstants a
             let resB = foldConstants b
             match (resA.Item, resB.Item) with
             | (Constant cA, Constant cB) ->
-                let valueA = Helpers.castToDouble cA.Item
-                let valueB = Helpers.castToDouble cB.Item
-
-                match op.Item with
-                | Add ->
-                    { Item = Constant({ Item = Number(valueA + valueB) }) } :> IAstItem<expr>
-                | Subtract ->
-                    { Item = Constant({ Item = Number(valueA - valueB) }) } :> IAstItem<expr>
-                | Multiply ->
-                    { Item = Constant({ Item = Number(valueA * valueB) }) } :> IAstItem<expr>
-                | Divide ->
-                    { Item = Constant({ Item = Number(valueA / valueB) }) } :> IAstItem<expr>
-                | Modulus ->
-                    { Item = Constant({ Item = Number(valueA % valueB) }) } :> IAstItem<expr>
-                | Power ->
-                    { Item = Constant({ Item = Number(valueA ** valueB) }) } :> IAstItem<expr>
+                match (Helpers.castToDouble cA.Item, Helpers.castToDouble cB.Item) with
+                | (Some valueA, Some valueB) ->
+                    match op.Item with
+                    | Add ->
+                        { Item = Constant({ Item = Number(valueA + valueB) }) } :> IAstItem<expr>
+                    | Subtract ->
+                        { Item = Constant({ Item = Number(valueA - valueB) }) } :> IAstItem<expr>
+                    | Multiply ->
+                        { Item = Constant({ Item = Number(valueA * valueB) }) } :> IAstItem<expr>
+                    | Divide ->
+                        { Item = Constant({ Item = Number(valueA / valueB) }) } :> IAstItem<expr>
+                    | Modulus ->
+                        { Item = Constant({ Item = Number(valueA % valueB) }) } :> IAstItem<expr>
+                    | Power ->
+                        { Item = Constant({ Item = Number(valueA ** valueB) }) } :> IAstItem<expr>
+                | _ -> { Item = Constant({ Item = Nothing }) } :> IAstItem<expr>
             | _ -> { Item = Arithmetic(resA, op, resB) } :> IAstItem<expr>
         | Inversion i ->
             let res = foldConstants i

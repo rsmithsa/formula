@@ -83,7 +83,10 @@ type CsWrapper private() =
         CsWrapper.InterpretExpression(ast, MapVariableProvider.Empty, functionProvider)
 
     static member InterpretExpression (ast, (variableProvider: IVariableProvider), (functionProvider: IFunctionProvider)) =
-        interpretFormula ast variableProvider functionProvider
+        let result = interpretFormula ast variableProvider functionProvider
+        match result with
+        | Some x -> Nullable(x)
+        | _ -> Nullable()
 
     static member CompileExpression ast =
         compileFormula ast
@@ -99,4 +102,7 @@ type CsWrapper private() =
 
     static member InterpretFormula (input, (variableProvider: IVariableProvider), (functionProvider: IFunctionProvider)) =
         let ast = parseFormula input
-        interpretFormula ast variableProvider functionProvider
+        let result = interpretFormula ast variableProvider functionProvider
+        match result with
+        | Some x -> Nullable(x)
+        | _ -> Nullable()

@@ -34,25 +34,27 @@ module Interpreter =
                         | None -> [| vars.Lookup id |]
 
             let interpretNegation negation = 
-                let value = Helpers.castToDouble(interpretFormulaInternal negation vars functions)
-                [| Number(-value) |]
+                match Helpers.castToDouble(interpretFormulaInternal negation vars functions) with
+                | Some value -> [| Number(-value) |]
+                | None -> [| Nothing |]
 
             let interpretArithmetic a op b =
-                let valueA = Helpers.castToDouble(interpretFormulaInternal a vars functions)
-                let valueB = Helpers.castToDouble(interpretFormulaInternal b vars functions)
-                match op with
-                | Add ->
-                    [| Number(valueA + valueB) |]
-                | Subtract ->
-                    [| Number(valueA - valueB) |]
-                | Multiply ->
-                    [| Number(valueA * valueB) |]
-                | Divide ->
-                    [| Number(valueA / valueB) |]
-                | Modulus ->
-                    [| Number(valueA % valueB) |]
-                | Power ->
-                    [| Number(valueA ** valueB) |]
+                match (Helpers.castToDouble(interpretFormulaInternal a vars functions), Helpers.castToDouble(interpretFormulaInternal b vars functions)) with
+                | (Some valueA, Some valueB) ->
+                    match op with
+                    | Add ->
+                        [| Number(valueA + valueB) |]
+                    | Subtract ->
+                        [| Number(valueA - valueB) |]
+                    | Multiply ->
+                        [| Number(valueA * valueB) |]
+                    | Divide ->
+                        [| Number(valueA / valueB) |]
+                    | Modulus ->
+                        [| Number(valueA % valueB) |]
+                    | Power ->
+                        [| Number(valueA ** valueB) |]
+                | _ -> [| Nothing |]
 
             let interpretInversion inversion =
                 let value = Helpers.castToBool(interpretFormulaInternal inversion vars functions)
