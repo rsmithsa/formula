@@ -89,7 +89,7 @@ type CsWrapper private() =
         | _ -> Nullable()
 
     static member CompileExpression ast =
-        compileFormula ast
+        compileFormula<Nullable<double>> ast
 
     static member InterpretFormula (input) =
         CsWrapper.InterpretFormula(input, MapVariableProvider.Empty, DefaultFunctionProvider.Instance)

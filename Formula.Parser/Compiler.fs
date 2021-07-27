@@ -15,7 +15,7 @@ module Compiler =
     open Formula.Parser
     open Formula.Parser.Ast
 
-    let compileFormula (ast: IAstItem<expr>) =
+    let compileFormula<'a> (ast: IAstItem<expr>) =
 
         let variableProvider =
             Expression.Parameter(typeof<IVariableProvider>, "variableProvider")
@@ -71,10 +71,10 @@ module Compiler =
             let compileConstant constant =
                 let result =
                     match constant with
-                    | Number n -> Expression.Constant(n)
-                    | Boolean b -> Expression.Constant(b)
-                    | Text t -> Expression.Constant(t)
-                    | Nothing -> Expression.Constant(null, typeof<Object>)
+                    | Number n -> Expression.Constant(n) :> Expression
+                    | Boolean b -> Expression.Constant(b) :> Expression
+                    | Text t -> Expression.Constant(t) :> Expression
+                    | Nothing -> Expression.Call(typeof<value>.GetMethod("Empty", BindingFlags.Static ||| BindingFlags.NonPublic)) :> Expression
 
                 Expression.NewArrayInit(typeof<value>, Expression.Convert(result, typeof<value>)) :> Expression
 
@@ -188,4 +188,9 @@ module Compiler =
             | Branch (cond, a, b) ->
                 compileBranch cond a b
 
-        Expression.Lambda(castToDoubleExpression(compileInternal ast), variableProvider, functionProvider).Compile() :?> Func<IVariableProvider, IFunctionProvider, float option>
+        let outputExpression =
+            match typeof<'a> with
+            | t when t = typeof<Nullable<double>> -> castToNullableDoubleExpression(compileInternal ast)
+            | _ -> castToDoubleExpression(compileInternal ast)
+
+        Expression.Lambda(outputExpression, variableProvider, functionProvider).Compile() :?> Func<IVariableProvider, IFunctionProvider, 'a>
