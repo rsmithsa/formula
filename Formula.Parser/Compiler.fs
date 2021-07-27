@@ -58,6 +58,7 @@ module Compiler =
                     | Number n -> Expression.Constant(n)
                     | Boolean b -> Expression.Constant(b)
                     | Text t -> Expression.Constant(t)
+                    | Nothing -> Expression.Constant(null, typeof<Object>)
 
                 Expression.NewArrayInit(typeof<value>, Expression.Convert(result, typeof<value>)) :> Expression
 

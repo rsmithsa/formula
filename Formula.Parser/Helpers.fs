@@ -17,6 +17,7 @@ type Helpers =
         | Number x when x <> 0.0 -> true
         | Text x when x.ToLowerInvariant() = "true" -> true
         | Text x when x.ToLowerInvariant() = "false" -> false
+        | Nothing -> false
         | _ -> invalidOp $"Unable to cast '{value}' to boolean."
 
     static member castToBool (value: value[]) =
