@@ -49,7 +49,7 @@ module Ast =
                static member op_GreaterThan(a: value, b: value) = a > b
                
                static member private Empty() = Nothing
-               
+
                member x.NumberValue =
                    match x with
                    | Number n -> n

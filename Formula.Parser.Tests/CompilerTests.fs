@@ -444,3 +444,22 @@ type CompilerTests () =
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
+    [<TestMethod>]
+    member this.TestCompileNothingArithmetic () =
+        let result = parseFormulaString "-1 * (42 + null)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
+            Assert.AreEqual(None, value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestCompileNothingNegation () =
+        let result = parseFormulaString "-null"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
+            Assert.AreEqual(None, value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)

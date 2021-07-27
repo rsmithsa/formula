@@ -565,3 +565,25 @@ type ConstantFolderTests () =
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestFoldNothingArithmetic () =
+        let result = parseFormulaString "-1 * (42 + null)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = { Item = Constant({ Item = Nothing }) }
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestFoldNothingNegation () =
+        let result = parseFormulaString "-null"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = { Item = Constant({ Item = Nothing }) }
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)

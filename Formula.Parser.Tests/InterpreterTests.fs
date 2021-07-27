@@ -444,3 +444,23 @@ type InterpreterTests () =
             Assert.AreEqual(Some(1.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestInterpretNothingArithmetic () =
+        let result = parseFormulaString "-1 * (42 + null)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            Assert.AreEqual(None, value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestInterpretNothingNegation () =
+        let result = parseFormulaString "-null"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            Assert.AreEqual(None, value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)

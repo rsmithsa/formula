@@ -122,10 +122,15 @@ module Parser =
     let pboolean: Parser<value, UserState> = (str_ws "true" >>% Boolean(true)) <|> (str_ws "false" >>% Boolean(false))
     let ptext: Parser<value, UserState> =
         stringsSepBy pBasicStrChars pEscapedChar |> between (str_ws "\"") (str_ws "\"") <?> "text" |>> Text
+    let pnothing: Parser<value, UserState> = (str_ws "null" >>% Nothing)
 
     let wrapPos<'a> (parser: Parser<'a, UserState>) = pipe3 getPosition parser getPosition (fun s expr e -> { Item = expr; StartPosition = s; EndPosition = e; } :> IPositionedAstItem<'a>) 
 
-    let pconstant = (wrapPos pnumber |>> (fun x -> Constant(x :> IAstItem<value>))) <|> (wrapPos pboolean |>> (fun x -> Constant(x :> IAstItem<value>))) <|> (wrapPos ptext |>> (fun x -> Constant(x :> IAstItem<value>)))
+    let pconstant =
+        (wrapPos pnumber |>> (fun x -> Constant(x :> IAstItem<value>)))
+        <|> (wrapPos pboolean |>> (fun x -> Constant(x :> IAstItem<value>)))
+        <|> (wrapPos ptext |>> (fun x -> Constant(x :> IAstItem<value>)))
+        <|> (wrapPos pnothing |>> (fun x -> Constant(x :> IAstItem<value>)))
 
     let psimpleidentifier: Parser<identifier, UserState> =
         let isIdentifierFirstChar c = isLetter c || c = '_'
