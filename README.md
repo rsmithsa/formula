@@ -11,6 +11,7 @@ A simple extensible formula language for .NET
   - Number: 123.0
   - Boolean: true/false
   - Text: "A string"
+  - Nothing: null
 - Branching: IF Expr THEN Expr ELSE Expr
 - Logical: = <> > < >= <= ! && ||
 
@@ -28,6 +29,14 @@ A simple extensible formula language for .NET
   - Formula.Parser.Interpreter.interpretFormula
 
 ## Version History
+
+### 0.12.0
+- Support for 'Nothing' data type
+  - Compiler & interpreter return an Option float value
+  - C# wrapper returns Nullable<double>
+  - Handling of Nothing values in aggregation functions
+- IFunctionProvider returns typed results
+- 'null' keyword added
 
 ### 0.11.0
 - Parser detection of ranges used outside of function parameters
