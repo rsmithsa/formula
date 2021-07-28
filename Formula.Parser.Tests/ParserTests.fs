@@ -33,6 +33,16 @@ type ParserTests () =
             Assert.Fail(msg)
             
     [<TestMethod>]
+    member this.TestParseNothingConstant () =
+        let result = parseFormulaString "null"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Constant({ Item = Nothing }) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
     member this.TestParseBooleanConstant () =
         let result = parseFormulaString "true"
         match result with

@@ -35,10 +35,11 @@ module Ast =
                | Number of float
                | Boolean of bool
                | Text of string
+               | Nothing
     with
                static member inline op_Implicit(x: float) = Number(x)
                static member inline op_Implicit(x: bool) = Boolean(x)
-               static member inline op_Implicit(x: string) = Text(x)
+               static member inline op_Implicit(x: string) = if x = null then Nothing else Text(x)
 
                static member op_Equality(a: value, b: value) = a = b
                static member op_Inequality(a: value, b: value) = a <> b
@@ -46,6 +47,13 @@ module Ast =
                static member op_GreaterThanOrEqual(a: value, b: value) = a >= b
                static member op_LessThan(a: value, b: value) = a < b
                static member op_GreaterThan(a: value, b: value) = a > b
+               
+               static member private Empty() = Nothing
+
+               member x.NumberValue =
+                   match x with
+                   | Number n -> n
+                   | _ -> invalidOp "Not a number value"
 
     type arithmetic = Add | Subtract | Multiply | Divide | Modulus | Power
     type comparison = Equal | NotEqual | GreaterThan | LessThan | GreaterThanEqual | LessThanEqual

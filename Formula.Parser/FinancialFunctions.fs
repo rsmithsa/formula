@@ -36,7 +36,7 @@ type DdbFunction() =
             | _ -> 2.0
 
         let rate = 1.0 / values.[2] * factor;
-        depreciate values.[0] values.[1] rate (int values.[3])
+        Number(depreciate values.[0] values.[1] rate (int values.[3]))
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -77,6 +77,7 @@ type FvFunction() =
         match Helpers.castToBool annuityDue with
         | true -> -(pv + (1.0 + values.[0]) * fv)
         | false -> -(pv + fv)
+        |> Number
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -105,6 +106,7 @@ type NpvFunction() =
         values.[1..]
         |> Array.fold (fun (rate, npv) flow -> (rate * (1.0 + values.[0]), npv + (flow / rate))) (1.0 + values.[0], 0.0)
         |> snd
+        |> Number
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -137,9 +139,10 @@ type IrrFunction() =
         let workingInput = Array.copy input
         let fx irr =
             workingInput.[0] <- Number(irr)
-            npvImplementation.Execute(workingInput)
+            (npvImplementation.Execute(workingInput)).NumberValue
         
         Newton.newtonsMethod fx guess delta
+        |> Number
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -191,7 +194,7 @@ type MirrFunction() =
             |> snd
 
         let root = (1.0 / ((float)input.Length - 3.0))
-        ((positive / -negative) ** root) - 1.0
+        Number(((positive / -negative) ** root) - 1.0)
         
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -238,6 +241,7 @@ type NperFunction() =
                 log((-rate * fv + pmt * (1.0 + rate)) / (rate * pv + pmt * (1.0 + rate))) / log(1.0 + rate)        
             | false ->
                 log((-rate * fv + pmt) / (rate * pv + pmt)) / log(1.0 + rate)
+        |> Number
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -281,6 +285,7 @@ type PmtFunction() =
             -(pvPmt * 1.0 / (1.0 + values.[0]) + fvPmt * 1.0 / (1.0 + values.[0]))
         | false ->
             -(pvPmt + fvPmt)
+        |> Number
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -313,13 +318,14 @@ type IpmtFunction() =
             | 6 -> input.[5]
             | _ -> Boolean(false)
         let pmt = pmtImplementation.Execute(Array.append input.[0..0] input.[2..])
-        let fv = fvImplementation.Execute(List.toArray [input.[0]; Number(values.[1] - 1.0); Number(pmt); input.[3]; annuityDue])
+        let fv = fvImplementation.Execute(List.toArray [input.[0]; Number(values.[1] - 1.0); pmt; input.[3]; annuityDue])
 
         match Helpers.castToBool annuityDue with
         | true ->
-            fv * values.[0] / (1.0 + values.[0])
+            fv.NumberValue * values.[0] / (1.0 + values.[0])
         | false ->
-            fv * values.[0]
+            fv.NumberValue * values.[0]
+        |> Number
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -345,7 +351,9 @@ type PpmtFunction() =
         "PPMT"
 
     member this.Execute (input: value[]) =
-        pmtImplementation.Execute(Array.append input.[0..0] input.[2..]) - ipmtImplementation.Execute(input)
+        let pmt = pmtImplementation.Execute(Array.append input.[0..0] input.[2..])
+        let ipmt = ipmtImplementation.Execute(input)
+        Number(pmt.NumberValue - ipmt.NumberValue)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -386,6 +394,7 @@ type PvFunction() =
         match Helpers.castToBool annuityDue with
         | true -> -(fv + (1.0 + values.[0]) * pv)
         | false -> -(fv + pv)
+        |> Number
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -438,6 +447,7 @@ type RateFunction() =
         | false ->
             let fx rate = fv + pv * (1.0 + rate) ** nper + pmt / rate * ((1.0 + rate) ** nper - 1.0)
             Newton.newtonsMethod fx guess delta
+        |> Number
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -463,7 +473,7 @@ type SlnFunction() =
     member this.Execute (input: value[]) =
         let values = Helpers.asDoubles(input)
 
-        (values.[0] - values.[1]) / values.[2]
+        Number((values.[0] - values.[1]) / values.[2])
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -489,7 +499,7 @@ type SydFunction() =
     member this.Execute (input: value[]) =
         let values = Helpers.asDoubles(input)
 
-        ((values.[0] - values.[1]) * (values.[2] - values.[3] + 1.0) * 2.0) / (values.[2] * (values.[2] + 1.0))
+        Number(((values.[0] - values.[1]) * (values.[2] - values.[3] + 1.0) * 2.0) / (values.[2] * (values.[2] + 1.0)))
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with

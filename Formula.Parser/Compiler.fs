@@ -9,12 +9,13 @@ namespace Formula.Parser
 module Compiler =
 
     open System;
-    open System.Linq.Expressions;
+    open System.Linq.Expressions
+    open System.Reflection;
 
     open Formula.Parser
     open Formula.Parser.Ast
 
-    let compileFormula (ast: IAstItem<expr>) =
+    let compileFormula<'a> (ast: IAstItem<expr>) =
 
         let variableProvider =
             Expression.Parameter(typeof<IVariableProvider>, "variableProvider")
@@ -27,6 +28,9 @@ module Compiler =
 
         let castToDoubleExpression (value: Expression) =
             Expression.Call(typeof<Helpers>.GetMethod("castToDouble", [| typeof<value[]> |]), value) :> Expression
+            
+        let castToNullableDoubleExpression (value: Expression) =
+            Expression.Call(typeof<Helpers>.GetMethod("castToNullableDouble", [| typeof<value[]> |]), value) :> Expression
 
         let arrayConcatExpression (value: seq<Expression>) =
             let param = Expression.NewArrayInit(typeof<value[]>, value)
@@ -49,15 +53,28 @@ module Compiler =
 
         let greaterThanExpression (left: Expression, right: Expression) =
             Expression.Call(typeof<Helpers>.GetMethod("fsGreaterThan").MakeGenericMethod(typeof<value[]>), left, right) :> Expression
+            
+        let isSomeExpression (value: Expression) =
+            Expression.NotEqual(value, Expression.Constant(null, typeof<Object>)) :> Expression
+            
+        let getSomeValueExpression (value: Expression) =
+            Expression.Property(value, typeof<Option<double>>.GetProperty("Value")) :> Expression
+            
+        let nothingExpression =
+            Expression.NewArrayInit(typeof<value>, Expression.Call(typeof<value>.GetMethod("Empty", BindingFlags.Static ||| BindingFlags.NonPublic))) :> Expression
+            
+        let valueArrayExpression (value: Expression) =
+            Expression.NewArrayInit(typeof<value>, Expression.Convert(value, typeof<value>)) :> Expression
 
         let rec compileInternal (ast: IAstItem<expr>): Expression =
 
             let compileConstant constant =
                 let result =
                     match constant with
-                    | Number n -> Expression.Constant(n)
-                    | Boolean b -> Expression.Constant(b)
-                    | Text t -> Expression.Constant(t)
+                    | Number n -> Expression.Constant(n) :> Expression
+                    | Boolean b -> Expression.Constant(b) :> Expression
+                    | Text t -> Expression.Constant(t) :> Expression
+                    | Nothing -> Expression.Call(typeof<value>.GetMethod("Empty", BindingFlags.Static ||| BindingFlags.NonPublic)) :> Expression
 
                 Expression.NewArrayInit(typeof<value>, Expression.Convert(result, typeof<value>)) :> Expression
 
@@ -79,7 +96,7 @@ module Compiler =
 
             let compileNegation negation = 
                 let value = castToDoubleExpression(compileInternal negation)
-                Expression.NewArrayInit(typeof<value>, Expression.Convert(Expression.Negate(value), typeof<value>)) :> Expression
+                Expression.Condition(isSomeExpression value, valueArrayExpression (Expression.Negate(getSomeValueExpression value)), nothingExpression) :> Expression
 
             let compileArithmetic a op b =
                 let valueA = castToDoubleExpression(compileInternal a)
@@ -87,19 +104,19 @@ module Compiler =
                 let result =
                     match op with
                     | Add ->
-                        Expression.Add(valueA, valueB)
+                        Expression.Add(getSomeValueExpression valueA, getSomeValueExpression valueB)
                     | Subtract ->
-                        Expression.Subtract(valueA, valueB)
+                        Expression.Subtract(getSomeValueExpression valueA, getSomeValueExpression valueB)
                     | Multiply ->
-                        Expression.Multiply(valueA, valueB)
+                        Expression.Multiply(getSomeValueExpression valueA, getSomeValueExpression valueB)
                     | Divide ->           
-                        Expression.Divide(valueA, valueB)
+                        Expression.Divide(getSomeValueExpression valueA, getSomeValueExpression valueB)
                     | Modulus ->
-                        Expression.Modulo(valueA, valueB)
+                        Expression.Modulo(getSomeValueExpression valueA, getSomeValueExpression valueB)
                     | Power ->
-                        Expression.Power(valueA, valueB)
+                        Expression.Power(getSomeValueExpression valueA, getSomeValueExpression valueB)
                 
-                Expression.NewArrayInit(typeof<value>, Expression.Convert(result, typeof<value>)) :> Expression
+                Expression.Condition(Expression.AndAlso(isSomeExpression valueA, isSomeExpression valueB), valueArrayExpression result, nothingExpression) :> Expression
 
             let compileInversion inversion =
                 let value = castToBoolExpression(compileInternal inversion)
@@ -145,7 +162,7 @@ module Compiler =
                     let argExpression = arrayConcatExpression(compiledArgs)
                     let imp = Expression.Call(functionProvider, typeof<IFunctionProvider>.GetMethod("Lookup"), Expression.Constant(id))
                     let result = Expression.Call(imp, typeof<IFunctionImplementation>.GetMethod("Execute"), argExpression)
-                    Expression.NewArrayInit(typeof<value>, Expression.Convert(result, typeof<value>)) :> Expression
+                    Expression.NewArrayInit(typeof<value>, result) :> Expression
 
             let compileBranch cond a b =
                 let valueCond = castToBoolExpression(compileInternal cond)
@@ -171,4 +188,9 @@ module Compiler =
             | Branch (cond, a, b) ->
                 compileBranch cond a b
 
-        Expression.Lambda(castToDoubleExpression(compileInternal ast), variableProvider, functionProvider).Compile() :?> Func<IVariableProvider, IFunctionProvider, double>
+        let outputExpression =
+            match typeof<'a> with
+            | t when t = typeof<Nullable<double>> -> castToNullableDoubleExpression(compileInternal ast)
+            | _ -> castToDoubleExpression(compileInternal ast)
+
+        Expression.Lambda(outputExpression, variableProvider, functionProvider).Compile() :?> Func<IVariableProvider, IFunctionProvider, 'a>

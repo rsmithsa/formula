@@ -6,6 +6,7 @@
 
 namespace Formula.Parser
 
+open System
 open Formula.Parser.Ast
 
 type Helpers = 
@@ -17,6 +18,7 @@ type Helpers =
         | Number x when x <> 0.0 -> true
         | Text x when x.ToLowerInvariant() = "true" -> true
         | Text x when x.ToLowerInvariant() = "false" -> false
+        | Nothing -> false
         | _ -> invalidOp $"Unable to cast '{value}' to boolean."
 
     static member castToBool (value: value[]) =
@@ -26,10 +28,11 @@ type Helpers =
 
     static member castToDouble value =
         match value with
-        | Number x -> x
-        | Boolean x when x = true -> 1.0
-        | Boolean x when x = false -> 0.0
-        | Text x -> float(x)
+        | Number x -> Some(x)
+        | Boolean x when x = true -> Some(1.0)
+        | Boolean x when x = false -> Some(0.0)
+        | Text x -> Some(float(x))
+        | Nothing -> None
         | _ -> invalidOp $"Unable to cast '{value}' to numeric."
 
     static member castToDouble (value: value[]) =
@@ -37,6 +40,11 @@ type Helpers =
         | 1 -> Helpers.castToDouble value.[0]
         | _ -> invalidOp $"Unable to cast multiple values to a single value."
 
+    static member castToNullableDouble (value: value[]) =
+        match Helpers.castToDouble value with
+        | Some x -> Nullable(x)
+        |_ -> Nullable()
+    
     static member asDoubles values =
         values |> Array.map (
             function

@@ -50,27 +50,40 @@ type ExpressionVariableProvider(expressionMap: Map<string, IAstItem<expr>>, func
             | true -> true
             | false -> v.IsDefined (name, this)
     member this.Lookup name =
-        let result =
-            match variableProvider with
-            | None -> this.CompiledExpressions.[name].Invoke(this, functionProvider)
-            | Some v ->
-                match this.CompiledExpressions.TryGetValue name with
-                | (true, f) -> f.Invoke(this, functionProvider)
-                | (false, f) -> Helpers.castToDouble(v.Lookup (name, this))
-        Number(result)
+        match variableProvider with
+        | None ->
+            match this.CompiledExpressions.[name].Invoke(this, functionProvider) with
+            | Some x -> Number(x)
+            | None -> Nothing
+        | Some v ->
+            match this.CompiledExpressions.TryGetValue name with
+            | (true, f) ->
+                match f.Invoke(this, functionProvider) with
+                | Some x -> Number(x)
+                | None -> Nothing
+            | (false, f) -> v.Lookup (name, this)
+
     member this.LookupRange name lower upper =
         match variableProvider with
         | None ->
-            let value = this.CompiledExpressions.[name].Invoke(this, functionProvider)
+            let result =
+                match this.CompiledExpressions.[name].Invoke(this, functionProvider) with
+                | Some x -> Number(x)
+                | None -> Nothing
+            
             match (lower, upper) with
-            | (Number a, Number b) -> Array.init (int(b - a) + 1) (fun x -> Number(value))
+            | (Number a, Number b) -> Array.init (int(b - a) + 1) (fun x -> result)
             | _ -> invalidArg "range" "Numeric range expected."
         | Some v ->
             match this.CompiledExpressions.TryGetValue name with
             | (true, f) ->
-                let value = f.Invoke(this, functionProvider)
+                let result =
+                    match f.Invoke(this, functionProvider) with
+                    | Some x -> Number(x)
+                    | None -> Nothing
+                    
                 match (lower, upper) with
-                | (Number a, Number b) -> Array.init (int(b - a) + 1) (fun x -> Number(value))
+                | (Number a, Number b) -> Array.init (int(b - a) + 1) (fun x -> result)
                 | _ -> invalidArg "range" "Numeric range expected."
             | (false, f) -> v.LookupRange (name, lower, upper, this)
     member this.LookupIndex name index =

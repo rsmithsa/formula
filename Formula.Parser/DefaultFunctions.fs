@@ -16,8 +16,9 @@ type SqrtFunction() =
         "SQRT"
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
-        sqrt values.[0]
+        match Helpers.castToDouble input.[0] with
+        | Some n -> Number(sqrt n)
+        | _ -> Nothing
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -41,7 +42,7 @@ type PiFunction() =
         "PI"
 
     member this.Execute (input: value[]) =
-        System.Math.PI
+        Number(System.Math.PI)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -63,8 +64,9 @@ type PowFunction() =
         "POW"
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
-        values.[0] ** values.[1]
+        match (Helpers.castToDouble input.[0], Helpers.castToDouble input.[1]) with
+        | (Some a, Some b) -> Number(a ** b)
+        | _ -> Nothing
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -88,8 +90,9 @@ type ModFunction() =
         "MOD"
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
-        values.[0] % values.[1]
+        match (Helpers.castToDouble input.[0], Helpers.castToDouble input.[1]) with
+        | (Some a, Some b) -> Number(a % b)
+        | _ -> Nothing
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -114,8 +117,8 @@ type CountFunction() =
 
     member this.Execute (input: value[]) =
         match isNull input with
-        | true -> 0.0
-        | false -> float(input.Length)
+        | true -> Number(0.0)
+        | false -> Number(Array.fold (fun a x -> if x = Nothing then a else a + 1.0) 0.0 input)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         true
@@ -131,10 +134,12 @@ type SumFunction() =
 
     member this.Execute (input: value[]) =
         match isNull input with
-        | true -> 0.0
+        | true -> Number(0.0)
         | false ->
-            let values = Helpers.asDoubles(input)
-            Array.sum values
+            if input.Length = 0 then Number(0.0)
+            else
+                let values = input |> Array.choose Helpers.castToDouble
+                if values.Length = 0 then Nothing else Number(Array.sum values)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         true
@@ -149,8 +154,8 @@ type AvgFunction() =
         "AVG"
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
-        Array.average values
+        let values = input |> Array.choose Helpers.castToDouble
+        if values.Length = 0 then Nothing else Number(Array.average values)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -174,7 +179,7 @@ type FirstFunction() =
         "FIRST"
 
     member this.Execute (input: value[]) =
-        Helpers.castToDouble input.[0]
+        input.[0]
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -198,7 +203,7 @@ type LastFunction() =
         "LAST"
 
     member this.Execute (input: value[]) =
-        Helpers.castToDouble input.[input.Length - 1]
+        input.[input.Length - 1]
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -222,8 +227,8 @@ type MinFunction() =
         "MIN"
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
-        Array.min values
+        let values = input |> Array.choose Helpers.castToDouble
+        if values.Length = 0 then Nothing else Number(Array.min values)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -247,8 +252,8 @@ type MaxFunction() =
         "MAX"
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
-        Array.max values
+        let values = input |> Array.choose Helpers.castToDouble
+        if values.Length = 0 then Nothing else Number(Array.max values)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with

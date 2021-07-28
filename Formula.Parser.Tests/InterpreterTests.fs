@@ -14,6 +14,7 @@ open Formula.Parser.Ast
 open Formula.Parser.Parser
 open Formula.Parser.Interpreter
 open Formula.Parser.Integration
+open TestHelper
 
 [<TestClass>]
 type InterpreterTests () =
@@ -35,7 +36,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(42.0, value);
+            Assert.AreEqual(Some(42.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -45,7 +46,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0, value);
+            Assert.AreEqual(Some(1.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -55,7 +56,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(123.0, value);
+            Assert.AreEqual(Some(123.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -65,7 +66,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(-42.0, value);
+            Assert.AreEqual(Some(-42.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -75,7 +76,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0 + 42.0, value);
+            Assert.AreEqual(Some(1.0 + 42.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -85,7 +86,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0 - 42.0, value);
+            Assert.AreEqual(Some(1.0 - 42.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -95,7 +96,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0 * 42.0, value);
+            Assert.AreEqual(Some(1.0 * 42.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -105,7 +106,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0 / 42.0, value);
+            Assert.AreEqual(Some(1.0 / 42.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -115,7 +116,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0 ** 42.0, value);
+            Assert.AreEqual(Some(1.0 ** 42.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -125,7 +126,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0 % 42.0, value);
+            Assert.AreEqual(Some(1.0 % 42.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -135,7 +136,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0 + 42.0 * 2.0, value);
+            Assert.AreEqual(Some(1.0 + 42.0 * 2.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -145,7 +146,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual((1.0 + 42.0) * 2.0, value);
+            Assert.AreEqual(Some((1.0 + 42.0) * 2.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -155,7 +156,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual((1.0 + 42.0) * 2.0 ** 3.0, value);
+            Assert.AreEqual(Some((1.0 + 42.0) * 2.0 ** 3.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -165,7 +166,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0 + 42.0 % 2.0, value);
+            Assert.AreEqual(Some(1.0 + 42.0 % 2.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -225,7 +226,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual(Helpers.castToDouble(varMap.Lookup "V1") + Helpers.castToDouble(varMap.Lookup "V42") * Helpers.castToDouble(varMap.Lookup "V2"), value);
+            Assert.AreEqual(Some(!!> Helpers.castToDouble(varMap.Lookup "V1") + !!> Helpers.castToDouble(varMap.Lookup "V42") * !!> Helpers.castToDouble(varMap.Lookup "V2")), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -235,7 +236,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual((Helpers.castToDouble(varMap.Lookup "V1") + Helpers.castToDouble(varMap.Lookup "V42")) * Helpers.castToDouble(varMap.Lookup "V2"), value);
+            Assert.AreEqual(Some((!!> Helpers.castToDouble(varMap.Lookup "V1") + !!> Helpers.castToDouble(varMap.Lookup "V42")) * !!> Helpers.castToDouble(varMap.Lookup "V2")), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -245,7 +246,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual((Helpers.castToDouble(varMap.Lookup "V1") + Helpers.castToDouble(varMap.Lookup "V42")) * Helpers.castToDouble(varMap.Lookup "V2") ** Helpers.castToDouble(varMap.Lookup "V3"), value);
+            Assert.AreEqual(Some((!!> Helpers.castToDouble(varMap.Lookup "V1") + !!> Helpers.castToDouble(varMap.Lookup "V42")) * !!> Helpers.castToDouble(varMap.Lookup "V2") ** !!> Helpers.castToDouble(varMap.Lookup "V3")), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -255,7 +256,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual(Helpers.castToDouble(varMap.Lookup "V1") + Helpers.castToDouble(varMap.Lookup "V42") % Helpers.castToDouble(varMap.Lookup "V2"), value);
+            Assert.AreEqual(Some(!!> Helpers.castToDouble(varMap.Lookup "V1") + !!> Helpers.castToDouble(varMap.Lookup "V42") % !!> Helpers.castToDouble(varMap.Lookup "V2")), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -265,7 +266,8 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray []), value);
+            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray []))
+            Assert.AreEqual(expected, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -275,7 +277,8 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [Number(1.0 + 42.0); varMap.Lookup "MyVar"]), value);
+            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [Number(1.0 + 42.0); varMap.Lookup "MyVar"]))
+            Assert.AreEqual(expected, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -285,7 +288,8 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [Number((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray []))]), value);
+            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [(DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [])]))
+            Assert.AreEqual(expected, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -295,7 +299,8 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (Array.concat [ [| Number(1.0 + 42.0) |]; varMap.LookupRange "MyVar" (Number(1.0)) (Number(10.0))]), value);
+            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (Array.concat [ [| Number(1.0 + 42.0) |]; varMap.LookupRange "MyVar" (Number(1.0)) (Number(10.0))]))
+            Assert.AreEqual(expected, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
             
@@ -305,7 +310,8 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            Assert.AreEqual((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute ([| Number(1.0 + 42.0); varMap.LookupIndex "MyVar" (Number(1.0)) |]), value);
+            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute ([| Number(1.0 + 42.0); varMap.LookupIndex "MyVar" (Number(1.0)) |]))
+            Assert.AreEqual(expected, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -315,7 +321,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0, value);
+            Assert.AreEqual(Some(1.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -325,7 +331,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(0.0, value);
+            Assert.AreEqual(Some(0.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -335,7 +341,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0, value);
+            Assert.AreEqual(Some(1.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -345,7 +351,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(0.0, value);
+            Assert.AreEqual(Some(0.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -355,7 +361,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0, value);
+            Assert.AreEqual(Some(1.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -365,7 +371,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(0.0, value);
+            Assert.AreEqual(Some(0.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -375,7 +381,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0, value);
+            Assert.AreEqual(Some(1.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -385,7 +391,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0, value);
+            Assert.AreEqual(Some(1.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -395,7 +401,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(0.0, value);
+            Assert.AreEqual(Some(0.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -405,7 +411,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0, value);
+            Assert.AreEqual(Some(1.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -415,7 +421,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(0.0, value);
+            Assert.AreEqual(Some(0.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -425,7 +431,7 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(42.0, value);
+            Assert.AreEqual(Some(42.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
 
@@ -435,6 +441,26 @@ type InterpreterTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
-            Assert.AreEqual(1.0, value);
+            Assert.AreEqual(Some(1.0), value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestInterpretNothingArithmetic () =
+        let result = parseFormulaString "-1 * (42 + null)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            Assert.AreEqual(None, value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestInterpretNothingNegation () =
+        let result = parseFormulaString "-null"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            Assert.AreEqual(None, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

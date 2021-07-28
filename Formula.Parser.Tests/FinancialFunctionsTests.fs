@@ -42,12 +42,12 @@ type FinancialFunctionsTests () =
         Assert.AreEqual((false, "DDB expects four or five arguments."), functionImplementation.Validate (List.toArray [Number(20000.0); Number(8000.0); Number(5.0)]))
         Assert.AreEqual((false, "DDB expects four or five arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(8000.0, functionImplementation.Execute (List.toArray [Number(20000.0); Number(8000.0); Number(5.0); Number(1.0)]), 0.000001)
-        Assert.AreEqual(4000.0, functionImplementation.Execute (List.toArray [Number(20000.0); Number(8000.0); Number(5.0); Number(2.0); Number(2.0)]), 0.000001)
-        Assert.AreEqual(0.0, functionImplementation.Execute (List.toArray [Number(20000.0); Number(8000.0); Number(5.0); Number(5.0); Number(2.0)]), 0.000001)
+        Assert.AreEqual(8000.0, (functionImplementation.Execute (List.toArray [Number(20000.0); Number(8000.0); Number(5.0); Number(1.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(4000.0, (functionImplementation.Execute (List.toArray [Number(20000.0); Number(8000.0); Number(5.0); Number(2.0); Number(2.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(0.0, (functionImplementation.Execute (List.toArray [Number(20000.0); Number(8000.0); Number(5.0); Number(5.0); Number(2.0)])).NumberValue, 0.000001)
 
-        Assert.AreEqual(2400.0, functionImplementation.Execute (List.toArray [Number(10000.0); Number(2000.0); Number(5.0); Number(2.0); Number(2.0)]), 0.000001)
-        Assert.AreEqual(160.0, functionImplementation.Execute (List.toArray [Number(10000.0); Number(2000.0); Number(5.0); Number(4.0); Number(2.0)]), 0.000001)
+        Assert.AreEqual(2400.0, (functionImplementation.Execute (List.toArray [Number(10000.0); Number(2000.0); Number(5.0); Number(2.0); Number(2.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(160.0, (functionImplementation.Execute (List.toArray [Number(10000.0); Number(2000.0); Number(5.0); Number(4.0); Number(2.0)])).NumberValue, 0.000001)
 
     [<TestMethod>]
     member this.TestFinancialFunctionFv () =
@@ -61,10 +61,10 @@ type FinancialFunctionsTests () =
         Assert.AreEqual((false, "FV expects three, four or five arguments."), functionImplementation.Validate (List.toArray [Number(0.1); Number(10.0)]))
         Assert.AreEqual((false, "FV expects three, four or five arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(-15937.424601, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0)]), 0.000001)
-        Assert.AreEqual(-17531.167061, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(0.0); Number(1.0)]), 0.000001)
-        Assert.AreEqual(-18531.167061, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(1000.0)]), 0.000001)
-        Assert.AreEqual(-20124.909521, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(1000.0); Number(1.0)]), 0.000001)
+        Assert.AreEqual(-15937.424601, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-17531.167061, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(0.0); Number(1.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-18531.167061, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(1000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-20124.909521, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(1000.0); Number(1.0)])).NumberValue, 0.000001)
 
     [<TestMethod>]
     member this.TestFinancialFunctionIpmt () =
@@ -78,10 +78,10 @@ type FinancialFunctionsTests () =
         Assert.AreEqual((false, "IPMT expects four, five or six arguments."), functionImplementation.Validate (List.toArray [Number(0.1); Number(10.0)]))
         Assert.AreEqual((false, "IPMT expects four, five or six arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(-86.823467, functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0)]), 0.000001)
-        Assert.AreEqual(-78.930425, functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0); Number(0.0); Number(1.0)]), 0.000001)
-        Assert.AreEqual(-73.646934, functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0); Number(1000.0)]), 0.000001)
-        Assert.AreEqual(-66.951758, functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0); Number(1000.0); Number(1.0)]), 0.000001)
+        Assert.AreEqual(-86.823467, (functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-78.930425, (functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0); Number(0.0); Number(1.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-73.646934, (functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0); Number(1000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-66.951758, (functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0); Number(1000.0); Number(1.0)])).NumberValue, 0.000001)
 
     [<TestMethod>]
     member this.TestFinancialFunctionIrr () =
@@ -95,8 +95,8 @@ type FinancialFunctionsTests () =
         Assert.AreEqual((false, "IRR expects at least three arguments."), functionImplementation.Validate (List.toArray [Number(0.1); Number(-100000.0)]))
         Assert.AreEqual((false, "IRR expects at least three arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(0.05, functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Number(105000.0)]), 0.000001)
-        Assert.AreEqual(0.095635, functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Number(105000.0); Number(5000.0)]), 0.000001)
+        Assert.AreEqual(0.05, (functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Number(105000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(0.095635, (functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Number(105000.0); Number(5000.0)])).NumberValue, 0.000001)
 
     [<TestMethod>]
     member this.TestFinancialFunctionMirr () =
@@ -111,9 +111,9 @@ type FinancialFunctionsTests () =
         Assert.AreEqual((false, "MIRR expects at least four arguments."), functionImplementation.Validate (List.toArray [Number(0.1); Number(0.1); Number(-100000.0)]))
         Assert.AreEqual((false, "MIRR expects at least four arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(0.05, functionImplementation.Execute (List.toArray [Number(0.1); Number(0.1); Number(-100000.0); Number(105000.0)]), 0.000001)
-        Assert.AreEqual(0.097724, functionImplementation.Execute (List.toArray [Number(0.1); Number(0.1); Number(-100000.0); Number(105000.0); Number(5000.0)]), 0.000001)
-        Assert.AreEqual(0.179085, functionImplementation.Execute (List.toArray [Number(0.1); Number(0.12); Number(-1000.0); Number(-4000.0); Number(5000.0); Number(2000.0)]), 0.000001)
+        Assert.AreEqual(0.05, (functionImplementation.Execute (List.toArray [Number(0.1); Number(0.1); Number(-100000.0); Number(105000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(0.097724, (functionImplementation.Execute (List.toArray [Number(0.1); Number(0.1); Number(-100000.0); Number(105000.0); Number(5000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(0.179085, (functionImplementation.Execute (List.toArray [Number(0.1); Number(0.12); Number(-1000.0); Number(-4000.0); Number(5000.0); Number(2000.0)])).NumberValue, 0.000001)
 
     [<TestMethod>]
     member this.TestFinancialFunctionNper () =
@@ -127,11 +127,11 @@ type FinancialFunctionsTests () =
         Assert.AreEqual((false, "NPER expects three, four or five arguments."), functionImplementation.Validate (List.toArray [Number(0.1); Number(10.0)]))
         Assert.AreEqual((false, "NPER expects three, four or five arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(-25.158858, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0)]), 0.000001)
-        Assert.AreEqual(-24.253809, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(0.0); Number(1.0)]), 0.000001)
-        Assert.AreEqual(-17.886317, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(-100.0)]), 0.000001)
-        Assert.AreEqual(-17.469359, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(-100.0); Number(1.0)]), 0.000001)
-        Assert.AreEqual(-100.0, functionImplementation.Execute (List.toArray [Number(0.0); Number(10.0); Number(1000.0)]), 0.000001)
+        Assert.AreEqual(-25.158858, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-24.253809, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(0.0); Number(1.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-17.886317, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(-100.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-17.469359, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(-100.0); Number(1.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-100.0, (functionImplementation.Execute (List.toArray [Number(0.0); Number(10.0); Number(1000.0)])).NumberValue, 0.000001)
 
     [<TestMethod>]
     member this.TestFinancialFunctionNpv () =
@@ -145,9 +145,9 @@ type FinancialFunctionsTests () =
         Assert.AreEqual((false, "NPV expects at least two arguments."), functionImplementation.Validate (List.toArray [Number(0.1)]))
         Assert.AreEqual((false, "NPV expects at least two arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(-90909.090909, functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0)]), 0.000001)
-        Assert.AreEqual(-82644.628099, functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Number(10000.0)]), 0.000001)
-        Assert.AreEqual(-75131.480090, functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Number(10000.0); Number(10000.0)]), 0.000001)
+        Assert.AreEqual(-90909.090909, (functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-82644.628099, (functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Number(10000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-75131.480090, (functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Number(10000.0); Number(10000.0)])).NumberValue, 0.000001)
 
     [<TestMethod>]
     member this.TestFinancialFunctionPmt () =
@@ -161,10 +161,10 @@ type FinancialFunctionsTests () =
         Assert.AreEqual((false, "PMT expects three, four or five arguments."), functionImplementation.Validate (List.toArray [Number(0.1); Number(10.0)]))
         Assert.AreEqual((false, "PMT expects three, four or five arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(-162.745395, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0)]), 0.000001)
-        Assert.AreEqual(-147.950359, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(0.0); Number(1.0)]), 0.000001)
-        Assert.AreEqual(-225.490790, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(1000.0)]), 0.000001)
-        Assert.AreEqual(-204.991627, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(1000.0); Number(1.0)]), 0.000001)
+        Assert.AreEqual(-162.745395, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-147.950359, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(0.0); Number(1.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-225.490790, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(1000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-204.991627, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(1000.0); Number(1.0)])).NumberValue, 0.000001)
 
     [<TestMethod>]
     member this.TestFinancialFunctionPpmt () =
@@ -178,10 +178,10 @@ type FinancialFunctionsTests () =
         Assert.AreEqual((false, "PPMT expects four, five or six arguments."), functionImplementation.Validate (List.toArray [Number(0.1); Number(10.0)]))
         Assert.AreEqual((false, "PPMT expects four, five or six arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(-75.921928, functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0)]), 0.000001)
-        Assert.AreEqual(-69.019934, functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0); Number(0.0); Number(1.0)]), 0.000001)
-        Assert.AreEqual(-151.843856, functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0); Number(1000.0)]), 0.000001)
-        Assert.AreEqual(-138.039869, functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0); Number(1000.0); Number(1.0)]), 0.000001)
+        Assert.AreEqual(-75.921928, (functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-69.019934, (functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0); Number(0.0); Number(1.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-151.843856, (functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0); Number(1000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-138.039869, (functionImplementation.Execute (List.toArray [Number(0.1); Number(3.0); Number(10.0); Number(1000.0); Number(1000.0); Number(1.0)])).NumberValue, 0.000001)
 
     [<TestMethod>]
     member this.TestFinancialFunctionPv () =
@@ -195,10 +195,10 @@ type FinancialFunctionsTests () =
         Assert.AreEqual((false, "PV expects three, four or five arguments."), functionImplementation.Validate (List.toArray [Number(0.1); Number(10.0)]))
         Assert.AreEqual((false, "PV expects three, four or five arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(-6144.567105, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0)]), 0.000001)
-        Assert.AreEqual(-6759.023816, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(0.0); Number(1.0)]), 0.000001)
-        Assert.AreEqual(-6530.110395, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(1000.0)]), 0.000001)
-        Assert.AreEqual(-7144.567105, functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(1000.0); Number(1.0)]), 0.000001)
+        Assert.AreEqual(-6144.567105, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-6759.023816, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(0.0); Number(1.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-6530.110395, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(1000.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(-7144.567105, (functionImplementation.Execute (List.toArray [Number(0.1); Number(10.0); Number(1000.0); Number(1000.0); Number(1.0)])).NumberValue, 0.000001)
 
     [<TestMethod>]
     member this.TestFinancialFunctionRate () =
@@ -213,12 +213,12 @@ type FinancialFunctionsTests () =
         Assert.AreEqual((false, "RATE expects three, four, five or six arguments."), functionImplementation.Validate (List.toArray [Number(10.0); Number(-100.0)]))
         Assert.AreEqual((false, "RATE expects three, four, five or six arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(0.042775, functionImplementation.Execute (List.toArray [Number(10.0); Number(-100.0); Number(800.0)]), 0.000001)
-        Assert.AreEqual(0.024227, functionImplementation.Execute (List.toArray [Number(10.0); Number(-100.0); Number(800.0); Number(100.0)]), 0.000001)
-        Assert.AreEqual(0.024227, functionImplementation.Execute (List.toArray [Number(10.0); Number(-100.0); Number(800.0); Number(100.0); Number(0.0)]), 0.000001)
-        Assert.AreEqual(0.031451, functionImplementation.Execute (List.toArray [Number(10.0); Number(-100.0); Number(800.0); Number(100.0); Number(1.0)]), 0.000001)
-        Assert.AreEqual(0.024227, functionImplementation.Execute (List.toArray [Number(10.0); Number(-100.0); Number(800.0); Number(100.0); Number(0.0); Number(0.2)]), 0.000001)
-        Assert.AreEqual(0.031451, functionImplementation.Execute (List.toArray [Number(10.0); Number(-100.0); Number(800.0); Number(100.0); Number(1.0); Number(0.2)]), 0.000001)
+        Assert.AreEqual(0.042775, (functionImplementation.Execute (List.toArray [Number(10.0); Number(-100.0); Number(800.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(0.024227, (functionImplementation.Execute (List.toArray [Number(10.0); Number(-100.0); Number(800.0); Number(100.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(0.024227, (functionImplementation.Execute (List.toArray [Number(10.0); Number(-100.0); Number(800.0); Number(100.0); Number(0.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(0.031451, (functionImplementation.Execute (List.toArray [Number(10.0); Number(-100.0); Number(800.0); Number(100.0); Number(1.0)])).NumberValue, 0.000001)
+        Assert.AreEqual(0.024227, (functionImplementation.Execute (List.toArray [Number(10.0); Number(-100.0); Number(800.0); Number(100.0); Number(0.0); Number(0.2)])).NumberValue, 0.000001)
+        Assert.AreEqual(0.031451, (functionImplementation.Execute (List.toArray [Number(10.0); Number(-100.0); Number(800.0); Number(100.0); Number(1.0); Number(0.2)])).NumberValue, 0.000001)
 
     [<TestMethod>]
     member this.TestFinancialFunctionSln () =
@@ -230,13 +230,13 @@ type FinancialFunctionsTests () =
         Assert.AreEqual((false, "SLN expects three arguments."), functionImplementation.Validate (List.toArray [Number(10000.0); Number(1000.0)]))
         Assert.AreEqual((false, "SLN expects three arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(9000.0 / 5.0, functionImplementation.Execute (List.toArray [Number(10000.0); Number(1000.0); Number(5.0)]))
+        Assert.AreEqual(Number(9000.0 / 5.0), functionImplementation.Execute (List.toArray [Number(10000.0); Number(1000.0); Number(5.0)]))
 
         let rand = Random(42)
         let cost = rand.NextDouble();
         let salvage = rand.NextDouble();
         let life = rand.NextDouble();
-        Assert.AreEqual((cost- salvage) / life, functionImplementation.Execute (List.toArray [Number(cost); Number(salvage); Number(life)]))
+        Assert.AreEqual(Number((cost - salvage) / life), functionImplementation.Execute (List.toArray [Number(cost); Number(salvage); Number(life)]))
 
     [<TestMethod>]
     member this.TestFinancialFunctionSyd () =
@@ -248,6 +248,6 @@ type FinancialFunctionsTests () =
         Assert.AreEqual((false, "SYD expects four arguments."), functionImplementation.Validate (List.toArray [Number(10000.0); Number(1000.0); Number(5.0)]))
         Assert.AreEqual((false, "SYD expects four arguments."), functionImplementation.Validate (null))
 
-        Assert.AreEqual(3000.0, functionImplementation.Execute (List.toArray [Number(10000.0); Number(1000.0); Number(5.0); Number(1.0)]))
-        Assert.AreEqual(2400.0, functionImplementation.Execute (List.toArray [Number(10000.0); Number(1000.0); Number(5.0); Number(2.0)]))
-        Assert.AreEqual(1800.0, functionImplementation.Execute (List.toArray [Number(10000.0); Number(1000.0); Number(5.0); Number(3.0)]))
+        Assert.AreEqual(Number(3000.0), functionImplementation.Execute (List.toArray [Number(10000.0); Number(1000.0); Number(5.0); Number(1.0)]))
+        Assert.AreEqual(Number(2400.0), functionImplementation.Execute (List.toArray [Number(10000.0); Number(1000.0); Number(5.0); Number(2.0)]))
+        Assert.AreEqual(Number(1800.0), functionImplementation.Execute (List.toArray [Number(10000.0); Number(1000.0); Number(5.0); Number(3.0)]))

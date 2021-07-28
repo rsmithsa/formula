@@ -54,10 +54,10 @@ let main argv =
 
         // Interpret and print result
         let evalResult = interpretFormula v variableProvider DefaultFunctionProvider.Instance
-        printfn "Function result:\n%f\n" evalResult
+        printfn $"Function result:\n{evalResult}\n"
 
         let evalFoldResult = interpretFormula fold variableProvider DefaultFunctionProvider.Instance
-        printfn "Folded function result:\n%f\n" evalFoldResult
+        printfn $"Folded function result:\n{evalFoldResult}\n"
 
         waitToClose 0
     | Failure (msg, err, _) ->
