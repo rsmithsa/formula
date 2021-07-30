@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="DefaultFunctions.fs" company="Richard Smith">
+// <copyright file="DefaultFunctionProvider.fs" company="Richard Smith">
 //     Copyright (c) Richard Smith. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,6 +14,8 @@ open Formula.Parser.Ast
 type SqrtFunction() =
     member this.Name =
         "SQRT"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         match Helpers.castToDouble input.[0] with
@@ -34,12 +36,15 @@ type SqrtFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type PiFunction() =
     member this.Name =
         "PI"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         Number(System.Math.PI)
@@ -56,12 +61,15 @@ type PiFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type PowFunction() =
     member this.Name =
         "POW"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         match (Helpers.castToDouble input.[0], Helpers.castToDouble input.[1]) with
@@ -82,12 +90,15 @@ type PowFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type ModFunction() =
     member this.Name =
         "MOD"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         match (Helpers.castToDouble input.[0], Helpers.castToDouble input.[1]) with
@@ -108,12 +119,15 @@ type ModFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type CountFunction() =
     member this.Name =
         "COUNT"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         match isNull input with
@@ -125,12 +139,15 @@ type CountFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type SumFunction() =
     member this.Name =
         "SUM"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         match isNull input with
@@ -146,12 +163,15 @@ type SumFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type AvgFunction() =
     member this.Name =
         "AVG"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = input |> Array.choose Helpers.castToDouble
@@ -171,12 +191,15 @@ type AvgFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type FirstFunction() =
     member this.Name =
         "FIRST"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         input.[0]
@@ -195,12 +218,15 @@ type FirstFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type LastFunction() =
     member this.Name =
         "LAST"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         input.[input.Length - 1]
@@ -219,12 +245,15 @@ type LastFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type MinFunction() =
     member this.Name =
         "MIN"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = input |> Array.choose Helpers.castToDouble
@@ -244,12 +273,15 @@ type MinFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
         
 type MaxFunction() =
     member this.Name =
         "MAX"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = input |> Array.choose Helpers.castToDouble
@@ -269,6 +301,7 @@ type MaxFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 

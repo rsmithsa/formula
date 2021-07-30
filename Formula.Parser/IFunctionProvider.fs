@@ -12,6 +12,7 @@ open Formula.Parser.Ast
 
 type IFunctionImplementation =
     abstract member Name: string
+    abstract member IsNonDeterministic: bool
     abstract member Execute: input: value[] -> value
     abstract member Validate: input: value[] * [<Out>] message: string byref -> bool
 

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="FinancialFunctions.fs" company="Richard Smith">
+// <copyright file="FinancialFunctionProvider.fs" company="Richard Smith">
 //     Copyright (c) Richard Smith. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -26,6 +26,8 @@ type DdbFunction() =
 
     member this.Name =
         "DDB"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = Helpers.asDoubles(input)
@@ -52,12 +54,15 @@ type DdbFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type FvFunction() =
     member this.Name =
         "FV"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = Helpers.asDoubles(input.[0..3])
@@ -93,12 +98,15 @@ type FvFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type NpvFunction() =
     member this.Name =
         "NPV"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = Helpers.asDoubles(input)
@@ -122,6 +130,7 @@ type NpvFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
@@ -129,6 +138,8 @@ type IrrFunction() =
     let npvImplementation = new NpvFunction();
     member this.Name =
         "IRR"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = Helpers.asDoubles(input)
@@ -158,6 +169,7 @@ type IrrFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
@@ -165,6 +177,8 @@ type MirrFunction() =
     let npvImplementation = new NpvFunction();
     member this.Name =
         "MIRR"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = Helpers.asDoubles(input)
@@ -210,12 +224,15 @@ type MirrFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type NperFunction() =
     member this.Name =
         "NPER"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = Helpers.asDoubles(input.[0..3])
@@ -257,12 +274,15 @@ type NperFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type PmtFunction() =
     member this.Name =
         "PMT"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = Helpers.asDoubles(input.[0..3])
@@ -301,6 +321,7 @@ type PmtFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
@@ -309,6 +330,8 @@ type IpmtFunction() =
     let fvImplementation = new FvFunction();
     member this.Name =
         "IPMT"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = Helpers.asDoubles(input.[0..4])
@@ -341,6 +364,7 @@ type IpmtFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
@@ -349,6 +373,8 @@ type PpmtFunction() =
     let ipmtImplementation = new IpmtFunction();
     member this.Name =
         "PPMT"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let pmt = pmtImplementation.Execute(Array.append input.[0..0] input.[2..])
@@ -369,12 +395,15 @@ type PpmtFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type PvFunction() =
     member this.Name =
         "PV"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = Helpers.asDoubles(input.[0..3])
@@ -410,12 +439,15 @@ type PvFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type RateFunction() =
     member this.Name =
         "RATE"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = Helpers.asDoubles(Array.append input.[0..3] input.[5..5])
@@ -463,12 +495,15 @@ type RateFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type SlnFunction() =
     member this.Name =
         "SLN"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = Helpers.asDoubles(input)
@@ -489,12 +524,15 @@ type SlnFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type SydFunction() =
     member this.Name =
         "SYD"
+        
+    member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
         let values = Helpers.asDoubles(input)
@@ -515,6 +553,7 @@ type SydFunction() =
 
     interface IFunctionImplementation with
         member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 

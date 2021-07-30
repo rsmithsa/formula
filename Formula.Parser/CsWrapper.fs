@@ -44,7 +44,7 @@ type CsWrapper private() =
                     match r with
                     | Some (a, b) ->
                         match (a.Item, b.Item) with
-                        | (Constant a, Constant b) ->struct (i, a.Item, b.Item)
+                        | (Constant a, Constant b) -> struct (i, a.Item, b.Item)
                         | _ -> struct (i, Unchecked.defaultof<value>, Unchecked.defaultof<value>)
                     | _ -> struct (i, Unchecked.defaultof<value>, Unchecked.defaultof<value>)
             )
@@ -72,6 +72,9 @@ type CsWrapper private() =
     
     static member ConstantFoldExpression ast =
         foldConstants ast
+        
+    static member ConstantFoldExpression (ast, (functionProvider: IFunctionProvider)) =
+        foldConstantsFunctions ast functionProvider
 
     static member InterpretExpression (ast) =
         CsWrapper.InterpretExpression(ast, MapVariableProvider.Empty, DefaultFunctionProvider.Instance)

@@ -87,6 +87,7 @@ namespace Formula.Parser.CsTests
                 }
 
                 public string Name => "MyFunc";
+                public bool IsNonDeterministic => false;
             }
 
             public IEnumerable<string> KnownFunctions => new[] { "MyFunc" };
