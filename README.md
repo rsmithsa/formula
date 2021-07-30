@@ -30,6 +30,12 @@ A simple extensible formula language for .NET
 
 ## Version History
 
+### 0.13.0
+- Constant folder supports folding functions with constant arguments
+  - Function implementations can declare they are deterministic
+  - EmptyFunctionProvider created
+- Implicit cast from nullables fix/improvement
+
 ### 0.12.0
 - Support for 'Nothing' data type
   - Compiler & interpreter return an Option float value
