@@ -22,6 +22,7 @@
     <Compile Include="Ast.fs" />
 	<Compile Include="IVariableProvider.fs" />
 	<Compile Include="IFunctionProvider.fs" />
+	<Compile Include="EmptyFunctionProvider.fs" />
 	<Compile Include="ParserException.fs" />
     <Compile Include="Helpers.fs" />
     <Compile Include="Newton.fs" />
