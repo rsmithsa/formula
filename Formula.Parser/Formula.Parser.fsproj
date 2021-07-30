@@ -35,8 +35,8 @@
 	<Compile Include="ExpressionVariableProvider.fs" />
 	<Compile Include="MutableVariableProvider.fs" />
 	<Compile Include="CompositeVariableProvider.fs" />
-	<Compile Include="DefaultFunctions.fs" />
-	<Compile Include="FinancialFunctions.fs" />
+	<Compile Include="DefaultFunctionProvider.fs" />
+	<Compile Include="FinancialFunctionProvider.fs" />
 	<Compile Include="CompositeFunctionProvider.fs" />
 	<Compile Include="CsWrapper.fs" />
   </ItemGroup>
