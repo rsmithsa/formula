@@ -7,6 +7,7 @@
 namespace Formula.Parser.Tests
 
 open FParsec.CharParsers
+open Formula.Parser.Integration
 open Microsoft.VisualStudio.TestTools.UnitTesting
 
 open Formula.Parser
@@ -584,6 +585,61 @@ type ConstantFolderTests () =
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
             let expected = { Item = Constant({ Item = Nothing }) }
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestFoldFunctionUsingProvider () =
+        let result = parseFormulaString "COUNT()"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = TestHelper.stripPositions (foldConstantsFunctions ast DefaultFunctionProvider.Instance)
+            let expected = { Item = Constant({ Item = Number(0.0) }) }
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestFoldFunctionWithParametersUsingProvider () =
+        let result = parseFormulaString "COUNT(1 + 42, MyVar)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = TestHelper.stripPositions (foldConstantsFunctions ast DefaultFunctionProvider.Instance)
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Constant({ Item = Number(1.0 + 42.0) }) }; { Item = Variable({ Item = Identifier("MyVar") }, None, None) } ]) }
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestFoldFunctionOfFunction1UsingProvider () =
+        let result = parseFormulaString "COUNT(COUNT())"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = TestHelper.stripPositions (foldConstantsFunctions ast DefaultFunctionProvider.Instance)
+            let expected = { Item = Constant({ Item = Number(1.0) }) }
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestFoldFunctionOfFunction2UsingProvider () =
+        let result = parseFormulaString "SUM(PI(), PI(), PI())"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = TestHelper.stripPositions (foldConstantsFunctions ast DefaultFunctionProvider.Instance)
+            let expected = { Item = Constant({ Item = Number(System.Math.PI * 3.0) }) }
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestFoldFunctionOfFunction3UsingProvider () =
+        let result = parseFormulaString "SQRT(4)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = TestHelper.stripPositions (foldConstantsFunctions ast DefaultFunctionProvider.Instance)
+            let expected = { Item = Constant({ Item = Number(2.0) }) }
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

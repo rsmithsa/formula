@@ -39,7 +39,7 @@ type ExpressionVariableProvider(expressionMap: Map<string, IAstItem<expr>>, func
     member this.CompiledExpressions =
         expressionMap
         |> Map.toSeq
-        |> Seq.map (fun (x, y) -> (x, foldConstants y |> compileFormula))
+        |> Seq.map (fun (x, y) -> (x, foldConstantsFunctions y functionProvider |> compileFormula))
         |> Map.ofSeq
 
     member this.IsDefined name =
