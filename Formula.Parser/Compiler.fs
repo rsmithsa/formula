@@ -167,6 +167,10 @@ module Compiler =
             let compileBranch cond a b =
                 let valueCond = castToBoolExpression(compileInternal cond)
                 Expression.Condition(valueCond, (compileInternal a), (compileInternal b)) :> Expression
+                
+            let compileIntermediate (ex: Expression) =
+                let inter = Expression.Lambda(ex, variableProvider, functionProvider).Compile()
+                Expression.Invoke(Expression.Constant(inter), variableProvider, functionProvider) :> Expression
 
             match ast.Item with
             | Constant c ->
@@ -176,7 +180,7 @@ module Compiler =
             | Negation n ->
                 compileNegation n
             | Arithmetic (a, op, b) ->
-                compileArithmetic a op.Item b
+                compileIntermediate (compileArithmetic a op.Item b)
             | Inversion i ->
                 compileInversion i
             | Comparison (a, op, b) ->
