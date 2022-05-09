@@ -464,3 +464,25 @@ type InterpreterTests () =
             Assert.AreEqual(None, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestInterpretBug51Variable () =
+        let result = parseFormulaString "MyVar + MyVar + MyVar + MyVar + MyVar + MyVar + MyVar + MyVar + MyVar + MyVar + MyVar + MyVar + MyVar + MyVar + MyVar + MyVar + MyVar + MyVar + MyVar + MyVar"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
+            let expected = Some(Helpers.castToDouble(varMap.Lookup "MyVar").Value * 20.0)
+            Assert.AreEqual(expected, value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestInterpretBug51Constant () =
+        let result = parseFormulaString "1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10 + 11 + 12 + 13 + 14 + 15 + 16 + 17 + 18 + 19 + 20"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            let expected = Some(210.0)
+            Assert.AreEqual(expected, value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
