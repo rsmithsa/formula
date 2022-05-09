@@ -30,6 +30,9 @@ A simple extensible formula language for .NET
 
 ## Version History
 
+### 1.0.0
+- Bug fix for large expressions
+
 ### 0.13.0
 - Constant folder supports folding functions with constant arguments
   - Function implementations can declare they are deterministic
