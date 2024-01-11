@@ -16,7 +16,6 @@ open Formula.Parser.DependencyExtractor
 open Formula.Parser.FunctionValidator
 open Formula.Parser.ConstantFolder
 open Formula.Parser.Interpreter
-open Formula.Parser.Compiler
 open Formula.Parser
 
 [<AbstractClass; Sealed>]
@@ -92,8 +91,11 @@ type CsWrapper private() =
         | _ -> Nullable()
 
     static member CompileExpression ast =
-        compileFormula<Nullable<double>> ast
+        Compiler.compileFormula<Nullable<double>> ast
 
+    static member ILCompileExpression ast =
+        ILCompiler.compileFormula<Nullable<double>> ast
+    
     static member InterpretFormula (input) =
         CsWrapper.InterpretFormula(input, MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
 
