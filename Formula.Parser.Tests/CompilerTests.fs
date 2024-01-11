@@ -272,11 +272,11 @@ type CompilerTests () =
 
     [<TestMethod>]
     member this.TestCompileFunctionWithParameters () =
-        let result = parseFormulaString "COUNT(1 + 42, MyVar)"
+        let result = parseFormulaString "SUM(1 + 42, MyVar)"
         match result with
         | Success (ast, userState, endPos) ->
             let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
-            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (List.toArray [Number(1.0 + 42.0); varMap.Lookup "MyVar"]))
+            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "SUM").Execute (List.toArray [Number(1.0 + 42.0); varMap.Lookup "MyVar"]))
             Assert.AreEqual(expected, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -293,12 +293,23 @@ type CompilerTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestCompileFunctionWithRange () =
-        let result = parseFormulaString "COUNT(1 + 42, MyVar|1:10|)"
+    member this.TestCompileFunctionOfFunctionWithRange () =
+        let result = parseFormulaString "SUM(SUM(1 + 42, MyVar|1:10|), 1)"
         match result with
         | Success (ast, userState, endPos) ->
             let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
-            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute (Array.concat [ [| Number(1.0 + 42.0) |]; varMap.LookupRange "MyVar" (Number(1.0)) (Number(10.0))]))
+            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "SUM").Execute (List.toArray [(DefaultFunctionProvider.Instance.Lookup "SUM").Execute (Array.concat [ [| Number(1.0 + 42.0) |]; varMap.LookupRange "MyVar" (Number(1.0)) (Number(10.0))]); Number(1.0)]))
+            Assert.AreEqual(expected, value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)    
+    
+    [<TestMethod>]
+    member this.TestCompileFunctionWithRange () =
+        let result = parseFormulaString "SUM(1 + 42, MyVar|1:10|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
+            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "SUM").Execute (Array.concat [ [| Number(1.0 + 42.0) |]; varMap.LookupRange "MyVar" (Number(1.0)) (Number(10.0))]))
             Assert.AreEqual(expected, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

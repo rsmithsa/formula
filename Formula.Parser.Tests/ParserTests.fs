@@ -463,6 +463,16 @@ type ParserTests () =
             Assert.Fail(msg)
             
     [<TestMethod>]
+    member this.TestParseFunctionOfFunctionMultiple () =
+        let result = parseFormulaString "COUNT(COUNT(), SUM(1))"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Function({ Item = Identifier("COUNT") }, []) }; { Item = Function({ Item = Identifier("SUM") }, [{ Item = Constant { Item = Number(1.0) } }]) }]) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
     member this.TestParseFunctionWithRanges () =
         let result = parseFormulaString "COUNT(1 + 42, MyVar|1:2|)"
         match result with
