@@ -32,6 +32,7 @@
 	<Compile Include="ConstantFolder.fs" />
     <Compile Include="Interpreter.fs" />
 	<Compile Include="Compiler.fs" />
+	<Compile Include="ILCompiler.fs" />
 	<Compile Include="MapVariableProvider.fs" />
 	<Compile Include="ExpressionVariableProvider.fs" />
 	<Compile Include="MutableVariableProvider.fs" />

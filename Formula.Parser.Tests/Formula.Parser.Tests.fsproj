@@ -16,6 +16,7 @@
     <Compile Include="ConstantFolderTests.fs" />
     <Compile Include="InterpreterTests.fs" />
     <Compile Include="CompilerTests.fs" />
+    <Compile Include="ILCompilerTests.fs" />
     <Compile Include="DefaultFunctionsTests.fs" />
     <Compile Include="FinancialFunctionsTests.fs" />
   </ItemGroup>
