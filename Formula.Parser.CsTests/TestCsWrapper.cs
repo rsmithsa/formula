@@ -228,5 +228,108 @@ namespace Formula.Parser.CsTests
 
             Assert.AreEqual(100.0, result);
         }
+        
+        [TestMethod]
+        public void TestExpressionDependenciesWithRanges()
+        {
+            var input = "42";
+
+            var ast = CsWrapper.ParseFormula(input);
+            var dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(0, dependencies.Count);
+
+            input = "[A]";
+
+            ast = CsWrapper.ParseFormula(input);
+            
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(1, dependencies.Count);
+            var dep = dependencies["A"];
+            Assert.AreEqual("A", dep.Item1);
+            Assert.AreEqual(0, dep.Item2);
+            Assert.AreEqual(0, dep.Item3);
+            
+            input = "SUM([A]|-1:0|)";
+
+            ast = CsWrapper.ParseFormula(input);
+            
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(1, dependencies.Count);
+            dep = dependencies["A"];
+            Assert.AreEqual("A", dep.Item1);
+            Assert.AreEqual(-1, dep.Item2);
+            Assert.AreEqual(0, dep.Item3);
+            
+            input = "SUM([A]|\"ABC\":0|)";
+
+            ast = CsWrapper.ParseFormula(input);
+            
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(1, dependencies.Count);
+            dep = dependencies["A"];
+            Assert.AreEqual("A", dep.Item1);
+            Assert.AreEqual("ABC", dep.Item2);
+            Assert.AreEqual(0, dep.Item3);
+            
+            input = "SUM([A]|[B]:0|)";
+
+            ast = CsWrapper.ParseFormula(input);
+            
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(2, dependencies.Count);
+            dep = dependencies["A"];
+            Assert.AreEqual("A", dep.Item1);
+            Assert.AreEqual(null, dep.Item2);
+            Assert.AreEqual(0, dep.Item3);
+            
+            input = "SUM([A]|-1:[B]|)";
+
+            ast = CsWrapper.ParseFormula(input);
+            
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(2, dependencies.Count);
+            dep = dependencies["A"];
+            Assert.AreEqual("A", dep.Item1);
+            Assert.AreEqual(-1, dep.Item2);
+            Assert.AreEqual(null, dep.Item3);
+            
+            input = "SUM([A]|[C]:[B]|)";
+
+            ast = CsWrapper.ParseFormula(input);
+            
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(3, dependencies.Count);
+            dep = dependencies["A"];
+            Assert.AreEqual("A", dep.Item1);
+            Assert.AreEqual(null, dep.Item2);
+            Assert.AreEqual(null, dep.Item3);
+            
+            input = "[A]|42|";
+
+            ast = CsWrapper.ParseFormula(input);
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(1, dependencies.Count);
+            dep = dependencies["A"];
+            Assert.AreEqual(42, dep.Item2);
+            Assert.AreEqual(42, dep.Item3);
+            
+            input = "[A]|[B]|";
+
+            ast = CsWrapper.ParseFormula(input);
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(2, dependencies.Count);
+            dep = dependencies["A"];
+            Assert.AreEqual(null, dep.Item2);
+            Assert.AreEqual(null, dep.Item3);
+        }
     }
 }

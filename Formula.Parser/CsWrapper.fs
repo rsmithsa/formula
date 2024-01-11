@@ -35,7 +35,7 @@ type CsWrapper private() =
 
     static member ExtractExpressionDependenciesWithRanges ast =
         let deps =
-            extractDependenciesWithRanges ast []
+            extractDependenciesWithRanges (foldConstants ast) []
             |> Seq.map (fun x ->
                 let (i, r) = x
                 match (i.Item, r) with
@@ -43,11 +43,14 @@ type CsWrapper private() =
                     match r with
                     | Some (a, b) ->
                         match (a.Item, b.Item) with
-                        | (Constant a, Constant b) -> struct (i, a.Item, b.Item)
-                        | _ -> struct (i, Unchecked.defaultof<value>, Unchecked.defaultof<value>)
-                    | _ -> struct (i, Unchecked.defaultof<value>, Unchecked.defaultof<value>)
+                        | (Constant a, Constant b) -> (i, struct (i, a.Item, b.Item))
+                        | (Constant a, _) -> (i, struct (i, a.Item, Unchecked.defaultof<value>))
+                        | (_, Constant b) -> (i, struct (i, Unchecked.defaultof<value>, b.Item))
+                        | _ -> (i, struct (i, Unchecked.defaultof<value>, Unchecked.defaultof<value>))
+                    | _ -> (i, struct (i, Number(0), Number(0)))
             )
-        new System.Collections.Generic.HashSet<ValueTuple<string, value, value>>(deps)
+            |> Map.ofSeq
+        new System.Collections.Generic.Dictionary<string, ValueTuple<string, value, value>>(deps)
     
     static member ExtractExpressionDependenciesWithPositions (ast: IPositionedAstItem<expr>) =
         let deps =
