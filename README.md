@@ -30,6 +30,10 @@ A simple extensible formula language for .NET
 
 ## Version History
 
+### 1.1.0
+- IL emit based compiler
+- ExtractExpressionDependenciesWithRanges bug fix for partially resolved ranges
+
 ### 1.0.0
 - Bug fix for large expressions
 
