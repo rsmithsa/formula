@@ -10,7 +10,7 @@ open Formula.Parser
 open Formula.Parser.Ast
 open Formula.Parser.Parser
 open Formula.Parser.ConstantFolder
-open Formula.Parser.Compiler
+open Formula.Parser.ILCompiler
 
 type ExpressionVariableProvider(expressionMap: Map<string, IAstItem<expr>>, functionProvider: IFunctionProvider, ?variableProvider: IVariableProvider) =
 

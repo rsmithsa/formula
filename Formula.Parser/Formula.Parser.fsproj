@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>Richard Smith</Authors>
     <Copyright>Richard Smith</Copyright>
     <RepositoryUrl>https://github.com/rsmithsa/formula</RepositoryUrl>
@@ -32,6 +32,7 @@
 	<Compile Include="ConstantFolder.fs" />
     <Compile Include="Interpreter.fs" />
 	<Compile Include="Compiler.fs" />
+	<Compile Include="ILCompiler.fs" />
 	<Compile Include="MapVariableProvider.fs" />
 	<Compile Include="ExpressionVariableProvider.fs" />
 	<Compile Include="MutableVariableProvider.fs" />

@@ -66,6 +66,40 @@ namespace Formula.Parser.CsTests
             Assert.AreEqual(1, result);
         }
 
+        [TestMethod]
+        public void TestCompilerDepth()
+        {
+#if DEBUG
+            Console.WriteLine("DEBUG");
+#else
+            Console.WriteLine("RELEASE");
+#endif
+            var depth = 190;
+            var function = "SQRT(Test)";
+            var input = new StringBuilder();
+
+            for (int i = 0; i < depth; i++)
+            {
+                input.Append("(");
+            }
+            input.Append($"{function})");
+            for (int i = 0; i < depth - 1; i++)
+            {
+                input.Append($"* {function})");
+            }
+           
+            var inputStr = input.ToString();
+            var compiled = CsWrapper.ILCompileExpression(CsWrapper.ParseFormula(inputStr));
+            
+            var sw = Stopwatch.StartNew();
+            var result = compiled.Invoke(new MapVariableProvider(new Dictionary<string, double>() { { "Test", 1 } }), DefaultFunctionProvider.Instance);
+            sw.Stop();
+
+            Console.WriteLine($"Depth: {depth}, Time: {sw.ElapsedMilliseconds}ms");
+
+            Assert.AreEqual(1, result);
+        }
+
         class CustomFunctionProvider: IFunctionProvider
         {
             class MyFuncImplementation : IFunctionImplementation
@@ -113,6 +147,14 @@ namespace Formula.Parser.CsTests
             var result = CsWrapper.InterpretFormula(input, new CustomFunctionProvider());
 
             Assert.AreEqual(42, result);
+            
+            result = CsWrapper.CompileExpression(CsWrapper.ParseFormula(input)).Invoke(MapVariableProvider.Empty, new CustomFunctionProvider());
+
+            Assert.AreEqual(42, result);
+            
+            result = CsWrapper.ILCompileExpression(CsWrapper.ParseFormula(input)).Invoke(MapVariableProvider.Empty, new CustomFunctionProvider());
+
+            Assert.AreEqual(42, result);
         }
 
         [TestMethod]
@@ -122,6 +164,14 @@ namespace Formula.Parser.CsTests
 
             var result = CsWrapper.InterpretFormula(input, new CompositeFunctionProvider(new IFunctionProvider[] {new CustomFunctionProvider(), DefaultFunctionProvider.Instance }));
 
+            Assert.AreEqual(84, result);
+            
+            result = CsWrapper.CompileExpression(CsWrapper.ParseFormula(input)).Invoke(MapVariableProvider.Empty, new CompositeFunctionProvider(new IFunctionProvider[] {new CustomFunctionProvider(), DefaultFunctionProvider.Instance }));
+            
+            Assert.AreEqual(84, result);
+            
+            result = CsWrapper.ILCompileExpression(CsWrapper.ParseFormula(input)).Invoke(MapVariableProvider.Empty, new CompositeFunctionProvider(new IFunctionProvider[] {new CustomFunctionProvider(), DefaultFunctionProvider.Instance }));
+            
             Assert.AreEqual(84, result);
         }
 
@@ -177,6 +227,109 @@ namespace Formula.Parser.CsTests
             result = CsWrapper.InterpretFormula("A", variableProvider);
 
             Assert.AreEqual(100.0, result);
+        }
+        
+        [TestMethod]
+        public void TestExpressionDependenciesWithRanges()
+        {
+            var input = "42";
+
+            var ast = CsWrapper.ParseFormula(input);
+            var dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(0, dependencies.Count);
+
+            input = "[A]";
+
+            ast = CsWrapper.ParseFormula(input);
+            
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(1, dependencies.Count);
+            var dep = dependencies["A"];
+            Assert.AreEqual("A", dep.Item1);
+            Assert.AreEqual(0, dep.Item2);
+            Assert.AreEqual(0, dep.Item3);
+            
+            input = "SUM([A]|-1:0|)";
+
+            ast = CsWrapper.ParseFormula(input);
+            
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(1, dependencies.Count);
+            dep = dependencies["A"];
+            Assert.AreEqual("A", dep.Item1);
+            Assert.AreEqual(-1, dep.Item2);
+            Assert.AreEqual(0, dep.Item3);
+            
+            input = "SUM([A]|\"ABC\":0|)";
+
+            ast = CsWrapper.ParseFormula(input);
+            
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(1, dependencies.Count);
+            dep = dependencies["A"];
+            Assert.AreEqual("A", dep.Item1);
+            Assert.AreEqual("ABC", dep.Item2);
+            Assert.AreEqual(0, dep.Item3);
+            
+            input = "SUM([A]|[B]:0|)";
+
+            ast = CsWrapper.ParseFormula(input);
+            
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(2, dependencies.Count);
+            dep = dependencies["A"];
+            Assert.AreEqual("A", dep.Item1);
+            Assert.AreEqual(null, dep.Item2);
+            Assert.AreEqual(0, dep.Item3);
+            
+            input = "SUM([A]|-1:[B]|)";
+
+            ast = CsWrapper.ParseFormula(input);
+            
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(2, dependencies.Count);
+            dep = dependencies["A"];
+            Assert.AreEqual("A", dep.Item1);
+            Assert.AreEqual(-1, dep.Item2);
+            Assert.AreEqual(null, dep.Item3);
+            
+            input = "SUM([A]|[C]:[B]|)";
+
+            ast = CsWrapper.ParseFormula(input);
+            
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(3, dependencies.Count);
+            dep = dependencies["A"];
+            Assert.AreEqual("A", dep.Item1);
+            Assert.AreEqual(null, dep.Item2);
+            Assert.AreEqual(null, dep.Item3);
+            
+            input = "[A]|42|";
+
+            ast = CsWrapper.ParseFormula(input);
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(1, dependencies.Count);
+            dep = dependencies["A"];
+            Assert.AreEqual(42, dep.Item2);
+            Assert.AreEqual(42, dep.Item3);
+            
+            input = "[A]|[B]|";
+
+            ast = CsWrapper.ParseFormula(input);
+            dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
+            
+            Assert.AreEqual(2, dependencies.Count);
+            dep = dependencies["A"];
+            Assert.AreEqual(null, dep.Item2);
+            Assert.AreEqual(null, dep.Item3);
         }
     }
 }

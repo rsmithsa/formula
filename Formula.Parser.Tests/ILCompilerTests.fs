@@ -1,4 +1,4 @@
-﻿// <copyright file="CompilerTests.fs" company="Richard Smith">
+﻿// <copyright file="ILCompilerTests.fs" company="Richard Smith">
 //     Copyright (c) Richard Smith. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -11,12 +11,12 @@ open Microsoft.VisualStudio.TestTools.UnitTesting
 open Formula.Parser
 open Formula.Parser.Ast
 open Formula.Parser.Parser
-open Formula.Parser.Compiler
+open Formula.Parser.ILCompiler
 open Formula.Parser.Integration
 open TestHelper
 
 [<TestClass>]
-type CompilerTests () =
+type ILCompilerTests () =
 
     let varMap = MapVariableProvider(Map.empty
                                         .Add("MyVar", 42.0)
@@ -291,7 +291,7 @@ type CompilerTests () =
             Assert.AreEqual(expected, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
-
+            
     [<TestMethod>]
     member this.TestCompileFunctionOfFunctionWithRange () =
         let result = parseFormulaString "SUM(SUM(1 + 42, MyVar|1:10|), 1)"
@@ -301,8 +301,8 @@ type CompilerTests () =
             let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "SUM").Execute (List.toArray [(DefaultFunctionProvider.Instance.Lookup "SUM").Execute (Array.concat [ [| Number(1.0 + 42.0) |]; varMap.LookupRange "MyVar" (Number(1.0)) (Number(10.0))]); Number(1.0)]))
             Assert.AreEqual(expected, value);
         | Failure (msg, error, userState) ->
-            Assert.Fail(msg)    
-    
+            Assert.Fail(msg)
+
     [<TestMethod>]
     member this.TestCompileFunctionWithRange () =
         let result = parseFormulaString "SUM(1 + 42, MyVar|1:10|)"

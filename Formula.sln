@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Formula.Parser.CsTests", "F
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Formula.Parser.Tests", "Formula.Parser.Tests\Formula.Parser.Tests.fsproj", "{D60648BF-32A3-43D1-83E0-ADA7A9C97711}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Formula.Parser.Benchmark", "Formula.Parser.Benchmark\Formula.Parser.Benchmark.csproj", "{D6F9ABB7-612F-4220-877B-6688F841F696}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{D60648BF-32A3-43D1-83E0-ADA7A9C97711}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D60648BF-32A3-43D1-83E0-ADA7A9C97711}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D60648BF-32A3-43D1-83E0-ADA7A9C97711}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6F9ABB7-612F-4220-877B-6688F841F696}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6F9ABB7-612F-4220-877B-6688F841F696}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6F9ABB7-612F-4220-877B-6688F841F696}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6F9ABB7-612F-4220-877B-6688F841F696}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
