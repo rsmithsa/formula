@@ -12,6 +12,7 @@
     <Description>A simple extensible formula language for .NET</Description>
     <Company />
     <PackageIcon>logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
