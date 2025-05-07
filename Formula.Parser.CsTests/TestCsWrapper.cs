@@ -35,6 +35,18 @@ namespace Formula.Parser.CsTests
         }
 
         [TestMethod]
+        public void TestCompileBug55IndexVariable()
+        {
+            var input = "MyVar|13|";
+
+            var ast = CsWrapper.ParseFormula(input);
+            var func = CsWrapper.ILCompileExpression(ast);
+            var vp = new MapVariableProvider(new Dictionary<string, double>() { { "MyVar", 42 } });
+            var val = func(vp, DefaultFunctionProvider.Instance);
+            Assert.AreEqual(42, val);
+        }
+
+        [TestMethod]
         public void TestInterpeterDepth()
         {
 #if DEBUG

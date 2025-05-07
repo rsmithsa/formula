@@ -317,11 +317,11 @@ type InterpreterTests () =
             
     [<TestMethod>]
     member this.TestInterpretFunctionWithIndex () =
-        let result = parseFormulaString "COUNT(1 + 42, MyVar|1|)"
+        let result = parseFormulaString "SUM(1 + 42, MyVar|1|)"
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
-            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "COUNT").Execute ([| Number(1.0 + 42.0); varMap.LookupIndex "MyVar" (Number(1.0)) |]))
+            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "SUM").Execute ([| Number(1.0 + 42.0); varMap.LookupIndex "MyVar" (Number(1.0)) |]))
             Assert.AreEqual(expected, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -494,6 +494,17 @@ type InterpreterTests () =
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
             let expected = Some(210.0)
+            Assert.AreEqual(expected, value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestCompileBug55IndexVariable () =
+        let result = parseFormulaString "MyVar|13|"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
+            let expected = Some(Helpers.castToDouble(varMap.LookupIndex "MyVar" (Number(13.0))).Value)
             Assert.AreEqual(expected, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

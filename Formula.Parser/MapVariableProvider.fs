@@ -34,7 +34,10 @@ type MapVariableProvider(map: Map<string, float>) =
         | (Number a, Number b) -> Array.init (int(b - a) + 1) (fun x -> Number(value))
         | _ -> invalidArg "range" "Numeric range expected."
     member this.LookupIndex name index =
-        this.Lookup name
+        let value = this.KnownVariables.[name]
+        match (index) with
+        | (Number a) -> Number(value)
+        | _ -> invalidArg "index" "Numeric index expected."
 
     interface IVariableProvider with 
         member this.IsDefined (name) = this.IsDefined name
