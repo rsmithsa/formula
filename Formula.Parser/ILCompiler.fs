@@ -122,6 +122,7 @@ module ILCompiler =
                         il.Emit(OpCodes.Newarr, typeof<value>)
                         il.Emit(OpCodes.Stloc, curArray)
                         il.Emit(OpCodes.Ldloc, curArray)
+                        il.Emit(OpCodes.Ldloc, curArray)
                         il.Emit(OpCodes.Ldc_I4_0)
                         
                         match index with
@@ -140,7 +141,6 @@ module ILCompiler =
                             il.EmitCall(OpCodes.Callvirt, lookup, null)
                         
                         il.Emit(OpCodes.Stelem_Ref)
-                        il.Emit(OpCodes.Ldloc, curArray)
 
             let compileNegation negation = 
                 let store = il.DefineLabel()
