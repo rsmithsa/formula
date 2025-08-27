@@ -20,6 +20,8 @@ module ILCompiler =
     
     let compileFormula<'a> (ast: IAstItem<expr>) =
         
+        let invalidOperationEx = typeof<InvalidOperationException>.GetConstructor([| typeof<string> |])
+        
         let empty = typeof<value>.GetMethod("Empty", BindingFlags.NonPublic ||| BindingFlags.Static)
         let number = typeof<value>.GetMethod("NewNumber", BindingFlags.Public ||| BindingFlags.Static)
         let boolean = typeof<value>.GetMethod("NewBoolean", BindingFlags.Public ||| BindingFlags.Static)
@@ -142,6 +144,39 @@ module ILCompiler =
                         
                         il.Emit(OpCodes.Stelem_Ref)
 
+            let compileCoalesce a b = 
+                let ret = il.DefineLabel()
+                let nullish = il.DefineLabel()
+                let ex = il.DefineLabel()
+                
+                compileInternal (a)
+
+                il.Emit(OpCodes.Dup)
+                il.Emit(OpCodes.Stloc, arrImm)
+                il.Emit(OpCodes.Ldlen)
+                il.Emit(OpCodes.Ldc_I4_1)
+                il.Emit(OpCodes.Bne_Un, ex)
+
+                il.Emit(OpCodes.Ldloc, arrImm)
+                il.Emit(OpCodes.Ldc_I4_0)
+                il.Emit(OpCodes.Ldelem_Ref)
+                il.EmitCall(OpCodes.Call, empty, null)
+                il.Emit(OpCodes.Beq, nullish)
+
+                il.Emit(OpCodes.Ldloc, arrImm)
+                il.Emit(OpCodes.Br, ret)
+        
+                il.MarkLabel(nullish)
+                compileInternal (b)
+                il.Emit(OpCodes.Br, ret)
+                
+                il.MarkLabel(ex)
+                il.Emit(OpCodes.Ldstr, "Unable to coalesce multiple values.")
+                il.Emit(OpCodes.Newobj, invalidOperationEx)
+                il.Emit(OpCodes.Throw)
+
+                il.MarkLabel(ret)
+            
             let compileNegation negation = 
                 let store = il.DefineLabel()
                 let notNull = il.DefineLabel()
@@ -417,6 +452,8 @@ module ILCompiler =
                 compileConstant c.Item
             | Variable (v, r, i) ->
                 compileVariable v.Item r i
+            | Coalesce (a, b) ->
+                compileCoalesce a b
             | Negation n ->
                 compileNegation n
             | Arithmetic (a, op, b) ->

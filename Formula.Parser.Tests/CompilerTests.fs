@@ -5,6 +5,7 @@
 
 namespace Formula.Parser.Tests
 
+open System
 open FParsec.CharParsers
 open Microsoft.VisualStudio.TestTools.UnitTesting
 
@@ -505,5 +506,34 @@ type CompilerTests () =
             let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
             let expected = Some(Helpers.castToDouble(varMap.LookupIndex "MyVar" (Number(13.0))).Value)
             Assert.AreEqual(expected, value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestCompileCoalesceConstant () =
+        let result = parseFormulaString "1 ?? 42"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
+            Assert.AreEqual(Some(1.0), value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestCompileCoalesceNothingConstant () =
+        let result = parseFormulaString "null ?? 42"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = (compileFormula ast).Invoke(MapVariableProvider.Empty, DefaultFunctionProvider.Instance)
+            Assert.AreEqual(Some(42.0), value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestCompileCoalesceRange () =
+        let result = parseFormulaString "SUM(MyVar|1:10| ?? 1)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            Assert.ThrowsException<InvalidOperationException>(Action(fun x -> (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance) |> ignore)) |> ignore
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
