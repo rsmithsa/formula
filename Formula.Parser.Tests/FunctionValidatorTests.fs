@@ -77,3 +77,14 @@ type FunctionValidatorTests () =
             Assert.AreEqual(expected, errors);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestKnownFunctionCoalesce () =
+        let result = parseFormulaString "COUNT(PI() ?? 12, null ?? PI())"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let errors = getSimpleErrorList (validateFunctions ast DefaultFunctionProvider.Instance [])
+            let expected = List.empty<identifier>
+            Assert.AreEqual(expected, errors);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)

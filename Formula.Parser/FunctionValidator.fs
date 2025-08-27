@@ -43,6 +43,8 @@ module FunctionValidator =
                 match idx with
                 | Some i -> (validateFunctions i functions errors)
                 | None -> errors
+        | Coalesce (a, b) ->
+            validateFunctions b functions (validateFunctions a functions errors)
         | Negation n ->
             validateFunctions n functions errors
         | Arithmetic (a, op, b) ->

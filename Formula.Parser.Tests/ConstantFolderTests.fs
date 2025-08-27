@@ -643,3 +643,36 @@ type ConstantFolderTests () =
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestFoldCoalesce () =
+        let result = parseFormulaString "(5 / 1) ?? (-1 * (42 + null))"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = { Item = Constant({ Item = Number(5.0) }) }
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestFoldCoalesceNothing () =
+        let result = parseFormulaString "(-1 * (42 + null)) ?? (2*1)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = foldConstants ast
+            let expected = { Item = Constant({ Item = Number(2.0) }) }
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestFoldCoalesceNothingNothing () =
+        let result = parseFormulaString "(-1 * (42 + null)) ?? null"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let folded = TestHelper.stripPositions (foldConstants ast)
+            let expected = { Item = Constant({ Item = Nothing }) }
+            Assert.AreEqual(expected, folded);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)

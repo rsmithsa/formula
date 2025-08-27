@@ -23,6 +23,8 @@ module DependencyExtractor =
                 match idx with
                 | Some i -> (extractDependencies i (v::deps))
                 | None -> v::deps
+        | Coalesce (a, b) ->
+            extractDependencies b (extractDependencies a deps)
         | Negation n ->
             extractDependencies n deps
         | Arithmetic (a, op, b) ->
@@ -54,6 +56,8 @@ module DependencyExtractor =
                     let r = (v, Some(i, i))
                     (extractDependenciesWithRanges i (r::deps))
                 | None -> d::deps
+        | Coalesce (a, b) ->
+            extractDependenciesWithRanges b (extractDependenciesWithRanges a deps)
         | Negation n ->
             extractDependenciesWithRanges n deps
         | Arithmetic (a, op, b) ->
