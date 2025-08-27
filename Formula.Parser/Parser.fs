@@ -111,11 +111,14 @@ module Parser =
     let getOperatorItem op p =
         { Item = op; StartPosition = fst p; EndPosition = snd p } :> IPositionedAstItem<'a>
 
+    let getInfixAst (kind: (IAstItem<'a> * IAstItem<'b> -> 'a0)) x y p =
+        { Item = kind(x :> IPositionedAstItem<'a>, y :> IPositionedAstItem<'b>); StartPosition = x.StartPosition; EndPosition = y.EndPosition } :> IPositionedAstItem<'a0>
+    
     let getInfixOperatorAst (kind: (IAstItem<'a> * IAstItem<'b> * IAstItem<'c> -> 'a0)) x y op p =
         let opItem = getOperatorItem op p
         { Item = kind(x :> IPositionedAstItem<'a>, opItem, y :> IPositionedAstItem<'c>); StartPosition = x.StartPosition; EndPosition = y.EndPosition } :> IPositionedAstItem<'a0>
 
-    let getPrefixOperatorAst (kind: (IAstItem<'a> -> 'a0)) x p =
+    let getPrefixAst (kind: (IAstItem<'a> -> 'a0)) x p =
         { Item = kind(x :> IPositionedAstItem<'a>); StartPosition = fst p; EndPosition = x.EndPosition } :> IPositionedAstItem<'a0>
     
     let pnumber = pfloat |>> Number
@@ -180,22 +183,23 @@ module Parser =
     do pexprImpl := oppa.ExpressionParser
     let terma = wrapPos (branchExpr .>> ws) <|> wrapPos (pconstant .>> ws) <|> wrapPos (identWithOptArgs .>> ws) <|> between (str_ws "(") (str_ws ")") pexpr
     oppa.TermParser <- incrementDepth >>? terma .>>? decrementDepth
-    oppa.AddOperator(getInfixOperator "||" 1 Associativity.Left (fun p x y -> getInfixOperatorAst Logical x y Or p))
-    oppa.AddOperator(getInfixOperator "&&" 2 Associativity.Left (fun p x y -> getInfixOperatorAst Logical x y And p))
-    oppa.AddOperator(getInfixOperator "=" 3 Associativity.Left (fun p x y -> getInfixOperatorAst Comparison x y Equal p))
-    oppa.AddOperator(getInfixOperator "<>" 3 Associativity.Left (fun p x y -> getInfixOperatorAst Comparison x y NotEqual p))
-    oppa.AddOperator(getInfixOperator ">" 3 Associativity.Left (fun p x y -> getInfixOperatorAst Comparison x y GreaterThan p))
-    oppa.AddOperator(getInfixOperator "<" 3 Associativity.Left (fun p x y -> getInfixOperatorAst Comparison x y LessThan p))
-    oppa.AddOperator(getInfixOperator ">=" 3 Associativity.Left (fun p x y -> getInfixOperatorAst Comparison x y GreaterThanEqual p))
-    oppa.AddOperator(getInfixOperator "<=" 3 Associativity.Left (fun p x y -> getInfixOperatorAst Comparison x y LessThanEqual p))
-    oppa.AddOperator(getInfixOperator "+" 5 Associativity.Left (fun p x y -> getInfixOperatorAst Arithmetic x y Add p))
-    oppa.AddOperator(getInfixOperator "-" 5 Associativity.Left (fun p x y -> getInfixOperatorAst Arithmetic x y Subtract p))
-    oppa.AddOperator(getInfixOperator "*" 6 Associativity.Left (fun p x y -> getInfixOperatorAst Arithmetic x y Multiply p))
-    oppa.AddOperator(getInfixOperator "/" 6 Associativity.Left (fun p x y -> getInfixOperatorAst Arithmetic x y Divide p))
-    oppa.AddOperator(getInfixOperator "%" 6 Associativity.Left (fun p x y -> getInfixOperatorAst Arithmetic x y Modulus p))
-    oppa.AddOperator(getInfixOperator "^" 7 Associativity.Left (fun p x y -> getInfixOperatorAst Arithmetic x y Power p))
-    oppa.AddOperator(getPrefixOperator "-" 8 true (fun p x -> getPrefixOperatorAst Negation x p))
-    oppa.AddOperator(getPrefixOperator "!" 8 true (fun p x -> getPrefixOperatorAst Inversion x p))
+    oppa.AddOperator(getInfixOperator "??" 1 Associativity.Left (fun p x y -> getInfixAst Coalesce x y p))
+    oppa.AddOperator(getInfixOperator "||" 2 Associativity.Left (fun p x y -> getInfixOperatorAst Logical x y Or p))
+    oppa.AddOperator(getInfixOperator "&&" 3 Associativity.Left (fun p x y -> getInfixOperatorAst Logical x y And p))
+    oppa.AddOperator(getInfixOperator "=" 4 Associativity.Left (fun p x y -> getInfixOperatorAst Comparison x y Equal p))
+    oppa.AddOperator(getInfixOperator "<>" 4 Associativity.Left (fun p x y -> getInfixOperatorAst Comparison x y NotEqual p))
+    oppa.AddOperator(getInfixOperator ">" 5 Associativity.Left (fun p x y -> getInfixOperatorAst Comparison x y GreaterThan p))
+    oppa.AddOperator(getInfixOperator "<" 5 Associativity.Left (fun p x y -> getInfixOperatorAst Comparison x y LessThan p))
+    oppa.AddOperator(getInfixOperator ">=" 5 Associativity.Left (fun p x y -> getInfixOperatorAst Comparison x y GreaterThanEqual p))
+    oppa.AddOperator(getInfixOperator "<=" 5 Associativity.Left (fun p x y -> getInfixOperatorAst Comparison x y LessThanEqual p))
+    oppa.AddOperator(getInfixOperator "+" 6 Associativity.Left (fun p x y -> getInfixOperatorAst Arithmetic x y Add p))
+    oppa.AddOperator(getInfixOperator "-" 6 Associativity.Left (fun p x y -> getInfixOperatorAst Arithmetic x y Subtract p))
+    oppa.AddOperator(getInfixOperator "*" 7 Associativity.Left (fun p x y -> getInfixOperatorAst Arithmetic x y Multiply p))
+    oppa.AddOperator(getInfixOperator "/" 7 Associativity.Left (fun p x y -> getInfixOperatorAst Arithmetic x y Divide p))
+    oppa.AddOperator(getInfixOperator "%" 7 Associativity.Left (fun p x y -> getInfixOperatorAst Arithmetic x y Modulus p))
+    oppa.AddOperator(getInfixOperator "^" 8 Associativity.Left (fun p x y -> getInfixOperatorAst Arithmetic x y Power p))
+    oppa.AddOperator(getPrefixOperator "-" 9 true (fun p x -> getPrefixAst Negation x p))
+    oppa.AddOperator(getPrefixOperator "!" 9 true (fun p x -> getPrefixAst Inversion x p))
 
     let formula = ws >>. pexpr .>> ws .>> eof
 

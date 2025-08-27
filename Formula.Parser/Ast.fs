@@ -65,6 +65,7 @@ module Ast =
     type expr =
               | Constant of IAstItem<value>
               | Variable of IAstItem<identifier> * option<IAstItem<expr> * IAstItem<expr>> * option<IAstItem<expr>>
+              | Coalesce of IAstItem<expr> * IAstItem<expr> 
               | Negation of IAstItem<expr>
               | Arithmetic of IAstItem<expr> * IAstItem<arithmetic> * IAstItem<expr>
               | Inversion of IAstItem<expr>

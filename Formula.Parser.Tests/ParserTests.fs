@@ -622,3 +622,23 @@ type ParserTests () =
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestParseCoalesceConstant () =
+        let result = parseFormulaString "1 ?? 42"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Coalesce({ Item = Constant({ Item = Number(1.0) }) }, { Item = Constant({ Item = Number(42.0) }) }) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestParseCoalesceNothingConstant () =
+        let result = parseFormulaString "null ?? 42"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Coalesce({ Item = Constant({ Item = Nothing }) }, { Item = Constant({ Item = Number(42.0) }) }) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
