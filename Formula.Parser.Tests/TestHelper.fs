@@ -27,6 +27,8 @@ let rec stripPositions (ast: IAstItem<expr>): IAstItem<expr> =
             match idx with
             | Some i -> { Item = Variable({ Item = v.Item }, None, Some(stripPositions i)) } :> IAstItem<expr>
             | None -> { Item = Variable({ Item = v.Item }, None, None) } :> IAstItem<expr>
+    | Coalesce (a, b) as item ->
+        { Item = Coalesce(stripPositions a, stripPositions b) } :> IAstItem<expr>
     | Negation n as item ->
         { Item = Negation(stripPositions n) } :> IAstItem<expr>
     | Arithmetic (a, op, b) ->

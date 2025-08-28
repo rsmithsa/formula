@@ -293,6 +293,41 @@ type ParserTests () =
             Assert.AreEqual("Ranges are not supported outside of function parameters and must be used directly as parameters without other operations.", (error.Messages.Head :?> ErrorMessage.Message).String)
             
     [<TestMethod>]
+    member this.TestParseVariableRangeFail6 () =
+        let result = parseFormulaString "COUNT(MyVar|1:2| + 42)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let actual = TestHelper.stripPositions ast
+            Assert.Fail($"{actual}")
+        | Failure (msg, error, userState) ->
+            let expected = """Error in Ln: 1 Col: 18
+COUNT(MyVar|1:2| + 42)
+                 ^
+Expecting: ')' or ','
+"""
+            Assert.AreEqual(expected, msg)
+    
+    [<TestMethod>]
+    member this.TestParseVariableRangeFail7 () =
+        let result = parseFormulaString "COUNT(42 + MyVar|1:2|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let actual = TestHelper.stripPositions ast
+            Assert.Fail($"{actual}")
+        | Failure (msg, error, userState) ->
+            Assert.AreEqual("Ranges are not supported outside of function parameters and must be used directly as parameters without other operations.", (error.Messages.Head :?> ErrorMessage.Message).String)
+    
+    [<TestMethod>]
+    member this.TestParseVariableRangeFail8 () =
+        let result = parseFormulaString "COUNT(-MyVar|1:2|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let actual = TestHelper.stripPositions ast
+            Assert.Fail($"{actual}")
+        | Failure (msg, error, userState) ->
+            Assert.AreEqual("Ranges are not supported outside of function parameters and must be used directly as parameters without other operations.", (error.Messages.Head :?> ErrorMessage.Message).String)
+    
+    [<TestMethod>]
     member this.TestParseVariableRangeFunction1 () =
         let result = parseFormulaString "COUNT(MyVar|1:2|)"
         match result with
@@ -490,7 +525,12 @@ type ParserTests () =
             let actual = TestHelper.stripPositions ast
             Assert.Fail($"{actual}")
         | Failure (msg, error, userState) ->
-            Assert.AreEqual("Ranges are not supported outside of function parameters and must be used directly as parameters without other operations.", (error.Messages.Head :?> ErrorMessage.Message).String)
+            let expected = """Error in Ln: 1 Col: 26
+COUNT(1 + 42, MyVar|1:2| + MyVar|1:2|)
+                         ^
+Expecting: ')' or ','
+"""
+            Assert.AreEqual(expected, msg)
             
 
     [<TestMethod>]
@@ -619,6 +659,26 @@ type ParserTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let expected = { Item = Branch({ Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = LessThanEqual }, { Item = Constant({ Item = Number(1.0) }) }) }, { Item = Constant({ Item = Number(42.0) }) }, { Item = Constant({ Item = Number(1.0) }) }) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestParseCoalesceConstant () =
+        let result = parseFormulaString "1 ?? 42"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Coalesce({ Item = Constant({ Item = Number(1.0) }) }, { Item = Constant({ Item = Number(42.0) }) }) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestParseCoalesceNothingConstant () =
+        let result = parseFormulaString "null ?? 42"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Coalesce({ Item = Constant({ Item = Nothing }) }, { Item = Constant({ Item = Number(42.0) }) }) }
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

@@ -27,6 +27,15 @@ module ConstantFolder =
                         let res = foldConstantsFunctions i functions
                         { Item = Variable(v, None, Some(res)) } :> IAstItem<expr>
                     | None -> { Item = Variable(v, r, idx) } :> IAstItem<expr>
+        | Coalesce (a, b) ->
+            let resA = foldConstantsFunctions a functions
+            let resB = foldConstantsFunctions b functions
+            match resA.Item with
+            | Constant c ->
+                match c.Item with
+                | Nothing -> resB
+                | _ -> resA
+            | _ -> { Item = Coalesce(resA, resB) } :> IAstItem<expr>
         | Negation n ->
             let res = foldConstantsFunctions n functions
             match res.Item with

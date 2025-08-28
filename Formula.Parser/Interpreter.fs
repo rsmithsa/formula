@@ -33,6 +33,15 @@ module Interpreter =
                             [| vars.LookupIndex (id, value.[0]) |]
                         | None -> [| vars.Lookup id |]
 
+            let interpretCoalesce a b = 
+                let valueA = interpretFormulaInternal a vars functions
+                match valueA with
+                | [| single |] ->
+                    match single with
+                    | Nothing -> interpretFormulaInternal b vars functions
+                    | _ -> valueA
+                | _ -> invalidOp $"Unable to coalesce multiple values."
+
             let interpretNegation negation = 
                 match Helpers.castToDouble(interpretFormulaInternal negation vars functions) with
                 | Some value -> [| Number(-value) |]
@@ -107,6 +116,8 @@ module Interpreter =
                 interpretConstant c.Item
             | Variable (v, r, i) ->
                 interpretVariable v.Item r i
+            | Coalesce (a, b) ->
+                interpretCoalesce a b
             | Negation n ->
                 interpretNegation n
             | Arithmetic (a, op, b) ->

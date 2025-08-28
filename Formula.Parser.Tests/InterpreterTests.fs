@@ -6,6 +6,7 @@
 
 namespace Formula.Parser.Tests
 
+open System
 open FParsec.CharParsers
 open Microsoft.VisualStudio.TestTools.UnitTesting
 
@@ -499,12 +500,32 @@ type InterpreterTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
-    member this.TestCompileBug55IndexVariable () =
+    member this.TestInterpretBug55IndexVariable () =
         let result = parseFormulaString "MyVar|13|"
         match result with
         | Success (ast, userState, endPos) ->
             let value = interpretFormula ast varMap DefaultFunctionProvider.Instance
             let expected = Some(Helpers.castToDouble(varMap.LookupIndex "MyVar" (Number(13.0))).Value)
             Assert.AreEqual(expected, value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestInterpretCoalesceConstant () =
+        let result = parseFormulaString "1 ?? 42"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            Assert.AreEqual(Some(1.0), value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestInterpretCoalesceNothingConstant () =
+        let result = parseFormulaString "null ?? 42"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = interpretFormula ast MapVariableProvider.Empty DefaultFunctionProvider.Instance
+            Assert.AreEqual(Some(42.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

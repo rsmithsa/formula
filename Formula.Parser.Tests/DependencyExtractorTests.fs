@@ -398,3 +398,25 @@ type DependencyExtractorTests () =
             Assert.AreEqual(expected, deps);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestCoalesceDependencies () =
+        let result = parseFormulaString "[My Var] ?? A"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let deps = getSimpleDependencyList (extractDependencies ast [])
+            let expected = [ Identifier("A"); Identifier("My Var") ]
+            Assert.AreEqual(expected, deps);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+            
+    [<TestMethod>]
+    member this.TestCoalesceDependenciesWithRanges () =
+        let result = parseFormulaString "[My Var] ?? A"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let deps = getSimpleRangeDependencyList (extractDependenciesWithRanges ast [])
+            let expected: list<identifier * option<expr * expr>> = [ (Identifier("A"), None); (Identifier("My Var"), None) ]
+            Assert.AreEqual(expected, deps);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)

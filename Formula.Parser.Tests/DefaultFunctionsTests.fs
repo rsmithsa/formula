@@ -26,6 +26,12 @@ type DefaultFunctionsTests () =
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "AVG")
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "FIRST")
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "LAST")
+        Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "MIN")
+        Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "MAX")
+        Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "COALESCE")
+        Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "IFNULL")
+        
+        Assert.AreEqual(13, DefaultFunctionProvider.Instance.KnownFunctions |> Seq.length)
 
     [<TestMethod>]
     member this.TestDefaultFunctionSqrt () =
@@ -223,4 +229,39 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(0.0)]))
         Assert.AreEqual(Number(123.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(123.0)]))
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
+        Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
+        
+    [<TestMethod>]
+    member this.TestDefaultFunctionCoalesce () =
+        let functionImplementation = DefaultFunctionProvider.Instance.Lookup "COALESCE"
+        Assert.AreEqual("COALESCE", functionImplementation.Name)
+
+        Assert.AreEqual((false, "COALESCE expects at least two arguments."), functionImplementation.Validate (null))
+        Assert.AreEqual((false, "COALESCE expects at least two arguments."), functionImplementation.Validate (List.toArray []))
+        Assert.AreEqual((false, "COALESCE expects at least two arguments."), functionImplementation.Validate (List.toArray [Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0); Number(1.0)]))
+
+        Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
+        Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Nothing; Number(2.0)]))
+        Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
+        Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0); Nothing; Nothing]))
+        Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Nothing; Number(2.0); Number(3.0)]))
+        Assert.AreEqual(Number(3.0), functionImplementation.Execute (List.toArray [Nothing; Nothing; Number(3.0)]))
+        Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing; Nothing]))
+        
+    [<TestMethod>]
+    member this.TestDefaultFunctionIfNull () =
+        let functionImplementation = DefaultFunctionProvider.Instance.Lookup "IFNULL"
+        Assert.AreEqual("IFNULL", functionImplementation.Name)
+
+        Assert.AreEqual((false, "IFNULL expects two arguments."), functionImplementation.Validate (null))
+        Assert.AreEqual((false, "IFNULL expects two arguments."), functionImplementation.Validate (List.toArray []))
+        Assert.AreEqual((false, "IFNULL expects two arguments."), functionImplementation.Validate (List.toArray [Number(1.0)]))
+        Assert.AreEqual((false, "IFNULL expects two arguments."), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0); Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+
+        Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
+        Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0); Nothing]))
+        Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Nothing; Number(2.0)]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))

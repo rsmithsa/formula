@@ -17,6 +17,9 @@ module Compiler =
 
     let compileFormula<'a> (ast: IAstItem<expr>) =
 
+        let invalidOperationEx (message: Expression) =
+            Expression.Throw(Expression.New(typeof<InvalidOperationException>.GetConstructor([| typeof<string> |]), message), typeof<value[]>)
+
         let variableProvider =
             Expression.Parameter(typeof<IVariableProvider>, "variableProvider")
 
@@ -57,6 +60,13 @@ module Compiler =
         let isSomeExpression (value: Expression) =
             Expression.NotEqual(value, Expression.Constant(null, typeof<Object>)) :> Expression
             
+        let isSomeValueExpression (value: Expression) =
+            let asValue = Expression.TypeAs(value, typeof<value>);
+            Expression.AndAlso(
+                Expression.NotEqual(asValue, Expression.Constant(null, typeof<Object>)),
+                Expression.NotEqual(asValue, Expression.Call(typeof<value>.GetMethod("Empty", BindingFlags.Static ||| BindingFlags.NonPublic)))
+            ):> Expression
+        
         let getSomeValueExpression (value: Expression) =
             Expression.Property(value, typeof<Option<double>>.GetProperty("Value")) :> Expression
             
@@ -94,6 +104,16 @@ module Compiler =
                         | None ->
                             Expression.NewArrayInit(typeof<value>, Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("Lookup", [| typeof<String> |]), Expression.Constant(id))) :> Expression
 
+            let compileCoalesce a b = 
+                let valueA = compileInternal a
+                Expression.Condition(
+                    Expression.Equal(Expression.ArrayLength(valueA), Expression.Constant(1)),
+                    Expression.Condition(
+                        isSomeValueExpression (Expression.ArrayIndex(valueA, Expression.Constant(0))),
+                        valueA,
+                        (compileInternal b)),
+                    invalidOperationEx(Expression.Constant("Unable to coalesce multiple values."))) :> Expression
+            
             let compileNegation negation = 
                 let value = castToDoubleExpression(compileInternal negation)
                 Expression.Condition(isSomeExpression value, valueArrayExpression (Expression.Negate(getSomeValueExpression value)), nothingExpression) :> Expression
@@ -177,6 +197,8 @@ module Compiler =
                 compileConstant c.Item
             | Variable (v, r, i) ->
                 compileVariable v.Item r i
+            | Coalesce (a, b) ->
+                compileCoalesce a b
             | Negation n ->
                 compileNegation n
             | Arithmetic (a, op, b) ->

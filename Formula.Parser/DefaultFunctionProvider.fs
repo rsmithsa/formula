@@ -305,6 +305,65 @@ type MaxFunction() =
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
+type CoalesceFunction() =
+    member this.Name =
+        "COALESCE"
+        
+    member this.IsNonDeterministic = false
+
+    member this.Execute (input: value[]) =
+        let value = input |> Array.tryFind (fun x -> if x = Nothing then false else true)
+        match value with
+        | Some value -> value
+        | _ -> Nothing
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "COALESCE expects at least two arguments."
+            false
+        | false ->
+            match input.Length with
+            | 0 | 1 ->
+                message <- "COALESCE expects at least two arguments."
+                false
+            | _ -> true
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
+type IfNullFunction() =
+    member this.Name =
+        "IFNULL"
+        
+    member this.IsNonDeterministic = false
+
+    member this.Execute (input: value[]) =
+        match input.[0] with
+        | Nothing -> input.[1]
+        | _ -> input.[0]
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "IFNULL expects two arguments."
+            false
+        | false ->
+            match input.Length with
+            | 2 -> true
+            | _ ->
+                message <- "IFNULL expects two arguments."
+                false
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
 type DefaultFunctionProvider() =
 
     static let instance = DefaultFunctionProvider()
@@ -321,7 +380,9 @@ type DefaultFunctionProvider() =
             Add("FIRST", FirstFunction()).
             Add("LAST", LastFunction()).
             Add("MIN", MinFunction()).
-            Add("MAX", MaxFunction())
+            Add("MAX", MaxFunction()).
+            Add("COALESCE", CoalesceFunction()).
+            Add("IFNULL", IfNullFunction())
 
     static member Instance = instance
 
