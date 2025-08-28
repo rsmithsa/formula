@@ -30,8 +30,10 @@ type DefaultFunctionsTests () =
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "MAX")
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "COALESCE")
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "IFNULL")
+        Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "DIV")
+        Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "SUMPRODUCT")
         
-        Assert.AreEqual(13, DefaultFunctionProvider.Instance.KnownFunctions |> Seq.length)
+        Assert.AreEqual(15, DefaultFunctionProvider.Instance.KnownFunctions |> Seq.length)
 
     [<TestMethod>]
     member this.TestDefaultFunctionSqrt () =
@@ -265,3 +267,54 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0); Nothing]))
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Nothing; Number(2.0)]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
+
+    [<TestMethod>]
+    member this.TestDefaultFunctionDiv () =
+        let functionImplementation = DefaultFunctionProvider.Instance.Lookup "DIV"
+        Assert.AreEqual("DIV", functionImplementation.Name)
+
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(2.0); Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(2.0); Number(1.0); Nothing]))
+        Assert.AreEqual((false, "DIV expects two or three arguments."), functionImplementation.Validate (List.toArray [Number(2.0)]))
+        Assert.AreEqual((false, "DIV expects two or three arguments."), functionImplementation.Validate (List.toArray [Number(2.0); Number(1.0); Number(1.0); Number(1.0)]))
+        Assert.AreEqual((false, "DIV expects two or three arguments."), functionImplementation.Validate (null))
+
+        Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0)]))
+        Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(2.0)]))
+        Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(0.0)]))
+        Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
+        Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Nothing; Number(2.0)]))
+
+        Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0); Boolean(true)]))
+        Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(2.0); Boolean(true)]))
+        Assert.AreEqual(Boolean(true), functionImplementation.Execute (List.toArray [Number(2.0); Number(0.0); Boolean(true)]))
+        Assert.AreEqual(Boolean(true), functionImplementation.Execute (List.toArray [Number(2.0); Nothing; Boolean(true)]))
+        Assert.AreEqual(Boolean(true), functionImplementation.Execute (List.toArray [Nothing; Number(2.0); Boolean(true)]))
+        
+        Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0); Nothing]))
+        Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(2.0); Nothing]))
+        Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Number(2.0); Number(0.0); Nothing]))
+        Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Number(2.0); Nothing; Nothing]))
+        Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Number(2.0); Nothing]))
+        
+        let rand = Random(42)
+        let a = rand.NextDouble();
+        let b = rand.NextDouble();
+        Assert.AreEqual(Number(a / b), functionImplementation.Execute (List.toArray [Number(a); Number(b)]))
+        
+    [<TestMethod>]
+    member this.TestDefaultFunctionSuProduct () =
+        let functionImplementation = DefaultFunctionProvider.Instance.Lookup "SUMPRODUCT"
+        Assert.AreEqual("SUMPRODUCT", functionImplementation.Name)
+
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(2.0); Number(1.0); Number(2.0); Number(1.0)]))
+        Assert.AreEqual((false, "SUMPRODUCT expects an even non-zero number of arguments."), functionImplementation.Validate (List.toArray []))
+        Assert.AreEqual((false, "SUMPRODUCT expects an even non-zero number of arguments."), functionImplementation.Validate (List.toArray [Number(2.0)]))
+        Assert.AreEqual((false, "SUMPRODUCT expects an even non-zero number of arguments."), functionImplementation.Validate (List.toArray [Number(2.0); Number(1.0); Number(1.0)]))
+        Assert.AreEqual((false, "SUMPRODUCT expects an even non-zero number of arguments."), functionImplementation.Validate (null))
+
+        Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(1.0)]))
+        Assert.AreEqual(Number(5.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0); Number(2.0); Number(1.0)]))
+        Assert.AreEqual(Number(3.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(3.0); Nothing; Number(1.0)]))
+        Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing; Nothing; Nothing]))
