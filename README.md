@@ -14,6 +14,7 @@ A simple extensible formula language for .NET
   - Nothing: null
 - Branching: IF Expr THEN Expr ELSE Expr
 - Logical: = <> > < >= <= ! && ||
+- Coalesce: ??
 
 ### Examples
 - (1 + 2) * 3
@@ -29,6 +30,10 @@ A simple extensible formula language for .NET
   - Formula.Parser.Interpreter.interpretFormula
 
 ## Version History
+
+### 1.2.0
+- Nothing (null) coalescing operator '??'
+- IFNULL and COALESCE functions
 
 ### 1.1.1
 - IL emit based compiler index lookup bug fix
