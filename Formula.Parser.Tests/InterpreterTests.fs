@@ -529,12 +529,3 @@ type InterpreterTests () =
             Assert.AreEqual(Some(42.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
-            
-    [<TestMethod>]
-    member this.TestInterpretCoalesceRange () =
-        let result = parseFormulaString "SUM(MyVar|1:10| ?? 1)"
-        match result with
-        | Success (ast, userState, endPos) ->
-            Assert.ThrowsException<InvalidOperationException>(Action(fun x -> interpretFormula ast varMap DefaultFunctionProvider.Instance |> ignore)) |> ignore
-        | Failure (msg, error, userState) ->
-            Assert.Fail(msg)

@@ -147,20 +147,41 @@ module Parser =
 
     let pexpr, pexprImpl = createParserForwardedToRef()
 
-    let argList = sepBy ((enterFunctionParameter) >>? pexpr .>>? (exitFunctionParameter)) (str_ws ",")
-    
-    let argListInParens =
-        (str_ws "(") >>. argList .>> (str_ws ")")
-
     let rangePart: Parser<IPositionedAstItem<expr> option, UserState> =
         (opt ((str_ws ":")
-              >>? ((isInRootOfFunctionParameter <|> failFatally "Ranges are not supported outside of function parameters and must be used directly as parameters without other operations.")
+              //>>? ((isInRootOfFunctionParameter <|> failFatally "Ranges are not supported outside of function parameters and must be used directly as parameters without other operations.")
+                   >>. pexpr ))//)
+    
+    let errorRangePart: Parser<IPositionedAstItem<expr> option, UserState> =
+        (opt ((str_ws ":")
+              >>? ((failFatally "Ranges are not supported outside of function parameters and must be used directly as parameters without other operations.")
                    >>. pexpr )))
+    
+    let indexNoRange =
+        (str_ws "|") >>? (enterRange) >>? pexpr .>>.? errorRangePart .>>? (exitRange) .>>? (str_ws "|")
     
     let indexOrRange =
         (str_ws "|") >>? (enterRange) >>? pexpr .>>.? rangePart .>>? (exitRange) .>>? (str_ws "|")
     
-    let identWithOptArgs = 
+    let funcParam = 
+        pipe2 pidentifier indexOrRange
+            (fun id indexOrRange ->
+                match indexOrRange with
+                | (index, optRange) ->
+                    match optRange with
+                    | Some range -> Variable(id :> IAstItem<identifier>, Some(((index) :> IAstItem<expr>, (range) :> IAstItem<expr>)), None)
+                    | None -> Variable(id :> IAstItem<identifier>, None, Some(((index) :> IAstItem<expr>)))
+                )
+
+    let argList = sepBy ((enterFunctionParameter) >>? ( attempt (wrapPos (funcParam)) <|> pexpr) .>>? (exitFunctionParameter)) (str_ws ",")
+    
+    let argListInParens =
+        (str_ws "(") >>. argList .>> (str_ws ")")
+
+    let index =
+        (str_ws "|") >>? pexpr .>>? (str_ws "|")
+    
+    (*let funcParam = 
         pipe3 pidentifier (opt (argListInParens)) (opt (indexOrRange))
             (fun id optArgs optIndexOrRange ->
                 match optArgs with
@@ -172,6 +193,23 @@ module Parser =
                     | Some (index, optRange) ->
                         match optRange with
                         | Some range -> Variable(id :> IAstItem<identifier>, Some(((index) :> IAstItem<expr>, (range) :> IAstItem<expr>)), None)
+                        | None -> Variable(id :> IAstItem<identifier>, None, Some(((index) :> IAstItem<expr>)))
+                    | None ->
+                        Variable(id :> IAstItem<identifier>, None, None)
+                )*)
+    
+    let identWithOptArgs = 
+        pipe3 pidentifier (opt (argListInParens)) (opt (indexNoRange))
+            (fun id optArgs optIndexNoRange ->
+                match optArgs with
+                | Some args ->
+                    Function(id :> IAstItem<identifier>, args
+                    |> List.map (fun x -> x :> IAstItem<expr>))
+                | None ->
+                    match optIndexNoRange with
+                    | Some (index, noRange) ->
+                        match noRange with
+                        | Some range -> invalidOp "Range parsing error - this should never be hit"
                         | None -> Variable(id :> IAstItem<identifier>, None, Some(((index) :> IAstItem<expr>)))
                     | None ->
                         Variable(id :> IAstItem<identifier>, None, None)

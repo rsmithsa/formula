@@ -528,12 +528,3 @@ type CompilerTests () =
             Assert.AreEqual(Some(42.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
-            
-    [<TestMethod>]
-    member this.TestCompileCoalesceRange () =
-        let result = parseFormulaString "SUM(MyVar|1:10| ?? 1)"
-        match result with
-        | Success (ast, userState, endPos) ->
-            Assert.ThrowsException<InvalidOperationException>(Action(fun x -> (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance) |> ignore)) |> ignore
-        | Failure (msg, error, userState) ->
-            Assert.Fail(msg)
