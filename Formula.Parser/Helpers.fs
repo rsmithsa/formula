@@ -40,6 +40,11 @@ type Helpers =
         | 1 -> Helpers.castToDouble value.[0]
         | _ -> invalidOp $"Unable to cast multiple values to a single value."
 
+    static member castToNullableDouble (value: value) =
+        match Helpers.castToDouble value with
+        | Some x -> Nullable(x)
+        |_ -> Nullable()
+    
     static member castToNullableDouble (value: value[]) =
         match Helpers.castToDouble value with
         | Some x -> Nullable(x)
