@@ -31,6 +31,9 @@ A simple extensible formula language for .NET
 
 ## Version History
 
+### 1.3.0
+-  DIV and SUMPRODUCT functions
+
 ### 1.2.0
 - Nothing (null) coalescing operator '??'
 - IFNULL and COALESCE functions

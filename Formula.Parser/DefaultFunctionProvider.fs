@@ -364,6 +364,75 @@ type IfNullFunction() =
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
+type DivFunction() =
+    member this.Name =
+        "DIV"
+        
+    member this.IsNonDeterministic = false
+
+    member this.Execute (input: value[]) =
+        let defaultValue =
+            match input.Length with
+            | 3 -> input.[2]
+            | _ -> Number(0.0)
+ 
+        match (Helpers.castToDouble input.[0], Helpers.castToDouble input.[1]) with
+        | (Some a, Some b) -> if b <> 0 then Number(a / b) else defaultValue
+        | _ -> defaultValue
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "DIV expects two or three arguments."
+            false
+        | false ->
+            match input.Length with
+            | 2 | 3 -> true
+            | _ ->
+                message <- "DIV expects two or three arguments."
+                false
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
+type SumProductFunction() =
+    member this.Name =
+        "SUMPRODUCT"
+        
+    member this.IsNonDeterministic = false
+
+    member this.Execute (input: value[]) =
+        let l, r = input |> Array.splitAt (input.Length / 2)
+        let sp =
+            fun (x: value) (y: value) ->
+                match (Helpers.castToDouble x, Helpers.castToDouble y) with
+                | (Some a, Some b) -> Some(a * b)
+                | _ -> None
+        
+        let values = Array.map2 sp l r |> Array.choose id
+        if values.Length = 0 then Nothing else Number(Array.sum values)
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "SUMPRODUCT expects an even non-zero number of arguments."
+            false
+        | false ->
+            match input.Length with
+            | x when x > 0 && x % 2 = 0 -> true
+            | _ ->
+                message <- "SUMPRODUCT expects an even non-zero number of arguments."
+                false
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
 type DefaultFunctionProvider() =
 
     static let instance = DefaultFunctionProvider()
@@ -382,7 +451,9 @@ type DefaultFunctionProvider() =
             Add("MIN", MinFunction()).
             Add("MAX", MaxFunction()).
             Add("COALESCE", CoalesceFunction()).
-            Add("IFNULL", IfNullFunction())
+            Add("IFNULL", IfNullFunction()).
+            Add("DIV", DivFunction()).
+            Add("SUMPRODUCT", SumProductFunction())
 
     static member Instance = instance
 
