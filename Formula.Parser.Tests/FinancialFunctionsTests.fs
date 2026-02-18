@@ -98,6 +98,12 @@ type FinancialFunctionsTests () =
         Assert.AreEqual(0.05, (functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Number(105000.0)])).NumberValue, 0.000001)
         Assert.AreEqual(0.095635, (functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Number(105000.0); Number(5000.0)])).NumberValue, 0.000001)
 
+        // Nothing values in cash flows are skipped: IRR(0.1, -100000, Nothing, 105000) same as IRR(0.1, -100000, 105000)
+        Assert.AreEqual(0.05, (functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Nothing; Number(105000.0)])).NumberValue, 0.000001)
+
+        // Insufficient cash flows after filtering returns Nothing
+        Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Nothing]))
+
     [<TestMethod>]
     member this.TestFinancialFunctionMirr () =
         let functionImplementation = FinancialFunctionProvider.Instance.Lookup "MIRR"
@@ -114,6 +120,12 @@ type FinancialFunctionsTests () =
         Assert.AreEqual(0.05, (functionImplementation.Execute (List.toArray [Number(0.1); Number(0.1); Number(-100000.0); Number(105000.0)])).NumberValue, 0.000001)
         Assert.AreEqual(0.097724, (functionImplementation.Execute (List.toArray [Number(0.1); Number(0.1); Number(-100000.0); Number(105000.0); Number(5000.0)])).NumberValue, 0.000001)
         Assert.AreEqual(0.179085, (functionImplementation.Execute (List.toArray [Number(0.1); Number(0.12); Number(-1000.0); Number(-4000.0); Number(5000.0); Number(2000.0)])).NumberValue, 0.000001)
+
+        // Nothing values in cash flows are skipped: MIRR(0.1, 0.1, -100000, Nothing, 105000) same as MIRR(0.1, 0.1, -100000, 105000)
+        Assert.AreEqual(0.05, (functionImplementation.Execute (List.toArray [Number(0.1); Number(0.1); Number(-100000.0); Nothing; Number(105000.0)])).NumberValue, 0.000001)
+
+        // Insufficient cash flows after filtering returns Nothing
+        Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Number(0.1); Number(0.1); Number(-100000.0); Nothing]))
 
     [<TestMethod>]
     member this.TestFinancialFunctionNper () =
@@ -148,6 +160,12 @@ type FinancialFunctionsTests () =
         Assert.AreEqual(-90909.090909, (functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0)])).NumberValue, 0.000001)
         Assert.AreEqual(-82644.628099, (functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Number(10000.0)])).NumberValue, 0.000001)
         Assert.AreEqual(-75131.480090, (functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Number(10000.0); Number(10000.0)])).NumberValue, 0.000001)
+
+        // Nothing values in cash flows are skipped: NPV(0.1, -100000, Nothing, 10000) same as NPV(0.1, -100000, 10000)
+        Assert.AreEqual(-82644.628099, (functionImplementation.Execute (List.toArray [Number(0.1); Number(-100000.0); Nothing; Number(10000.0)])).NumberValue, 0.000001)
+
+        // All cash flows Nothing returns Nothing
+        Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Number(0.1); Nothing]))
 
     [<TestMethod>]
     member this.TestFinancialFunctionPmt () =
