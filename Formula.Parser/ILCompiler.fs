@@ -189,13 +189,13 @@ module ILCompiler =
                 il.Emit(OpCodes.Stloc, aImm)
                 il.Emit(OpCodes.Ldloc, aImm)
                 
-                il.Emit(OpCodes.Brtrue_S, notNull)
+                il.Emit(OpCodes.Brtrue, notNull)
                 
                 il.Emit(OpCodes.Ldloc, curArray)
                 il.Emit(OpCodes.Ldc_I4_0)
                 il.EmitCall(OpCodes.Call, empty, null)
-                il.Emit(OpCodes.Br_S, store)
-                                
+                il.Emit(OpCodes.Br, store)
+                
                 il.MarkLabel(notNull)
                 il.Emit(OpCodes.Ldloc, aImm)
                 il.EmitCall(OpCodes.Call, valueProperty.GetMethod, null)
@@ -230,15 +230,15 @@ module ILCompiler =
                 il.Emit(OpCodes.Stloc, curArray)
                 
                 il.Emit(OpCodes.Ldloc, aImm)
-                il.Emit(OpCodes.Brfalse_S, nullCase)
+                il.Emit(OpCodes.Brfalse, nullCase)
                 il.Emit(OpCodes.Ldloc, bImm)
-                il.Emit(OpCodes.Brtrue_S, notNull)
+                il.Emit(OpCodes.Brtrue, notNull)
                 
                 il.MarkLabel(nullCase)
                 il.Emit(OpCodes.Ldloc, curArray)
                 il.Emit(OpCodes.Ldc_I4_0)
                 il.EmitCall(OpCodes.Call, empty, null)
-                il.Emit(OpCodes.Br_S, store)
+                il.Emit(OpCodes.Br, store)
                 
                 il.MarkLabel(notNull)
                 il.Emit(OpCodes.Ldloc, aImm)
@@ -363,7 +363,7 @@ module ILCompiler =
                     il.Emit(OpCodes.Stloc, argArray)
                     il.Emit(OpCodes.Ldloc, argLen)
                     il.Emit(OpCodes.Ldc_I4_0)
-                    il.Emit(OpCodes.Beq_S, execute)
+                    il.Emit(OpCodes.Beq, execute)
                     
                     il.Emit(OpCodes.Ldc_I4_0)
                     il.Emit(OpCodes.Stloc, i)
@@ -379,7 +379,7 @@ module ILCompiler =
                     il.Emit(OpCodes.Ldc_I4_0)
                     il.Emit(OpCodes.Stloc, j)
                     
-                    il.Emit(OpCodes.Br_S, innerCondition)
+                    il.Emit(OpCodes.Br, innerCondition)
                     il.MarkLabel(innerLoop)
                     
                     il.Emit(OpCodes.Ldloc, argArray)
@@ -404,7 +404,7 @@ module ILCompiler =
                     il.Emit(OpCodes.Ldloc, arrTmp)
                     il.Emit(OpCodes.Ldlen)
                     il.Emit(OpCodes.Conv_I4)
-                    il.Emit(OpCodes.Blt_S, innerLoop)
+                    il.Emit(OpCodes.Blt, innerLoop)
                     
                     il.Emit(OpCodes.Ldloc, a)
                     il.Emit(OpCodes.Ldc_I4_1)
@@ -414,7 +414,7 @@ module ILCompiler =
                     il.MarkLabel(condition)
                     il.Emit(OpCodes.Ldloc, i)
                     il.Emit(OpCodes.Ldloc, argLen)
-                    il.Emit(OpCodes.Blt_S, loop)
+                    il.Emit(OpCodes.Blt, loop)
                     
                     il.MarkLabel(execute)
                     il.Emit(OpCodes.Ldarg_1)
