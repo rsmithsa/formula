@@ -109,12 +109,15 @@ type NpvFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
+        let rate = (Helpers.asDoubles(input.[0..0])).[0]
+        let flows = input.[1..] |> Array.choose Helpers.castToDouble
 
-        values.[1..]
-        |> Array.fold (fun (rate, npv) flow -> (rate * (1.0 + values.[0]), npv + (flow / rate))) (1.0 + values.[0], 0.0)
-        |> snd
-        |> Number
+        if flows.Length = 0 then Nothing
+        else
+            flows
+            |> Array.fold (fun (r, npv) flow -> (r * (1.0 + rate), npv + (flow / r))) (1.0 + rate, 0.0)
+            |> snd
+            |> Number
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -142,18 +145,20 @@ type IrrFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
+        let guess = (Helpers.asDoubles(input.[0..0])).[0]
+        let flows = input.[1..] |> Array.choose Helpers.castToDouble |> Array.map Number
 
-        let delta = 0.01
-        let guess = values.[0]
+        if flows.Length < 2 then Nothing
+        else
+            let delta = 0.01
 
-        let workingInput = Array.copy input
-        let fx irr =
-            workingInput.[0] <- Number(irr)
-            (npvImplementation.Execute(workingInput)).NumberValue
-        
-        Newton.newtonsMethod fx guess delta
-        |> Number
+            let workingInput = Array.append [| Number(0.0) |] flows
+            let fx irr =
+                workingInput.[0] <- Number(irr)
+                (npvImplementation.Execute(workingInput)).NumberValue
+
+            Newton.newtonsMethod fx guess delta
+            |> Number
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -181,34 +186,36 @@ type MirrFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
+        let params' = Helpers.asDoubles(input.[0..1])
+        let financeRate = params'.[0]
+        let reinvestmentRate = params'.[1]
+        let flows = input.[2..] |> Array.choose Helpers.castToDouble
 
-        let financeRate = values.[0]
-        let reinvestmentRate = values.[1]
+        if flows.Length < 2 then Nothing
+        else
+            let negativeFlows =
+                flows
+                |> Seq.where(fun x -> x < 0.0)
+                |> Seq.toArray
 
-        let negativeFlows =
-            values.[2..]
-            |> Seq.where(fun x -> x < 0.0)
-            |> Seq.toArray
+            let positiveFlows =
+                flows
+                |> Seq.where(fun x -> x >= 0.0)
+                |> Seq.rev
+                |> Seq.toArray
 
-        let positiveFlows =
-            values.[2..]
-            |> Seq.where(fun x -> x >= 0.0)
-            |> Seq.rev
-            |> Seq.toArray
+            let negative =
+                negativeFlows
+                |> Array.fold (fun (rate, npv) flow -> (rate * (1.0 + financeRate), npv + (flow / rate))) (1.0, 0.0)
+                |> snd
 
-        let negative = 
-            negativeFlows
-            |> Array.fold (fun (rate, npv) flow -> (rate * (1.0 + financeRate), npv + (flow / rate))) (1.0, 0.0)
-            |> snd
+            let positive =
+                positiveFlows
+                |> Array.fold (fun (rate, npv) flow -> (rate * (1.0 + reinvestmentRate), npv + (flow * rate))) (1.0, 0.0)
+                |> snd
 
-        let positive = 
-            positiveFlows
-            |> Array.fold (fun (rate, npv) flow -> (rate * (1.0 + reinvestmentRate), npv + (flow * rate))) (1.0, 0.0)
-            |> snd
-
-        let root = (1.0 / ((float)input.Length - 3.0))
-        Number(((positive / -negative) ** root) - 1.0)
+            let root = (1.0 / ((float)flows.Length - 1.0))
+            Number(((positive / -negative) ** root) - 1.0)
         
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
 
@@ -19,6 +19,7 @@
     <Compile Include="ILCompilerTests.fs" />
     <Compile Include="DefaultFunctionsTests.fs" />
     <Compile Include="FinancialFunctionsTests.fs" />
+    <Compile Include="ForecastFunctionsTests.fs" />
   </ItemGroup>
 
   <ItemGroup>

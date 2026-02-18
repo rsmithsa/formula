@@ -40,7 +40,7 @@ module Ast =
     with
                static member inline op_Implicit(x: float) = Number(x)
                static member inline op_Implicit(x: bool) = Boolean(x)
-               static member inline op_Implicit(x: string) = if isNull x then Nothing else Text(x)
+               static member inline op_Implicit(x: string) = if String.IsNullOrEmpty x then Nothing else Text(x)
                static member inline op_Implicit(x: Nullable<float>) = if x.HasValue then Number(x.GetValueOrDefault()) else Nothing 
                static member inline op_Implicit(x: Nullable<bool>) = if x.HasValue then Boolean(x.GetValueOrDefault()) else Nothing 
 
