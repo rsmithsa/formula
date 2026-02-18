@@ -213,6 +213,7 @@ module ILCompiler =
             let compileArithmetic a op b =
                 let store = il.DefineLabel()
                 let notNull = il.DefineLabel()
+                let nullCase = il.DefineLabel()                
                 
                 compileInternal (b)
                 il.Emit(OpCodes.Stloc, curArray)
@@ -227,12 +228,13 @@ module ILCompiler =
                 il.Emit(OpCodes.Stloc, aImm)
                 il.Emit(OpCodes.Stloc, bImm)
                 il.Emit(OpCodes.Stloc, curArray)
-                il.Emit(OpCodes.Ldloc, aImm)
-                il.Emit(OpCodes.Ldloc, bImm)
                 
-                il.Emit(OpCodes.And)
+                il.Emit(OpCodes.Ldloc, aImm)
+                il.Emit(OpCodes.Brfalse_S, nullCase)
+                il.Emit(OpCodes.Ldloc, bImm)
                 il.Emit(OpCodes.Brtrue_S, notNull)
                 
+                il.MarkLabel(nullCase)
                 il.Emit(OpCodes.Ldloc, curArray)
                 il.Emit(OpCodes.Ldc_I4_0)
                 il.EmitCall(OpCodes.Call, empty, null)
