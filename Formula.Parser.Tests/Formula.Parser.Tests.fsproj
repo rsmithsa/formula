@@ -19,6 +19,7 @@
     <Compile Include="ILCompilerTests.fs" />
     <Compile Include="DefaultFunctionsTests.fs" />
     <Compile Include="FinancialFunctionsTests.fs" />
+    <Compile Include="ForecastFunctionsTests.fs" />
   </ItemGroup>
 
   <ItemGroup>
