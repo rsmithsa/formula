@@ -31,8 +31,17 @@ A simple extensible formula language for .NET
 
 ## Version History
 
+### 1.4.0
+- Forecast/smoothing functions - ForecastFunctionProvider
+   - SES / FORECAST
+   - DES / HOLT
+   - HWA / HOLTWINTERS
+   - HWM / HOLTWINTERSM
+- FinancialFunctionProvider null handling improvements
+- ILCompiler quality improvements
+
 ### 1.3.0
--  DIV and SUMPRODUCT functions
+- DIV and SUMPRODUCT functions
 
 ### 1.2.0
 - Nothing (null) coalescing operator '??'
