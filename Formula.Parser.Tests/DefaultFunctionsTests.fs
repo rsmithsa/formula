@@ -17,6 +17,7 @@ type DefaultFunctionsTests () =
 
     [<TestMethod>]
     member this.TestDefaultFunctionList () =
+        Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "ABS")
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "SQRT")
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "PI")
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "POW")
@@ -33,7 +34,22 @@ type DefaultFunctionsTests () =
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "DIV")
         Assert.IsTrue(DefaultFunctionProvider.Instance.IsDefined "SUMPRODUCT")
         
-        Assert.AreEqual(15, DefaultFunctionProvider.Instance.KnownFunctions |> Seq.length)
+        Assert.AreEqual(16, DefaultFunctionProvider.Instance.KnownFunctions |> Seq.length)
+
+    [<TestMethod>]
+    member this.TestDefaultFunctionAbs () =
+        let functionImplementation = DefaultFunctionProvider.Instance.Lookup "ABS"
+        Assert.AreEqual("ABS", functionImplementation.Name)
+
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(4.0)]))
+        Assert.AreEqual((false, "ABS expects one argument."), functionImplementation.Validate (List.toArray []))
+        Assert.AreEqual((false, "ABS expects one argument."), functionImplementation.Validate (List.toArray [Number(4.0); Number(4.0)]))
+        Assert.AreEqual((false, "ABS expects one argument."), functionImplementation.Validate (null))
+
+        Assert.AreEqual(Number(5.0), functionImplementation.Execute (List.toArray [Number(5.0)]))
+        Assert.AreEqual(Number(5.0), functionImplementation.Execute (List.toArray [Number(-5.0)]))
+        Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Number(0.0)]))
+        Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing]))
 
     [<TestMethod>]
     member this.TestDefaultFunctionSqrt () =

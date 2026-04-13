@@ -31,6 +31,9 @@ A simple extensible formula language for .NET
 
 ## Version History
 
+### 1.4.1
+- ABS function
+
 ### 1.4.0
 - Forecast/smoothing functions - ForecastFunctionProvider
    - SES / FORECAST
