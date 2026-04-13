@@ -11,6 +11,35 @@ open System.Runtime.InteropServices
 open Formula.Parser
 open Formula.Parser.Ast
 
+type AbsFunction() =
+    member this.Name =
+        "ABS"
+
+    member this.IsNonDeterministic = false
+
+    member this.Execute (input: value[]) =
+        match Helpers.castToDouble input.[0] with
+        | Some n -> Number(System.Math.Abs n)
+        | _ -> Nothing
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "ABS expects one argument."
+            false
+        | false ->
+            match input.Length with
+            | 1 -> true
+            | _ ->
+                message <- "ABS expects one argument."
+                false
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
 type SqrtFunction() =
     member this.Name =
         "SQRT"
@@ -439,7 +468,8 @@ type DefaultFunctionProvider() =
 
     let knownFunctions: Map<string, IFunctionImplementation> =
         Map.empty.
-            Add("SQRT", SqrtFunction() :> IFunctionImplementation).
+            Add("ABS", AbsFunction() :> IFunctionImplementation).
+            Add("SQRT", SqrtFunction()).
             Add("PI", PiFunction()).
             Add("POW", PowFunction()).
             Add("MOD", ModFunction()).
