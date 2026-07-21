@@ -39,24 +39,162 @@
     { "id": "var-range-sum", "formula": "SUM(MyVar|1:5|)", "variables": { "MyVar": 2 } },
     { "id": "var-index", "formula": "MyVar|1|", "variables": { "MyVar": 7 } },
 
-    { "id": "fn-pi", "formula": "PI()", "fold": true },
-    { "id": "fn-sqrt", "formula": "SQRT(16)", "fold": true },
-    { "id": "fn-sqrt-negative", "formula": "SQRT(-1)", "fold": true },
-    { "id": "fn-pow", "formula": "POW(2, 10)", "fold": true },
-    { "id": "fn-abs", "formula": "ABS(-7)", "fold": true },
-    { "id": "fn-sum", "formula": "SUM(1, 2, 3, 4)", "fold": true },
-    { "id": "fn-avg", "formula": "AVG(2, 4, 6)", "fold": true },
-    { "id": "fn-min", "formula": "MIN(3, 1, 2)", "fold": true },
-    { "id": "fn-max", "formula": "MAX(3, 1, 2)", "fold": true },
-    { "id": "fn-count", "formula": "COUNT(1, 2, 3)", "fold": true },
-    { "id": "fn-mod", "formula": "MOD(10, 3)", "fold": true },
-    { "id": "fn-nested", "formula": "SUM(SUM(1, 2), 3)", "fold": true },
-    { "id": "fn-coalesce", "formula": "COALESCE(null, 5)", "fold": true },
+    { "id": "fn-ifnull", "formula": "IFNULL(null, 9)", "fold": true },
 
-    { "id": "fin-ddb", "formula": "DDB(20000, 8000, 5, 1)", "functionProvider": "financial", "fold": true },
-    { "id": "fin-fv", "formula": "FV(0.1, 10, 1000)", "functionProvider": "financial", "fold": true, "tolerance": 0.000001 },
+    { "id": "abs-const", "formula": "ABS(-7.5)", "fold": true },
+    { "id": "abs-var", "formula": "ABS(A)", "variables": { "A": -3.5 }, "fold": true },
 
-    { "id": "fore-ses", "formula": "SES(0.5, 10, 12, 14)", "functionProvider": "forecast", "fold": true },
-    { "id": "fore-holt", "formula": "HOLT(0.5, 0.3, 10, 12, 14)", "functionProvider": "all", "fold": true }
+    { "id": "sqrt-const", "formula": "SQRT(2)", "fold": true },
+    { "id": "sqrt-var", "formula": "SQRT(A)", "variables": { "A": 144 }, "fold": true },
+    { "id": "sqrt-negative", "formula": "SQRT(-1)", "fold": true },
+
+    { "id": "pi-const", "formula": "PI()", "fold": true },
+
+    { "id": "pow-const", "formula": "POW(3, 4)", "fold": true },
+    { "id": "pow-var", "formula": "POW(A, B)", "variables": { "A": 2, "B": 8 }, "fold": true },
+    { "id": "pow-combo", "formula": "POW(A, 2)", "variables": { "A": 5 }, "fold": true },
+
+    { "id": "mod-const", "formula": "MOD(17, 5)", "fold": true },
+    { "id": "mod-var", "formula": "MOD(A, B)", "variables": { "A": 20, "B": 6 }, "fold": true },
+    { "id": "mod-combo", "formula": "MOD(A, 4)", "variables": { "A": 10 }, "fold": true },
+
+    { "id": "div-const", "formula": "DIV(10, 4)", "fold": true },
+    { "id": "div-zero-default", "formula": "DIV(10, 0)", "fold": true },
+    { "id": "div-zero-fallback", "formula": "DIV(10, 0, -1)", "fold": true },
+    { "id": "div-var", "formula": "DIV(A, B)", "variables": { "A": 9, "B": 3 }, "fold": true },
+    { "id": "div-combo", "formula": "DIV(A, 0, B)", "variables": { "A": 5, "B": 99 }, "fold": true },
+
+    { "id": "coalesce-const", "formula": "COALESCE(null, 5, 6)", "fold": true },
+    { "id": "coalesce-var", "formula": "COALESCE(A, B)", "variables": { "A": 3, "B": 4 }, "fold": true },
+    { "id": "coalesce-combo", "formula": "COALESCE(null, A, 7)", "variables": { "A": 42 }, "fold": true },
+    { "id": "coalesce-range", "formula": "COALESCE(V|1:3|)", "variables": { "V": 8 }, "fold": true },
+
+    { "id": "count-const", "formula": "COUNT(1, 2, 3, 4)", "fold": true },
+    { "id": "count-var", "formula": "COUNT(A, B, C)", "variables": { "A": 1, "B": 2, "C": 3 }, "fold": true },
+    { "id": "count-range", "formula": "COUNT(V|1:5|)", "variables": { "V": 1 }, "fold": true },
+    { "id": "count-combo", "formula": "COUNT(A, V|1:3|)", "variables": { "A": 9, "V": 2 }, "fold": true },
+
+    { "id": "sum-const", "formula": "SUM(1, 2, 3, 4)", "fold": true },
+    { "id": "sum-var", "formula": "SUM(A, B, C)", "variables": { "A": 1, "B": 2, "C": 3 }, "fold": true },
+    { "id": "sum-range", "formula": "SUM(V|1:4|)", "variables": { "V": 5 }, "fold": true },
+    { "id": "sum-combo", "formula": "SUM(A, V|1:3|, 10)", "variables": { "A": 1, "V": 2 }, "fold": true },
+
+    { "id": "avg-const", "formula": "AVG(2, 4, 6)", "fold": true },
+    { "id": "avg-var", "formula": "AVG(A, B, C)", "variables": { "A": 10, "B": 20, "C": 30 }, "fold": true },
+    { "id": "avg-range", "formula": "AVG(V|1:4|)", "variables": { "V": 7 }, "fold": true },
+    { "id": "avg-combo", "formula": "AVG(A, V|1:3|)", "variables": { "A": 0, "V": 3 }, "fold": true },
+
+    { "id": "min-const", "formula": "MIN(3, 1, 2)", "fold": true },
+    { "id": "min-var", "formula": "MIN(A, B, C)", "variables": { "A": 5, "B": 2, "C": 8 }, "fold": true },
+    { "id": "min-range", "formula": "MIN(V|1:3|)", "variables": { "V": 4 }, "fold": true },
+    { "id": "min-combo", "formula": "MIN(A, V|1:3|)", "variables": { "A": 1, "V": 9 }, "fold": true },
+
+    { "id": "max-const", "formula": "MAX(3, 1, 2)", "fold": true },
+    { "id": "max-var", "formula": "MAX(A, B, C)", "variables": { "A": 5, "B": 2, "C": 8 }, "fold": true },
+    { "id": "max-range", "formula": "MAX(V|1:3|)", "variables": { "V": 4 }, "fold": true },
+    { "id": "max-combo", "formula": "MAX(A, V|1:3|)", "variables": { "A": 99, "V": 9 }, "fold": true },
+
+    { "id": "first-const", "formula": "FIRST(3, 1, 2)", "fold": true },
+    { "id": "first-var", "formula": "FIRST(A, B)", "variables": { "A": 9, "B": 1 }, "fold": true },
+    { "id": "first-range", "formula": "FIRST(V|1:3|)", "variables": { "V": 6 }, "fold": true },
+    { "id": "first-combo", "formula": "FIRST(A, V|1:2|)", "variables": { "A": 42, "V": 1 }, "fold": true },
+
+    { "id": "last-const", "formula": "LAST(3, 1, 2)", "fold": true },
+    { "id": "last-var", "formula": "LAST(A, B, C)", "variables": { "A": 1, "B": 2, "C": 3 }, "fold": true },
+    { "id": "last-range", "formula": "LAST(V|1:3|)", "variables": { "V": 6 }, "fold": true },
+    { "id": "last-combo", "formula": "LAST(A, V|1:2|)", "variables": { "A": 1, "V": 8 }, "fold": true },
+
+    { "id": "sumproduct-const", "formula": "SUMPRODUCT(2, 3, 4, 5)", "fold": true },
+    { "id": "sumproduct-var", "formula": "SUMPRODUCT(A, B, C, D)", "variables": { "A": 1, "B": 2, "C": 3, "D": 4 }, "fold": true },
+    { "id": "sumproduct-range", "formula": "SUMPRODUCT(V|1:2|, W|1:2|)", "variables": { "V": 3, "W": 5 }, "fold": true },
+    { "id": "sumproduct-combo", "formula": "SUMPRODUCT(A, V|1:2|, 2, 3, 4)", "variables": { "A": 1, "V": 2 }, "fold": true },
+
+    { "id": "nested-fn", "formula": "SUM(SUM(1, 2), 3)", "fold": true },
+
+    { "id": "ddb-const", "formula": "DDB(20000, 8000, 5, 1)", "functionProvider": "financial", "fold": true },
+    { "id": "ddb-var", "formula": "DDB(Cost, Salvage, Life, Per)", "functionProvider": "financial", "variables": { "Cost": 20000, "Salvage": 8000, "Life": 5, "Per": 1 }, "fold": true },
+    { "id": "ddb-combo", "formula": "DDB(Cost, Salvage, 5, Per, 2)", "functionProvider": "financial", "variables": { "Cost": 10000, "Salvage": 2000, "Per": 2 }, "fold": true },
+
+    { "id": "fv-const", "formula": "FV(0.1, 10, 1000)", "functionProvider": "financial", "fold": true, "tolerance": 0.000001 },
+    { "id": "fv-var", "formula": "FV(Rate, Nper, Pmt)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Nper": 10, "Pmt": 1000 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "fv-combo", "formula": "FV(Rate, 10, 1000, 1000, 1)", "functionProvider": "financial", "variables": { "Rate": 0.1 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "pv-const", "formula": "PV(0.1, 10, 1000)", "functionProvider": "financial", "fold": true, "tolerance": 0.000001 },
+    { "id": "pv-var", "formula": "PV(Rate, Nper, Pmt)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Nper": 10, "Pmt": 1000 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "pv-combo", "formula": "PV(Rate, 10, 1000, 1000, 1)", "functionProvider": "financial", "variables": { "Rate": 0.1 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "pmt-const", "formula": "PMT(0.1, 10, 1000)", "functionProvider": "financial", "fold": true, "tolerance": 0.000001 },
+    { "id": "pmt-var", "formula": "PMT(Rate, Nper, Pv)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Nper": 10, "Pv": 1000 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "pmt-combo", "formula": "PMT(Rate, 10, 1000, 0, 1)", "functionProvider": "financial", "variables": { "Rate": 0.1 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "nper-const", "formula": "NPER(0.1, 10, 1000)", "functionProvider": "financial", "fold": true, "tolerance": 0.000001 },
+    { "id": "nper-var", "formula": "NPER(Rate, Pmt, Pv)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Pmt": 10, "Pv": 1000 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "nper-combo", "formula": "NPER(Rate, 10, 1000, -100)", "functionProvider": "financial", "variables": { "Rate": 0.1 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "ipmt-const", "formula": "IPMT(0.1, 3, 10, 1000)", "functionProvider": "financial", "fold": true, "tolerance": 0.000001 },
+    { "id": "ipmt-var", "formula": "IPMT(Rate, Per, Nper, Pv)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Per": 3, "Nper": 10, "Pv": 1000 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "ipmt-combo", "formula": "IPMT(Rate, 3, 10, 1000, 0, 1)", "functionProvider": "financial", "variables": { "Rate": 0.1 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "ppmt-const", "formula": "PPMT(0.1, 3, 10, 1000)", "functionProvider": "financial", "fold": true, "tolerance": 0.000001 },
+    { "id": "ppmt-var", "formula": "PPMT(Rate, Per, Nper, Pv)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Per": 3, "Nper": 10, "Pv": 1000 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "ppmt-combo", "formula": "PPMT(Rate, 3, 10, 1000, 1000)", "functionProvider": "financial", "variables": { "Rate": 0.1 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "rate-const", "formula": "RATE(10, -100, 800)", "functionProvider": "financial", "fold": true, "tolerance": 0.000001 },
+    { "id": "rate-var", "formula": "RATE(Nper, Pmt, Pv)", "functionProvider": "financial", "variables": { "Nper": 10, "Pmt": -100, "Pv": 800 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "rate-combo", "formula": "RATE(10, -100, 800, 100, 0, 0.2)", "functionProvider": "financial", "fold": true, "tolerance": 0.000001 },
+
+    { "id": "sln-const", "formula": "SLN(10000, 1000, 5)", "functionProvider": "financial", "fold": true },
+    { "id": "sln-var", "formula": "SLN(Cost, Salvage, Life)", "functionProvider": "financial", "variables": { "Cost": 10000, "Salvage": 1000, "Life": 5 }, "fold": true },
+    { "id": "sln-combo", "formula": "SLN(Cost, 1000, Life)", "functionProvider": "financial", "variables": { "Cost": 10000, "Life": 5 }, "fold": true },
+
+    { "id": "syd-const", "formula": "SYD(10000, 1000, 5, 1)", "functionProvider": "financial", "fold": true },
+    { "id": "syd-var", "formula": "SYD(Cost, Salvage, Life, Per)", "functionProvider": "financial", "variables": { "Cost": 10000, "Salvage": 1000, "Life": 5, "Per": 1 }, "fold": true },
+    { "id": "syd-combo", "formula": "SYD(Cost, 1000, 5, Per)", "functionProvider": "financial", "variables": { "Cost": 10000, "Per": 1 }, "fold": true },
+
+    { "id": "npv-const", "formula": "NPV(0.1, -100000, 10000, 10000)", "functionProvider": "financial", "fold": true, "tolerance": 0.000001 },
+    { "id": "npv-var", "formula": "NPV(Rate, A, B)", "functionProvider": "financial", "variables": { "Rate": 0.1, "A": -100000, "B": 105000 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "npv-range", "formula": "NPV(Rate, Flow|1:4|)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Flow": 10000 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "npv-combo", "formula": "NPV(Rate, -100000, Flow|1:3|)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Flow": 10000 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "irr-const", "formula": "IRR(0.1, -100000, 105000)", "functionProvider": "financial", "fold": true, "tolerance": 0.000001 },
+    { "id": "irr-var", "formula": "IRR(Guess, A, B)", "functionProvider": "financial", "variables": { "Guess": 0.1, "A": -100000, "B": 105000 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "irr-combo", "formula": "IRR(Guess, A, Flow|1:3|)", "functionProvider": "financial", "variables": { "Guess": 0.1, "A": -100000, "Flow": 40000 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "mirr-const", "formula": "MIRR(0.1, 0.1, -100000, 105000)", "functionProvider": "financial", "fold": true, "tolerance": 0.000001 },
+    { "id": "mirr-var", "formula": "MIRR(FinRate, ReinvRate, A, B)", "functionProvider": "financial", "variables": { "FinRate": 0.1, "ReinvRate": 0.1, "A": -100000, "B": 105000 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "mirr-combo", "formula": "MIRR(FinRate, ReinvRate, A, Flow|1:3|)", "functionProvider": "financial", "variables": { "FinRate": 0.1, "ReinvRate": 0.12, "A": -1000, "Flow": 5000 }, "fold": true, "tolerance": 0.000001 },
+
+
+    { "id": "ses-const", "formula": "SES(0.5, 10, 12, 14)", "functionProvider": "forecast", "fold": true, "tolerance": 0.000001 },
+    { "id": "ses-var", "formula": "SES(Alpha, D1, D2, D3)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "D1": 10, "D2": 12, "D3": 14 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "ses-range", "formula": "SES(Alpha, D|1:4|)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "D": 10 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "ses-combo", "formula": "SES(Alpha, 10, D|1:3|)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "D": 14 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "forecast-const", "formula": "FORECAST(0.5, 10, 12, 14)", "functionProvider": "forecast", "fold": true, "tolerance": 0.000001 },
+    { "id": "forecast-range", "formula": "FORECAST(Alpha, D|1:4|)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "D": 10 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "holt-const", "formula": "HOLT(0.5, 0.3, 10, 12, 14)", "functionProvider": "forecast", "fold": true, "tolerance": 0.000001 },
+    { "id": "holt-var", "formula": "HOLT(Alpha, Beta, D1, D2, D3)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "Beta": 0.3, "D1": 10, "D2": 12, "D3": 14 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "holt-range", "formula": "HOLT(0.5, 0.3, D|1:4|)", "functionProvider": "forecast", "variables": { "D": 10 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "holt-combo", "formula": "HOLT(Alpha, 0.3, 10, D|1:2|)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "D": 14 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "des-const", "formula": "DES(0.5, 0.3, 10, 12, 14)", "functionProvider": "forecast", "fold": true, "tolerance": 0.000001 },
+    { "id": "des-range", "formula": "DES(Alpha, Beta, D|1:4|)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "Beta": 0.3, "D": 10 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "hwa-const", "formula": "HWA(0.5, 0.3, 0.4, 3, 10, 20, 30, 12, 22, 32)", "functionProvider": "forecast", "fold": true, "tolerance": 0.000001 },
+    { "id": "hwa-var", "formula": "HWA(Alpha, Beta, Gamma, Period, D1, D2, D3, D4, D5, D6)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "Beta": 0.3, "Gamma": 0.4, "Period": 3, "D1": 10, "D2": 20, "D3": 30, "D4": 12, "D5": 22, "D6": 32 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "hwa-range", "formula": "HWA(0.5, 0.3, 0.4, 2, D|1:4|)", "functionProvider": "forecast", "variables": { "D": 10 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "hwa-combo", "formula": "HWA(Alpha, 0.3, 0.4, 2, 10, D|1:3|)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "D": 20 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "holtwinters-const", "formula": "HOLTWINTERS(0.5, 0.3, 0.4, 3, 10, 20, 30, 12, 22, 32)", "functionProvider": "all", "fold": true, "tolerance": 0.000001 },
+    { "id": "holtwinters-range", "formula": "HOLTWINTERS(0.5, 0.3, 0.4, 2, D|1:4|)", "functionProvider": "all", "variables": { "D": 10 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "hwm-const", "formula": "HWM(0.5, 0.3, 0.4, 3, 10, 20, 30, 12, 22, 32)", "functionProvider": "forecast", "fold": true, "tolerance": 0.000001 },
+    { "id": "hwm-var", "formula": "HWM(Alpha, Beta, Gamma, Period, D1, D2, D3, D4, D5, D6)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "Beta": 0.3, "Gamma": 0.4, "Period": 3, "D1": 10, "D2": 20, "D3": 30, "D4": 12, "D5": 22, "D6": 32 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "hwm-range", "formula": "HWM(0.5, 0.3, 0.4, 2, D|1:4|)", "functionProvider": "forecast", "variables": { "D": 10 }, "fold": true, "tolerance": 0.000001 },
+    { "id": "hwm-combo", "formula": "HWM(Alpha, 0.3, 0.4, 2, 10, D|1:3|)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "D": 20 }, "fold": true, "tolerance": 0.000001 },
+
+    { "id": "holtwintersm-const", "formula": "HOLTWINTERSM(0.5, 0.3, 0.4, 3, 10, 20, 30, 12, 22, 32)", "functionProvider": "all", "fold": true, "tolerance": 0.000001 },
+    { "id": "holtwintersm-range", "formula": "HOLTWINTERSM(0.5, 0.3, 0.4, 2, D|1:4|)", "functionProvider": "all", "variables": { "D": 10 }, "fold": true, "tolerance": 0.000001 }
   ]
 }
