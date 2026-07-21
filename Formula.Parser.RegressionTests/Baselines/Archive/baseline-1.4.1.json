@@ -1,0 +1,1853 @@
+{
+  "libraryVersion": "1.4.1",
+  "generatedUtc": "2026-07-21T10:25:37.8953670Z",
+  "engines": [
+    "Interpreter",
+    "Compiler",
+    "ILCompiler"
+  ],
+  "entries": [
+    {
+      "caseId": "arith-add",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 43
+    },
+    {
+      "caseId": "arith-add",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 43
+    },
+    {
+      "caseId": "arith-add",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 43
+    },
+    {
+      "caseId": "arith-add",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 43
+    },
+    {
+      "caseId": "arith-add",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 43
+    },
+    {
+      "caseId": "arith-add",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 43
+    },
+    {
+      "caseId": "arith-div",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 2.5
+    },
+    {
+      "caseId": "arith-div",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 2.5
+    },
+    {
+      "caseId": "arith-div",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 2.5
+    },
+    {
+      "caseId": "arith-div",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 2.5
+    },
+    {
+      "caseId": "arith-div",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 2.5
+    },
+    {
+      "caseId": "arith-div",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 2.5
+    },
+    {
+      "caseId": "arith-div-zero",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": "Infinity"
+    },
+    {
+      "caseId": "arith-div-zero",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": "Infinity"
+    },
+    {
+      "caseId": "arith-div-zero",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": "Infinity"
+    },
+    {
+      "caseId": "arith-div-zero",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": "Infinity"
+    },
+    {
+      "caseId": "arith-div-zero",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": "Infinity"
+    },
+    {
+      "caseId": "arith-div-zero",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": "Infinity"
+    },
+    {
+      "caseId": "arith-mod",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "arith-mod",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "arith-mod",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "arith-mod",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "arith-mod",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "arith-mod",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "arith-mul",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "arith-mul",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "arith-mul",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "arith-mul",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "arith-mul",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "arith-mul",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "arith-pow",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1024
+    },
+    {
+      "caseId": "arith-pow",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1024
+    },
+    {
+      "caseId": "arith-pow",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1024
+    },
+    {
+      "caseId": "arith-pow",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1024
+    },
+    {
+      "caseId": "arith-pow",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 1024
+    },
+    {
+      "caseId": "arith-pow",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 1024
+    },
+    {
+      "caseId": "arith-sub",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "arith-sub",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "arith-sub",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "arith-sub",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "arith-sub",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "arith-sub",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "branch-expr",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "branch-expr",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "branch-expr",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "branch-nested-fold",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "branch-nested-fold",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "branch-nested-fold",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "branch-nested-fold",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "branch-nested-fold",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "branch-nested-fold",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "branch-true",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "branch-true",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "branch-true",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "branch-true",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "branch-true",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "branch-true",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "cmp-ge",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-ge",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-ge",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-ge",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-ge",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-ge",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-lt",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-lt",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-lt",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-lt",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-lt",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-lt",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-ne",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-ne",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-ne",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-ne",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-ne",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "cmp-ne",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "coalesce-nothing",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "nothing"
+    },
+    {
+      "caseId": "coalesce-nothing",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "nothing"
+    },
+    {
+      "caseId": "coalesce-nothing",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "nothing"
+    },
+    {
+      "caseId": "coalesce-nothing",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "nothing"
+    },
+    {
+      "caseId": "coalesce-nothing",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "nothing"
+    },
+    {
+      "caseId": "coalesce-nothing",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "nothing"
+    },
+    {
+      "caseId": "coalesce-null",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "coalesce-null",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "coalesce-null",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "coalesce-null",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "coalesce-null",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "coalesce-null",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "coalesce-value",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "coalesce-value",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "coalesce-value",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "coalesce-value",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "coalesce-value",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "coalesce-value",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "const-bool-false",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "const-bool-false",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "const-bool-false",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "const-bool-false",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "const-bool-false",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "const-bool-false",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "const-bool-true",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "const-bool-true",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "const-bool-true",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "const-bool-true",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "const-bool-true",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "const-bool-true",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "const-number",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "const-number",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "const-number",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "const-number",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "const-number",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "const-number",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "const-text-number",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 123
+    },
+    {
+      "caseId": "const-text-number",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 123
+    },
+    {
+      "caseId": "const-text-number",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 123
+    },
+    {
+      "caseId": "const-text-number",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 123
+    },
+    {
+      "caseId": "const-text-number",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 123
+    },
+    {
+      "caseId": "const-text-number",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 123
+    },
+    {
+      "caseId": "fin-ddb",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 8000
+    },
+    {
+      "caseId": "fin-ddb",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 8000
+    },
+    {
+      "caseId": "fin-ddb",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 8000
+    },
+    {
+      "caseId": "fin-ddb",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 8000
+    },
+    {
+      "caseId": "fin-ddb",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 8000
+    },
+    {
+      "caseId": "fin-ddb",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 8000
+    },
+    {
+      "caseId": "fin-fv",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": -15937.424601000022
+    },
+    {
+      "caseId": "fin-fv",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": -15937.424601000022
+    },
+    {
+      "caseId": "fin-fv",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": -15937.424601000022
+    },
+    {
+      "caseId": "fin-fv",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": -15937.424601000022
+    },
+    {
+      "caseId": "fin-fv",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": -15937.424601000022
+    },
+    {
+      "caseId": "fin-fv",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": -15937.424601000022
+    },
+    {
+      "caseId": "fn-abs",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "fn-abs",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "fn-abs",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "fn-abs",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "fn-abs",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "fn-abs",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "fn-avg",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "fn-avg",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "fn-avg",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "fn-avg",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "fn-avg",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "fn-avg",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "fn-coalesce",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 5
+    },
+    {
+      "caseId": "fn-coalesce",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 5
+    },
+    {
+      "caseId": "fn-coalesce",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 5
+    },
+    {
+      "caseId": "fn-coalesce",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 5
+    },
+    {
+      "caseId": "fn-coalesce",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 5
+    },
+    {
+      "caseId": "fn-coalesce",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 5
+    },
+    {
+      "caseId": "fn-count",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "fn-count",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "fn-count",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "fn-count",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "fn-count",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "fn-count",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "fn-max",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "fn-max",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "fn-max",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "fn-max",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "fn-max",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "fn-max",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "fn-min",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "fn-min",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "fn-min",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "fn-min",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "fn-min",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "fn-min",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "fn-mod",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "fn-mod",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "fn-mod",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "fn-mod",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "fn-mod",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "fn-mod",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "fn-nested",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "fn-nested",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "fn-nested",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "fn-nested",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "fn-nested",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "fn-nested",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "fn-pi",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 3.141592653589793
+    },
+    {
+      "caseId": "fn-pi",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 3.141592653589793
+    },
+    {
+      "caseId": "fn-pi",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 3.141592653589793
+    },
+    {
+      "caseId": "fn-pi",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 3.141592653589793
+    },
+    {
+      "caseId": "fn-pi",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 3.141592653589793
+    },
+    {
+      "caseId": "fn-pi",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 3.141592653589793
+    },
+    {
+      "caseId": "fn-pow",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1024
+    },
+    {
+      "caseId": "fn-pow",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1024
+    },
+    {
+      "caseId": "fn-pow",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1024
+    },
+    {
+      "caseId": "fn-pow",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1024
+    },
+    {
+      "caseId": "fn-pow",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 1024
+    },
+    {
+      "caseId": "fn-pow",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 1024
+    },
+    {
+      "caseId": "fn-sqrt",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "fn-sqrt",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "fn-sqrt",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "fn-sqrt",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "fn-sqrt",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "fn-sqrt",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "fn-sqrt-negative",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": "NaN"
+    },
+    {
+      "caseId": "fn-sqrt-negative",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": "NaN"
+    },
+    {
+      "caseId": "fn-sqrt-negative",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": "NaN"
+    },
+    {
+      "caseId": "fn-sqrt-negative",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": "NaN"
+    },
+    {
+      "caseId": "fn-sqrt-negative",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": "NaN"
+    },
+    {
+      "caseId": "fn-sqrt-negative",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": "NaN"
+    },
+    {
+      "caseId": "fn-sum",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "fn-sum",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "fn-sum",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "fn-sum",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "fn-sum",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "fn-sum",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "fore-holt",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 16
+    },
+    {
+      "caseId": "fore-holt",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 16
+    },
+    {
+      "caseId": "fore-holt",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 16
+    },
+    {
+      "caseId": "fore-holt",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 16
+    },
+    {
+      "caseId": "fore-holt",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 16
+    },
+    {
+      "caseId": "fore-holt",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 16
+    },
+    {
+      "caseId": "fore-ses",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 12.5
+    },
+    {
+      "caseId": "fore-ses",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 12.5
+    },
+    {
+      "caseId": "fore-ses",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 12.5
+    },
+    {
+      "caseId": "fore-ses",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 12.5
+    },
+    {
+      "caseId": "fore-ses",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 12.5
+    },
+    {
+      "caseId": "fore-ses",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 12.5
+    },
+    {
+      "caseId": "inversion",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "inversion",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "inversion",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "inversion",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "inversion",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "inversion",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "logical-and",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "logical-and",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "logical-and",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "logical-and",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "logical-and",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "logical-and",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "logical-or",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "logical-or",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "logical-or",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "logical-or",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "logical-or",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "logical-or",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": 1
+    },
+    {
+      "caseId": "negation",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": -42
+    },
+    {
+      "caseId": "negation",
+      "engine": "Compiler",
+      "folded": true,
+      "kind": "value",
+      "value": -42
+    },
+    {
+      "caseId": "negation",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": -42
+    },
+    {
+      "caseId": "negation",
+      "engine": "ILCompiler",
+      "folded": true,
+      "kind": "value",
+      "value": -42
+    },
+    {
+      "caseId": "negation",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": -42
+    },
+    {
+      "caseId": "negation",
+      "engine": "Interpreter",
+      "folded": true,
+      "kind": "value",
+      "value": -42
+    },
+    {
+      "caseId": "parens",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 86
+    },
+    {
+      "caseId": "parens",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 86
+    },
+    {
+      "caseId": "parens",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 86
+    },
+    {
+      "caseId": "power-precedence",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 344
+    },
+    {
+      "caseId": "power-precedence",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 344
+    },
+    {
+      "caseId": "power-precedence",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 344
+    },
+    {
+      "caseId": "precedence",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 85
+    },
+    {
+      "caseId": "precedence",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 85
+    },
+    {
+      "caseId": "precedence",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 85
+    },
+    {
+      "caseId": "var-index",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "var-index",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "var-index",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "var-range-sum",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "var-range-sum",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "var-range-sum",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "var-simple",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "var-simple",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "var-simple",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 42
+    },
+    {
+      "caseId": "var-spaces",
+      "engine": "Compiler",
+      "folded": false,
+      "kind": "value",
+      "value": 0.42
+    },
+    {
+      "caseId": "var-spaces",
+      "engine": "ILCompiler",
+      "folded": false,
+      "kind": "value",
+      "value": 0.42
+    },
+    {
+      "caseId": "var-spaces",
+      "engine": "Interpreter",
+      "folded": false,
+      "kind": "value",
+      "value": 0.42
+    }
+  ]
+}

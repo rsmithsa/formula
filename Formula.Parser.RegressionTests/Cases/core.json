@@ -1,0 +1,62 @@
+{
+  "cases": [
+    { "id": "const-number", "formula": "42", "fold": true },
+    { "id": "const-bool-true", "formula": "true", "fold": true },
+    { "id": "const-bool-false", "formula": "false", "fold": true },
+    { "id": "const-text-number", "formula": "\"123\"", "fold": true },
+    { "id": "negation", "formula": "-42", "fold": true },
+
+    { "id": "arith-add", "formula": "1 + 42", "fold": true },
+    { "id": "arith-sub", "formula": "100 - 58", "fold": true },
+    { "id": "arith-mul", "formula": "6 * 7", "fold": true },
+    { "id": "arith-div", "formula": "10 / 4", "fold": true },
+    { "id": "arith-div-zero", "formula": "1 / 0", "fold": true },
+    { "id": "arith-mod", "formula": "10 % 3", "fold": true },
+    { "id": "arith-pow", "formula": "2 ^ 10", "fold": true },
+
+    { "id": "precedence", "formula": "V1 + V42 * V2", "variables": { "V1": 1, "V42": 42, "V2": 2 } },
+    { "id": "parens", "formula": "(V1 + V42) * V2", "variables": { "V1": 1, "V42": 42, "V2": 2 } },
+    { "id": "power-precedence", "formula": "(V1 + V42) * V2 ^ V3", "variables": { "V1": 1, "V42": 42, "V2": 2, "V3": 3 } },
+
+    { "id": "cmp-lt", "formula": "1 < 2", "fold": true },
+    { "id": "cmp-ge", "formula": "5 >= 5", "fold": true },
+    { "id": "cmp-ne", "formula": "3 <> 4", "fold": true },
+
+    { "id": "logical-and", "formula": "true && false", "fold": true },
+    { "id": "logical-or", "formula": "true || false", "fold": true },
+    { "id": "inversion", "formula": "!true", "fold": true },
+
+    { "id": "coalesce-value", "formula": "1 ?? 42", "fold": true },
+    { "id": "coalesce-null", "formula": "null ?? 42", "fold": true },
+    { "id": "coalesce-nothing", "formula": "null ?? null", "fold": true },
+
+    { "id": "branch-true", "formula": "IF true THEN 42 ELSE 1", "fold": true },
+    { "id": "branch-expr", "formula": "IF (V42 <= 1) THEN (V42) ELSE (1)", "variables": { "V42": 42 } },
+    { "id": "branch-nested-fold", "formula": "IF 1 < 2 THEN SQRT(9) ELSE 0", "fold": true },
+
+    { "id": "var-simple", "formula": "MyVar", "variables": { "MyVar": 42 } },
+    { "id": "var-spaces", "formula": "[My Long Variable]", "variables": { "My Long Variable": 0.42 } },
+    { "id": "var-range-sum", "formula": "SUM(MyVar|1:5|)", "variables": { "MyVar": 2 } },
+    { "id": "var-index", "formula": "MyVar|1|", "variables": { "MyVar": 7 } },
+
+    { "id": "fn-pi", "formula": "PI()", "fold": true },
+    { "id": "fn-sqrt", "formula": "SQRT(16)", "fold": true },
+    { "id": "fn-sqrt-negative", "formula": "SQRT(-1)", "fold": true },
+    { "id": "fn-pow", "formula": "POW(2, 10)", "fold": true },
+    { "id": "fn-abs", "formula": "ABS(-7)", "fold": true },
+    { "id": "fn-sum", "formula": "SUM(1, 2, 3, 4)", "fold": true },
+    { "id": "fn-avg", "formula": "AVG(2, 4, 6)", "fold": true },
+    { "id": "fn-min", "formula": "MIN(3, 1, 2)", "fold": true },
+    { "id": "fn-max", "formula": "MAX(3, 1, 2)", "fold": true },
+    { "id": "fn-count", "formula": "COUNT(1, 2, 3)", "fold": true },
+    { "id": "fn-mod", "formula": "MOD(10, 3)", "fold": true },
+    { "id": "fn-nested", "formula": "SUM(SUM(1, 2), 3)", "fold": true },
+    { "id": "fn-coalesce", "formula": "COALESCE(null, 5)", "fold": true },
+
+    { "id": "fin-ddb", "formula": "DDB(20000, 8000, 5, 1)", "functionProvider": "financial", "fold": true },
+    { "id": "fin-fv", "formula": "FV(0.1, 10, 1000)", "functionProvider": "financial", "fold": true, "tolerance": 0.000001 },
+
+    { "id": "fore-ses", "formula": "SES(0.5, 10, 12, 14)", "functionProvider": "forecast", "fold": true },
+    { "id": "fore-holt", "formula": "HOLT(0.5, 0.3, 10, 12, 14)", "functionProvider": "all", "fold": true }
+  ]
+}
