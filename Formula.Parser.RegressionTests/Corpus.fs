@@ -94,10 +94,6 @@ let private parseCase (node: JsonNode) : Case =
       Variables = variables
       FunctionProvider = defaultArg (optString node "functionProvider") "default"
       VariableProvider = defaultArg (optString node "variableProvider") "map"
-      Fold =
-        match node.["fold"] with
-        | null -> false
-        | v -> v.GetValue<bool>()
       Tolerance =
         match node.["tolerance"] with
         | null -> None

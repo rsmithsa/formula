@@ -12,6 +12,7 @@ module Formula.Parser.RegressionTests.Snapshotter
 open System
 open System.Globalization
 open System.Reflection
+open System.Text.Encodings.Web
 open System.Text.Json
 open System.Text.Json.Nodes
 
@@ -38,7 +39,7 @@ let generate (cases: Case list) : Snapshot =
     let entries =
         cases
         |> List.collect Engines.evaluate
-        |> List.sortBy (fun e -> e.CaseId, e.Engine, e.Folded)
+        |> List.sortBy (fun e -> e.CaseId, e.Engine)
     { LibraryVersion = libraryVersion ()
       GeneratedUtc = DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture)
       Engines = Engines.engineNames
@@ -90,12 +91,13 @@ let serialize (snapshot: Snapshot) : string =
         let node = JsonObject()
         node.["caseId"] <- JsonValue.Create(entry.CaseId)
         node.["engine"] <- JsonValue.Create(entry.Engine)
-        node.["folded"] <- JsonValue.Create(entry.Folded)
         writeResult entry.Result node
         entries.Add(node)
     root.["entries"] <- entries
 
-    root.ToJsonString(JsonSerializerOptions(WriteIndented = true))
+    // Relaxed encoding so engine names like "Interpreter+ConstantFold" are written
+    // with a literal '+' rather than '+', keeping committed diffs readable.
+    root.ToJsonString(JsonSerializerOptions(WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping))
 
 /// Parse a snapshot from JSON.
 let deserialize (json: string) : Snapshot =
@@ -109,7 +111,6 @@ let deserialize (json: string) : Snapshot =
         |> Seq.map (fun n ->
             { CaseId = n.["caseId"].GetValue<string>()
               Engine = n.["engine"].GetValue<string>()
-              Folded = n.["folded"].GetValue<bool>()
               Result = readResult n })
         |> List.ofSeq
     { LibraryVersion = root.["libraryVersion"].GetValue<string>()

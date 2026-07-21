@@ -13,9 +13,9 @@ open System
 open Formula.Parser.RegressionTests.Model
 
 /// A stable key identifying one entry across snapshots.
-type private Key = string * string * bool
+type private Key = string * string
 
-let private keyOf (entry: SnapshotEntry) : Key = (entry.CaseId, entry.Engine, entry.Folded)
+let private keyOf (entry: SnapshotEntry) : Key = (entry.CaseId, entry.Engine)
 
 /// Are two computed doubles equal under the given options? NaN equals NaN and
 /// equal infinities match; `Epsilon = 0.0` means exact.
@@ -48,7 +48,7 @@ let compare (optionsFor: string -> ComparisonOptions) (baseline: Snapshot) (curr
                   (currMap |> Map.toSeq |> Seq.map fst |> Set.ofSeq)
 
     [ for key in keys do
-        let (caseId, engine, folded) = key
+        let (caseId, engine) = key
         let baseResult = Map.tryFind key baseMap
         let currResult = Map.tryFind key currMap
         let differs =
@@ -58,22 +58,26 @@ let compare (optionsFor: string -> ComparisonOptions) (baseline: Snapshot) (curr
         if differs then
             { CaseId = caseId
               Engine = engine
-              Folded = folded
               Baseline = baseResult
               Current = currResult } ]
-    |> List.sortBy (fun m -> m.CaseId, m.Engine, m.Folded)
+    |> List.sortBy (fun m -> m.CaseId, m.Engine)
+
+/// Render a single result for display.
+let formatResult (result: ResultValue) =
+    match result with
+    | NoValue -> "Nothing"
+    | Computed v -> string v
+    | Failed msg -> sprintf "Error(%s)" msg
 
 let private describe (result: ResultValue option) =
     match result with
     | None -> "<absent>"
-    | Some NoValue -> "Nothing"
-    | Some (Computed v) -> string v
-    | Some (Failed msg) -> sprintf "Error(%s)" msg
+    | Some r -> formatResult r
 
 /// Render mismatches as a human-readable, one-line-per-diff report.
 let report (mismatches: Mismatch list) : string =
     mismatches
     |> List.map (fun m ->
-        sprintf "%s | %s | folded=%b : %s -> %s"
-            m.CaseId m.Engine m.Folded (describe m.Baseline) (describe m.Current))
+        sprintf "%s | %s : %s -> %s"
+            m.CaseId m.Engine (describe m.Baseline) (describe m.Current))
     |> String.concat Environment.NewLine

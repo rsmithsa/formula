@@ -19,6 +19,8 @@ type ResultValue =
 
 /// A single formula case from the corpus. `Variables` are typed `value`s
 /// (number, boolean, text or nothing) so coercion behaviour can be exercised.
+/// Every case is evaluated across all engine permutations (see Engines); constant
+/// folding is one of those permutations rather than a per-case flag.
 type Case =
     { Id: string
       Formula: string
@@ -27,16 +29,15 @@ type Case =
       FunctionProvider: string
       /// Name of a variable provider config in the Corpus registry (e.g. "map").
       VariableProvider: string
-      /// When true, the case is also evaluated after a ConstantFolder pass.
-      Fold: bool
       /// Optional per-case absolute tolerance override for comparison.
       Tolerance: float option }
 
-/// One recorded result: a case evaluated through one engine, folded or not.
+/// One recorded result: a case evaluated through one engine permutation. The
+/// `Engine` name encodes both the backend and whether constant folding was applied
+/// (e.g. "Interpreter", "Interpreter+ConstantFold").
 type SnapshotEntry =
     { CaseId: string
       Engine: string
-      Folded: bool
       Result: ResultValue }
 
 /// A full, versioned baseline of every entry produced by a corpus.
@@ -64,6 +65,5 @@ module ComparisonOptions =
 type Mismatch =
     { CaseId: string
       Engine: string
-      Folded: bool
       Baseline: ResultValue option
       Current: ResultValue option }

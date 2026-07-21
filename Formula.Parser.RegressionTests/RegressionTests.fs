@@ -110,3 +110,44 @@ type RegressionTests() =
                 pathA snapA.LibraryVersion pathB snapB.LibraryVersion mismatches.Length
             if not (List.isEmpty mismatches) then
                 printfn "%s" (Comparer.report mismatches)
+
+    /// Every engine permutation (Interpreter/Compiler/ILCompiler, with and without
+    /// constant folding) must agree on every case in the corpus. Fails listing any
+    /// case whose permutations disagree, showing each permutation's result.
+    ///
+    /// NOTE: this test currently FAILS. It surfaces a real inconsistency — the
+    /// ConstantFolder evaluates comparisons via numeric coercion while the backends
+    /// compare the `value` union structurally, so type-mixed/text comparisons (e.g.
+    /// "1 = true", "\"abc\" = \"abc\"") differ between the folded and unfolded
+    /// permutations. The test should pass once the pipeline agrees.
+    [<TestMethod>]
+    member _.CrossEngineConsistency() =
+        let cases = Corpus.loadDirectory casesDir
+        Assert.IsTrue(cases.Length > 0, sprintf "Corpus at '%s' is empty." casesDir)
+
+        let options = optionsFor cases
+
+        let failures =
+            [ for case in cases do
+                let entries = Engines.evaluate case
+                match entries with
+                | [] -> ()
+                | reference :: rest ->
+                    let disagree =
+                        rest |> List.exists (fun e -> not (Comparer.resultsEqual (options case.Id) reference.Result e.Result))
+                    if disagree then
+                        yield (case, entries) ]
+
+        if not (List.isEmpty failures) then
+            let report =
+                failures
+                |> List.map (fun (case, entries) ->
+                    let perms =
+                        entries
+                        |> List.map (fun e -> sprintf "    %-24s = %s" e.Engine (Comparer.formatResult e.Result))
+                        |> String.concat Environment.NewLine
+                    sprintf "%s  [%s]%s%s" case.Id case.Formula Environment.NewLine perms)
+                |> String.concat Environment.NewLine
+            Assert.Fail(
+                sprintf "%d expression(s) produced different results across engine permutations:%s%s"
+                    failures.Length Environment.NewLine report)
