@@ -7,6 +7,8 @@
 /// Core data types for the regression snapshot harness.
 module Formula.Parser.RegressionTests.Model
 
+open Formula.Parser.Ast
+
 /// The outcome of evaluating a single case through a single engine.
 /// A formula either computes a finite/non-finite number, returns no value
 /// (the language's `Nothing`), or throws while parsing/evaluating.
@@ -15,12 +17,12 @@ type ResultValue =
     | NoValue
     | Failed of string
 
-/// A single formula case from the corpus. `Variables` map to `MapVariableProvider`
-/// entries (numbers only; the language's `Nothing` variable is not representable there).
+/// A single formula case from the corpus. `Variables` are typed `value`s
+/// (number, boolean, text or nothing) so coercion behaviour can be exercised.
 type Case =
     { Id: string
       Formula: string
-      Variables: Map<string, float>
+      Variables: Map<string, value>
       /// Name of a function provider config in the Corpus registry (e.g. "default").
       FunctionProvider: string
       /// Name of a variable provider config in the Corpus registry (e.g. "map").

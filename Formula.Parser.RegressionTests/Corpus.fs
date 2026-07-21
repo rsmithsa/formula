@@ -9,18 +9,43 @@
 module Formula.Parser.RegressionTests.Corpus
 
 open System.IO
+open System.Text.Json
 open System.Text.Json.Nodes
 
 open Formula.Parser
+open Formula.Parser.Ast
 open Formula.Parser.Integration
 
 open Formula.Parser.RegressionTests.Model
 
+/// A variable provider over typed `value`s. Mirrors `MapVariableProvider`'s range/index
+/// semantics (a range returns `upper - lower + 1` copies of the single stored value; an
+/// index returns that value) but supports boolean/text/nothing variables too.
+type TypedMapVariableProvider(map: Map<string, value>) =
+
+    member _.IsDefined name = map.ContainsKey name
+    member _.Lookup name = map.[name]
+    member _.LookupRange (name, lower, upper) =
+        match lower, upper with
+        | Number a, Number b -> Array.init (int (b - a) + 1) (fun _ -> map.[name])
+        | _ -> invalidArg "range" "Numeric range expected."
+    member _.LookupIndex (name, _index) = map.[name]
+
+    interface IVariableProvider with
+        member this.IsDefined name = this.IsDefined name
+        member this.IsDefined (name, _sender) = this.IsDefined name
+        member this.Lookup name = this.Lookup name
+        member this.Lookup (name, _sender) = this.Lookup name
+        member this.LookupRange (name, lower, upper) = this.LookupRange (name, lower, upper)
+        member this.LookupRange (name, lower, upper, _sender) = this.LookupRange (name, lower, upper)
+        member this.LookupIndex (name, index) = this.LookupIndex (name, index)
+        member this.LookupIndex (name, index, _sender) = this.LookupIndex (name, index)
+
 /// Build the variable provider named by a case. Unknown names fail loudly.
-let buildVariableProvider (name: string) (variables: Map<string, float>) : IVariableProvider =
+let buildVariableProvider (name: string) (variables: Map<string, value>) : IVariableProvider =
     match name with
-    | "map" -> MapVariableProvider(variables) :> IVariableProvider
-    | "empty" -> MapVariableProvider.Empty :> IVariableProvider
+    | "map" -> TypedMapVariableProvider(variables) :> IVariableProvider
+    | "empty" -> TypedMapVariableProvider(Map.empty) :> IVariableProvider
     | other -> failwithf "Unknown variable provider '%s' (expected 'map' or 'empty')." other
 
 /// Build the function provider named by a case. Unknown names fail loudly.
@@ -42,13 +67,27 @@ let private optString (node: JsonNode) (key: string) =
     | null -> None
     | v -> Some(v.GetValue<string>())
 
+/// Interpret a JSON variable value as a typed `value`. A JSON number/bool/string/null
+/// becomes Number/Boolean/Text/Nothing respectively.
+let private parseValue (node: JsonNode) : value =
+    match node with
+    | null -> Nothing
+    | _ ->
+        match node.GetValueKind() with
+        | JsonValueKind.Number -> Number(node.GetValue<float>())
+        | JsonValueKind.True -> Boolean true
+        | JsonValueKind.False -> Boolean false
+        | JsonValueKind.String -> Text(node.GetValue<string>())
+        | JsonValueKind.Null -> Nothing
+        | kind -> failwithf "Unsupported variable value kind '%O'." kind
+
 let private parseCase (node: JsonNode) : Case =
     let variables =
         match node.["variables"] with
         | null -> Map.empty
         | v ->
             v.AsObject()
-            |> Seq.map (fun kvp -> kvp.Key, kvp.Value.GetValue<float>())
+            |> Seq.map (fun kvp -> kvp.Key, parseValue kvp.Value)
             |> Map.ofSeq
     { Id = node.["id"].GetValue<string>()
       Formula = node.["formula"].GetValue<string>()
