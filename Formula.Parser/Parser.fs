@@ -28,6 +28,11 @@ module Parser =
     let ws = spaces
     let str_ws s = str s .>> ws
 
+    let isIdentifierFirstChar c = isLetter c || c = '_'
+    let isIdentifierChar c = isLetter c || isDigit c || c = '_'
+
+    let keyword s = attempt (pstring s .>> notFollowedBy (satisfy isIdentifierChar)) .>> ws
+
     let pUnicodeHex =
         (manyMinMaxSatisfy 4 4 isHex <?> "a Unicode scalar value")
     let toCharOrSurrogatePair p =
@@ -87,10 +92,10 @@ module Parser =
         { Item = kind(x :> IPositionedAstItem<'a>); StartPosition = fst p; EndPosition = x.EndPosition } :> IPositionedAstItem<'a0>
     
     let pnumber = pfloat |>> Number
-    let pboolean = (str_ws "true" >>% Boolean(true)) <|> (str_ws "false" >>% Boolean(false))
+    let pboolean = (keyword "true" >>% Boolean(true)) <|> (keyword "false" >>% Boolean(false))
     let ptext =
         stringsSepBy pBasicStrChars pEscapedChar |> between (str_ws "\"") (str_ws "\"") <?> "text" |>> Text
-    let pnothing = (str_ws "null" >>% Nothing)
+    let pnothing = (keyword "null" >>% Nothing)
 
     let wrapPos<'a> (parser) = pipe3 getPosition parser getPosition (fun s expr e -> { Item = expr; StartPosition = s; EndPosition = e; } :> IPositionedAstItem<'a>) 
 
@@ -101,8 +106,6 @@ module Parser =
         <|> (wrapPos pnothing |>> (fun x -> Constant(x :> IAstItem<value>)))
 
     let psimpleidentifier =
-        let isIdentifierFirstChar c = isLetter c || c = '_'
-        let isIdentifierChar c = isLetter c || isDigit c || c = '_'
         many1Satisfy2L isIdentifierFirstChar isIdentifierChar "identifier" |>> Identifier
 
     let pescapedidentifier =
@@ -180,7 +183,7 @@ module Parser =
                         Variable(id :> IAstItem<identifier>, None, None)
                 )
     
-    let branchExpr = pipe3 (str_ws "IF" >>. pexpr .>> ws)  (str_ws "THEN" >>. pexpr .>> ws) (str_ws "ELSE" >>. pexpr .>> ws) (fun cond a b -> Branch(cond, a, b))
+    let branchExpr = pipe3 (keyword "IF" >>. pexpr .>> ws)  (keyword "THEN" >>. pexpr .>> ws) (keyword "ELSE" >>. pexpr .>> ws) (fun cond a b -> Branch(cond, a, b))
 
     let oppa = new OperatorPrecedenceParser<IPositionedAstItem<expr>,_,_>()
     do pexprImpl := oppa.ExpressionParser
