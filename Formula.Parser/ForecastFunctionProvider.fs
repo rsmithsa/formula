@@ -35,7 +35,8 @@ type SesFunction() =
             message <- "SES expects at least three arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 | 1 | 2 ->
                 message <- "SES expects at least three arguments."
                 false
@@ -78,7 +79,8 @@ type HoltFunction() =
             message <- "HOLT expects at least four arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 | 1 | 2 | 3 ->
                 message <- "HOLT expects at least four arguments."
                 false
@@ -131,7 +133,8 @@ type HwaFunction() =
             message <- "HWA expects at least seven arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | l when l < 7 ->
                 message <- "HWA expects at least seven arguments."
                 false
@@ -184,7 +187,8 @@ type HwmFunction() =
             message <- "HWM expects at least seven arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | l when l < 7 ->
                 message <- "HWM expects at least seven arguments."
                 false

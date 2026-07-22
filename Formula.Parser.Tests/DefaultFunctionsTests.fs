@@ -45,6 +45,8 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "ABS expects one argument."), functionImplementation.Validate (List.toArray []))
         Assert.AreEqual((false, "ABS expects one argument."), functionImplementation.Validate (List.toArray [Number(4.0); Number(4.0)]))
         Assert.AreEqual((false, "ABS expects one argument."), functionImplementation.Validate (null))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(4.0) |])]))
+        Assert.AreEqual((false, "ABS expects one argument."), functionImplementation.Validate (List.toArray [ValueArray([| Number(4.0); Number(4.0) |])]))
 
         Assert.AreEqual(Number(5.0), functionImplementation.Execute (List.toArray [Number(5.0)]))
         Assert.AreEqual(Number(5.0), functionImplementation.Execute (List.toArray [Number(-5.0)]))
@@ -60,6 +62,8 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "SQRT expects one argument."), functionImplementation.Validate (List.toArray []))
         Assert.AreEqual((false, "SQRT expects one argument."), functionImplementation.Validate (List.toArray [Number(4.0); Number(4.0)]))
         Assert.AreEqual((false, "SQRT expects one argument."), functionImplementation.Validate (null))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(4.0) |])]))
+        Assert.AreEqual((false, "SQRT expects one argument."), functionImplementation.Validate (List.toArray [ValueArray([| Number(4.0); Number(4.0) |])]))
 
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(4.0)]))
         Assert.AreEqual(Number(3.0), functionImplementation.Execute (List.toArray [Number(9.0)]))
@@ -79,6 +83,8 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (null))
         Assert.AreEqual((false, "PI expects no arguments."), functionImplementation.Validate (List.toArray [Number(4.0)]))
         Assert.AreEqual((false, "PI expects no arguments."), functionImplementation.Validate (List.toArray [Number(4.0); Number(4.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([||])]))
+        Assert.AreEqual((false, "PI expects no arguments."), functionImplementation.Validate (List.toArray [ValueArray([| Number(4.0) |])]))
 
         Assert.AreEqual(Number(Math.PI), functionImplementation.Execute (List.toArray []))
 
@@ -91,6 +97,9 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "POW expects two arguments."), functionImplementation.Validate (List.toArray [Number(2.0)]))
         Assert.AreEqual((false, "POW expects two arguments."), functionImplementation.Validate (List.toArray [Number(2.0); Number(1.0); Number(1.0)]))
         Assert.AreEqual((false, "POW expects two arguments."), functionImplementation.Validate (null))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(2.0); Number(1.0) |])]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(2.0); ValueArray([| Number(1.0) |])]))
+        Assert.AreEqual((false, "POW expects two arguments."), functionImplementation.Validate (List.toArray [ValueArray([| Number(2.0); Number(1.0); Number(1.0) |])]))
 
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0)]))
         Assert.AreEqual(Number(4.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(2.0)]))
@@ -112,6 +121,8 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "MOD expects two arguments."), functionImplementation.Validate (List.toArray [Number(2.0)]))
         Assert.AreEqual((false, "MOD expects two arguments."), functionImplementation.Validate (List.toArray [Number(2.0); Number(1.0); Number(1.0)]))
         Assert.AreEqual((false, "MOD expects two arguments."), functionImplementation.Validate (null))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(2.0); Number(1.0) |])]))
+        Assert.AreEqual((false, "MOD expects two arguments."), functionImplementation.Validate (List.toArray [ValueArray([| Number(2.0); Number(1.0); Number(1.0) |])]))
 
         Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0)]))
         Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(2.0)]))
@@ -175,6 +186,8 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "AVG expects at least one argument."), functionImplementation.Validate (List.toArray []))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0) |])]))
+        Assert.AreEqual((false, "AVG expects at least one argument."), functionImplementation.Validate (List.toArray [ValueArray([||])]))
 
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0)]))
         Assert.AreEqual(Number(1.5), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
@@ -195,6 +208,8 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "FIRST expects at least one argument."), functionImplementation.Validate (List.toArray []))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+        // FIRST is not flattened for validation: a single (even empty) array argument counts as one argument
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([||])]))
 
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0)]))
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
@@ -212,6 +227,8 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "LAST expects at least one argument."), functionImplementation.Validate (List.toArray []))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+        // LAST is not flattened for validation: a single (even empty) array argument counts as one argument
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([||])]))
 
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0)]))
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
@@ -229,6 +246,8 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "MIN expects at least one argument."), functionImplementation.Validate (List.toArray []))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0) |])]))
+        Assert.AreEqual((false, "MIN expects at least one argument."), functionImplementation.Validate (List.toArray [ValueArray([||])]))
 
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0)]))
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
@@ -247,6 +266,8 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "MAX expects at least one argument."), functionImplementation.Validate (List.toArray []))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0) |])]))
+        Assert.AreEqual((false, "MAX expects at least one argument."), functionImplementation.Validate (List.toArray [ValueArray([||])]))
 
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0)]))
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
@@ -266,6 +287,8 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "COALESCE expects at least two arguments."), functionImplementation.Validate (List.toArray [Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0); Number(1.0)]))
+        Assert.AreEqual((false, "COALESCE expects at least two arguments."), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0) |])]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0); Number(1.0) |])]))
 
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Nothing; Number(2.0)]))
@@ -286,6 +309,8 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "IFNULL expects two arguments."), functionImplementation.Validate (List.toArray [Number(1.0)]))
         Assert.AreEqual((false, "IFNULL expects two arguments."), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0); Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0); Number(1.0) |])]))
+        Assert.AreEqual((false, "IFNULL expects two arguments."), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0) |])]))
 
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0); Nothing]))
@@ -304,6 +329,9 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "DIV expects two or three arguments."), functionImplementation.Validate (List.toArray [Number(2.0)]))
         Assert.AreEqual((false, "DIV expects two or three arguments."), functionImplementation.Validate (List.toArray [Number(2.0); Number(1.0); Number(1.0); Number(1.0)]))
         Assert.AreEqual((false, "DIV expects two or three arguments."), functionImplementation.Validate (null))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(2.0); Number(1.0) |])]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(2.0); Number(1.0); Nothing |])]))
+        Assert.AreEqual((false, "DIV expects two or three arguments."), functionImplementation.Validate (List.toArray [ValueArray([| Number(2.0); Number(1.0); Number(1.0); Number(1.0) |])]))
 
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0)]))
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(2.0)]))
@@ -348,6 +376,9 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "SUMPRODUCT expects an even non-zero number of arguments."), functionImplementation.Validate (List.toArray [Number(2.0)]))
         Assert.AreEqual((false, "SUMPRODUCT expects an even non-zero number of arguments."), functionImplementation.Validate (List.toArray [Number(2.0); Number(1.0); Number(1.0)]))
         Assert.AreEqual((false, "SUMPRODUCT expects an even non-zero number of arguments."), functionImplementation.Validate (null))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0); Number(1.0) |])]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(2.0); Number(1.0) |]); ValueArray([| Number(2.0); Number(1.0) |])]))
+        Assert.AreEqual((false, "SUMPRODUCT expects an even non-zero number of arguments."), functionImplementation.Validate (List.toArray [ValueArray([| Number(2.0); Number(1.0); Number(1.0) |])]))
 
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(1.0)]))
         Assert.AreEqual(Number(5.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0); Number(2.0); Number(1.0)]))

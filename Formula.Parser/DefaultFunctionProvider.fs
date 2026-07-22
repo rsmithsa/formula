@@ -28,7 +28,8 @@ type AbsFunction() =
             message <- "ABS expects one argument."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 1 -> true
             | _ ->
                 message <- "ABS expects one argument."
@@ -57,7 +58,8 @@ type SqrtFunction() =
             message <- "SQRT expects one argument."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 1 -> true
             | _ ->
                 message <- "SQRT expects one argument."
@@ -82,7 +84,8 @@ type PiFunction() =
         match isNull input with
         | true -> true
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 -> true
             | _ ->
                 message <- "PI expects no arguments."
@@ -112,7 +115,8 @@ type PowFunction() =
             message <- "POW expects two arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 2 -> true
             | _ ->
                 message <- "POW expects two arguments."
@@ -142,7 +146,8 @@ type ModFunction() =
             message <- "MOD expects two arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 2 -> true
             | _ ->
                 message <- "MOD expects two arguments."
@@ -214,7 +219,8 @@ type AvgFunction() =
             message <- "AVG expects at least one argument."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 ->
                 message <- "AVG expects at least one argument."
                 false
@@ -296,7 +302,8 @@ type MinFunction() =
             message <- "MIN expects at least one argument."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 ->
                 message <- "MIN expects at least one argument."
                 false
@@ -324,7 +331,8 @@ type MaxFunction() =
             message <- "MAX expects at least one argument."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 ->
                 message <- "MAX expects at least one argument."
                 false
@@ -354,7 +362,8 @@ type CoalesceFunction() =
             message <- "COALESCE expects at least two arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 | 1 ->
                 message <- "COALESCE expects at least two arguments."
                 false
@@ -384,7 +393,8 @@ type IfNullFunction() =
             message <- "IFNULL expects two arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 2 -> true
             | _ ->
                 message <- "IFNULL expects two arguments."
@@ -419,7 +429,8 @@ type DivFunction() =
             message <- "DIV expects two or three arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 2 | 3 -> true
             | _ ->
                 message <- "DIV expects two or three arguments."
@@ -455,7 +466,8 @@ type SumProductFunction() =
             message <- "SUMPRODUCT expects an even non-zero number of arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | x when x > 0 && x % 2 = 0 -> true
             | _ ->
                 message <- "SUMPRODUCT expects an even non-zero number of arguments."

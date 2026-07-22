@@ -46,7 +46,8 @@ type DdbFunction() =
             message <- "DDB expects four or five arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 4 | 5 -> true
             | _ ->
                 message <- "DDB expects four or five arguments."
@@ -90,7 +91,8 @@ type FvFunction() =
             message <- "FV expects three, four or five arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 3 | 4 | 5 -> true
             | _ ->
                 message <- "FV expects three, four or five arguments."
@@ -126,7 +128,8 @@ type NpvFunction() =
             message <- "NPV expects at least two arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 | 1 ->
                 message <- "NPV expects at least two arguments."
                 false
@@ -168,7 +171,8 @@ type IrrFunction() =
             message <- "IRR expects at least three arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 | 1 | 2 ->
                 message <- "IRR expects at least three arguments."
                 false
@@ -226,7 +230,8 @@ type MirrFunction() =
             message <- "MIRR expects at least four arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 | 1 | 2 | 3 ->
                 message <- "MIRR expects at least four arguments."
                 false
@@ -276,7 +281,8 @@ type NperFunction() =
             message <- "NPER expects three, four or five arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 3 | 4 | 5 -> true
             | _ ->
                 message <- "NPER expects three, four or five arguments."
@@ -323,7 +329,8 @@ type PmtFunction() =
             message <- "PMT expects three, four or five arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 3 | 4 | 5 -> true
             | _ ->
                 message <- "PMT expects three, four or five arguments."
@@ -366,7 +373,8 @@ type IpmtFunction() =
             message <- "IPMT expects four, five or six arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 4 | 5 | 6 -> true
             | _ ->
                 message <- "IPMT expects four, five or six arguments."
@@ -397,7 +405,8 @@ type PpmtFunction() =
             message <- "PPMT expects four, five or six arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 4 | 5 | 6 -> true
             | _ ->
                 message <- "PPMT expects four, five or six arguments."
@@ -441,7 +450,8 @@ type PvFunction() =
             message <- "PV expects three, four or five arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 3 | 4 | 5 -> true
             | _ ->
                 message <- "PV expects three, four or five arguments."
@@ -497,7 +507,8 @@ type RateFunction() =
             message <- "RATE expects three, four, five or six arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 3 | 4 | 5 | 6 -> true
             | _ ->
                 message <- "RATE expects three, four, five or six arguments."
@@ -526,7 +537,8 @@ type SlnFunction() =
             message <- "SLN expects three arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 3 -> true
             | _ ->
                 message <- "SLN expects three arguments."
@@ -555,7 +567,8 @@ type SydFunction() =
             message <- "SYD expects four arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 4 -> true
             | _ ->
                 message <- "SYD expects four arguments."

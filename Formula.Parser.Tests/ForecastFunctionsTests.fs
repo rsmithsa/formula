@@ -43,6 +43,8 @@ type ForecastFunctionsTests () =
         Assert.AreEqual((false, "SES expects at least three arguments."), functionImplementation.Validate (List.toArray [Number(0.5)]))
         Assert.AreEqual((false, "SES expects at least three arguments."), functionImplementation.Validate (List.toArray [Number(0.5); Number(10.0)]))
         Assert.AreEqual((false, "SES expects at least three arguments."), functionImplementation.Validate (null))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(0.5); ValueArray([| Number(10.0); Number(12.0) |])]))
+        Assert.AreEqual((false, "SES expects at least three arguments."), functionImplementation.Validate (List.toArray [ValueArray([| Number(0.5); Number(10.0) |])]))
 
         // SES(0.5, 10, 12, 14): s0=10, s1=0.5*12+0.5*10=11, s2=0.5*14+0.5*11=12.5
         Assert.AreEqual(12.5, (functionImplementation.Execute (List.toArray [Number(0.5); Number(10.0); Number(12.0); Number(14.0)])).NumberValue, 0.000001)
@@ -74,6 +76,8 @@ type ForecastFunctionsTests () =
         Assert.AreEqual((false, "HOLT expects at least four arguments."), functionImplementation.Validate (List.toArray [Number(0.5); Number(0.3)]))
         Assert.AreEqual((false, "HOLT expects at least four arguments."), functionImplementation.Validate (List.toArray [Number(0.5); Number(0.3); Number(10.0)]))
         Assert.AreEqual((false, "HOLT expects at least four arguments."), functionImplementation.Validate (null))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(0.5); Number(0.3); ValueArray([| Number(10.0); Number(12.0) |])]))
+        Assert.AreEqual((false, "HOLT expects at least four arguments."), functionImplementation.Validate (List.toArray [ValueArray([| Number(0.5); Number(0.3); Number(10.0) |])]))
 
         // HOLT(0.5, 0.3, 10, 12, 14):
         //   level0=10, trend0=2
@@ -111,6 +115,8 @@ type ForecastFunctionsTests () =
         Assert.AreEqual((false, "HWA expects at least seven arguments."), functionImplementation.Validate (List.toArray []))
         Assert.AreEqual((false, "HWA expects at least seven arguments."), functionImplementation.Validate (List.toArray [Number(0.5); Number(0.3); Number(0.4); Number(3.0); Number(10.0); Number(20.0)]))
         Assert.AreEqual((false, "HWA expects at least seven arguments."), functionImplementation.Validate (null))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(0.5); Number(0.3); Number(0.4); Number(3.0); ValueArray([| Number(10.0); Number(20.0); Number(30.0) |])]))
+        Assert.AreEqual((false, "HWA expects at least seven arguments."), functionImplementation.Validate (List.toArray [ValueArray([| Number(0.5); Number(0.3); Number(0.4); Number(3.0); Number(10.0); Number(20.0) |])]))
 
         // HWA(0.5, 0.3, 0.4, 3, 10, 20, 30, 12, 22, 32):
         //   period=3, avg(first season)=(10+20+30)/3=20
@@ -152,6 +158,8 @@ type ForecastFunctionsTests () =
         Assert.AreEqual((false, "HWM expects at least seven arguments."), functionImplementation.Validate (List.toArray []))
         Assert.AreEqual((false, "HWM expects at least seven arguments."), functionImplementation.Validate (List.toArray [Number(0.5); Number(0.3); Number(0.4); Number(3.0); Number(10.0); Number(20.0)]))
         Assert.AreEqual((false, "HWM expects at least seven arguments."), functionImplementation.Validate (null))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(0.5); Number(0.3); Number(0.4); Number(3.0); ValueArray([| Number(10.0); Number(20.0); Number(30.0) |])]))
+        Assert.AreEqual((false, "HWM expects at least seven arguments."), functionImplementation.Validate (List.toArray [ValueArray([| Number(0.5); Number(0.3); Number(0.4); Number(3.0); Number(10.0); Number(20.0) |])]))
 
         // HWM(0.5, 0.3, 0.4, 3, 10, 20, 30, 12, 24, 36):
         //   period=3, avg(first season)=(10+20+30)/3=20
