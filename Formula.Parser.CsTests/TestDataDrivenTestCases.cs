@@ -8,12 +8,14 @@ using Formula.Parser.Integration;
 
 namespace Formula.Parser.CsTests
 {
+    using CsvHelper;
+    using CsvHelper.Configuration;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
     using System.Text;
-    using CsvHelper;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class TestDataDrivenTestCases : TestBase
@@ -32,7 +34,7 @@ namespace Formula.Parser.CsTests
             {
                 using (var sr = new StreamReader(sourceFile))
                 {
-                    using (var csvReader = new CsvReader(sr))
+                    using (var csvReader = new CsvReader(sr, new CsvConfiguration(CultureInfo.InvariantCulture)))
                     {
                         var assertions = new List<Tuple<string, double>>();
                         var expressions = new Dictionary<string, string>();
@@ -52,7 +54,7 @@ namespace Formula.Parser.CsTests
                             {
                                 Assert.IsTrue(dependencyMap.ContainsKey(dependency), $"Missing dependency {assertion.Item1}->{dependency}");
                             }
-                            
+
                             Assert.AreEqual(assertion.Item2, variableProvider.Lookup(assertion.Item1));
                             Assert.AreEqual(assertion.Item2, CsWrapper.InterpretFormula(expressions[assertion.Item1], variableProvider));
                         }
