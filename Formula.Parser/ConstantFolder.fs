@@ -78,8 +78,8 @@ module ConstantFolder =
             let resB = foldConstantsFunctions b functions
             match (resA.Item, resB.Item) with
             | (Constant cA, Constant cB) ->
-                let valueA = Helpers.castToDouble cA.Item
-                let valueB = Helpers.castToDouble cB.Item
+                let valueA = cA.Item
+                let valueB = cB.Item
 
                 match op.Item with
                 | Equal ->
