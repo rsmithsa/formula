@@ -23,7 +23,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Constant({ Item = Number(42.0) }) }
+            let expected = { Item = Constant({ Item = Number(42.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -34,7 +34,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Number(-42.0) }) }
+            let expected = { Item = Constant({ Item = Number(-42.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -45,7 +45,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Negation({ Item = Variable({ Item = Identifier("ABC") }, None, None) }) }
+            let expected = { Item = Negation({ Item = Variable({ Item = Identifier("ABC") }, None, None) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -56,7 +56,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Number(1.0 + 42.0) }) }
+            let expected = { Item = Constant({ Item = Number(1.0 + 42.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -67,7 +67,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Number(1.0 - 42.0) }) }
+            let expected = { Item = Constant({ Item = Number(1.0 - 42.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -78,7 +78,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Number(1.0 * 42.0) }) }
+            let expected = { Item = Constant({ Item = Number(1.0 * 42.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -89,7 +89,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Number(1.0 / 42.0) }) }
+            let expected = { Item = Constant({ Item = Number(1.0 / 42.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -100,7 +100,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Number(1.0 ** 42.0) }) }
+            let expected = { Item = Constant({ Item = Number(1.0 ** 42.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -111,7 +111,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Number(1.0 % 42.0) }) }
+            let expected = { Item = Constant({ Item = Number(1.0 % 42.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -122,7 +122,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Number(1.0 + 42.0 * 2.0) }) }
+            let expected = { Item = Constant({ Item = Number(1.0 + 42.0 * 2.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -133,7 +133,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Number((1.0 + 42.0) * 2.0) }) }
+            let expected = { Item = Constant({ Item = Number((1.0 + 42.0) * 2.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -144,7 +144,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Number((1.0 + 42.0) * 2.0 ** 3.0) }) }
+            let expected = { Item = Constant({ Item = Number((1.0 + 42.0) * 2.0 ** 3.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -155,7 +155,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Number(1.0 + 42.0 % 2.0) }) }
+            let expected = { Item = Constant({ Item = Number(1.0 + 42.0 % 2.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -166,7 +166,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Variable({ Item = Identifier("MyVar") }, None, None) }
+            let expected = { Item = Variable({ Item = Identifier("MyVar") }, None, None) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -177,7 +177,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Variable({ Item = Identifier("MyVar1") }, None, None) }
+            let expected = { Item = Variable({ Item = Identifier("MyVar1") }, None, None) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -188,7 +188,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Variable({ Item = Identifier("_MyVar_1") }, None, None) }
+            let expected = { Item = Variable({ Item = Identifier("_MyVar_1") }, None, None) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -199,7 +199,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, None, None) }
+            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, None, None) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -210,7 +210,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Variable({ Item = Identifier("My Long @$#% Variable 2") }, None, None) }
+            let expected = { Item = Variable({ Item = Identifier("My Long @$#% Variable 2") }, None, None) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -221,7 +221,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Number(3.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(12.0) }) } :> IAstItem<expr>), None) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Number(3.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(12.0) }) } :> IAstItem<expr>), None) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -232,7 +232,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Boolean(false) }) } :> IAstItem<expr>, { Item = Constant({ Item = Text("2020/01/01") }) } :> IAstItem<expr>), None) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Boolean(false) }) } :> IAstItem<expr>, { Item = Constant({ Item = Text("2020/01/01") }) } :> IAstItem<expr>), None) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -243,7 +243,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Number(0.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>), None) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Number(0.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>), None) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -254,7 +254,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Text("Test") }) } :> IAstItem<expr>, { Item = Constant({ Item = Boolean(true) }) } :> IAstItem<expr>), None) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Text("Test") }) } :> IAstItem<expr>, { Item = Constant({ Item = Boolean(true) }) } :> IAstItem<expr>), None) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -265,7 +265,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Variable({ Item = Identifier("MyVar") }, None, Some({ Item = Constant({ Item = Number(3.0) }) } :> IAstItem<expr>)) }
+            let expected = { Item = Variable({ Item = Identifier("MyVar") }, None, Some({ Item = Constant({ Item = Number(3.0) }) } :> IAstItem<expr>)) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -276,7 +276,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Variable({ Item = Identifier("MyVar") }, None, Some({ Item = Constant({ Item = Boolean(false) }) } :> IAstItem<expr>)) }
+            let expected = { Item = Variable({ Item = Identifier("MyVar") }, None, Some({ Item = Constant({ Item = Boolean(false) }) } :> IAstItem<expr>)) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -287,7 +287,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, None, Some({ Item = Constant({ Item = Number(0.0) }) } :> IAstItem<expr>)) }
+            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, None, Some({ Item = Constant({ Item = Number(0.0) }) } :> IAstItem<expr>)) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -298,7 +298,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, None, Some({ Item = Constant({ Item = Text("Test") }) } :> IAstItem<expr>)) }
+            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, None, Some({ Item = Constant({ Item = Text("Test") }) } :> IAstItem<expr>)) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -309,7 +309,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Arithmetic({ Item = Variable({ Item = Identifier("V42") }, None, None) }, { Item = Multiply }, { Item = Variable({ Item = Identifier("V2") }, None, None) }) }) }
+            let expected = { Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Arithmetic({ Item = Variable({ Item = Identifier("V42") }, None, None) }, { Item = Multiply }, { Item = Variable({ Item = Identifier("V2") }, None, None) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -320,7 +320,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Arithmetic({ Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Variable({ Item = Identifier("V42") }, None, None) }) }, { Item = Multiply }, { Item = Variable({ Item = Identifier("V2") }, None, None) }) }
+            let expected = { Item = Arithmetic({ Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Variable({ Item = Identifier("V42") }, None, None) }) }, { Item = Multiply }, { Item = Variable({ Item = Identifier("V2") }, None, None) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -331,7 +331,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Arithmetic({ Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Variable({ Item = Identifier("V42") }, None, None) }) }, { Item = Multiply }, { Item = Arithmetic({ Item = Variable({ Item = Identifier("V2") }, None, None) }, { Item = Power }, { Item = Variable({ Item = Identifier("V3") }, None, None) }) }) }
+            let expected = { Item = Arithmetic({ Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Variable({ Item = Identifier("V42") }, None, None) }) }, { Item = Multiply }, { Item = Arithmetic({ Item = Variable({ Item = Identifier("V2") }, None, None) }, { Item = Power }, { Item = Variable({ Item = Identifier("V3") }, None, None) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -342,7 +342,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Arithmetic({ Item = Variable({ Item = Identifier("V42") }, None, None) }, { Item = Modulus }, { Item = Variable({ Item = Identifier("V2") }, None, None) }) }) }
+            let expected = { Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Arithmetic({ Item = Variable({ Item = Identifier("V42") }, None, None) }, { Item = Modulus }, { Item = Variable({ Item = Identifier("V2") }, None, None) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -353,7 +353,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, []) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, []) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -364,7 +364,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Constant({ Item = Number(1.0 + 42.0) }) }; { Item = Variable({ Item = Identifier("MyVar") }, None, None) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Constant({ Item = Number(1.0 + 42.0) }) }; { Item = Variable({ Item = Identifier("MyVar") }, None, None) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -375,7 +375,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Function({ Item = Identifier("COUNT") }, []) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Function({ Item = Identifier("COUNT") }, []) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -386,7 +386,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Constant({ Item = Boolean(true) }) }
+            let expected = { Item = Constant({ Item = Boolean(true) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -397,7 +397,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Constant({ Item = Boolean(false) }) }
+            let expected = { Item = Constant({ Item = Boolean(false) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -408,7 +408,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Boolean(not false) }) }
+            let expected = { Item = Constant({ Item = Boolean(not false) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -419,7 +419,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Inversion({ Item = Variable({ Item = Identifier("ABC") }, None, None) }) }
+            let expected = { Item = Inversion({ Item = Variable({ Item = Identifier("ABC") }, None, None) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -430,7 +430,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Boolean(true && false) }) }
+            let expected = { Item = Constant({ Item = Boolean(true && false) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -441,7 +441,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Boolean(true || false) }) }
+            let expected = { Item = Constant({ Item = Boolean(true || false) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -452,7 +452,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Logical({ Item = Variable({ Item = Identifier("ABC") }, None, None) }, { Item = Or }, { Item = Variable({ Item = Identifier("DEF") }, None, None) }) }
+            let expected = { Item = Logical({ Item = Variable({ Item = Identifier("ABC") }, None, None) }, { Item = Or }, { Item = Variable({ Item = Identifier("DEF") }, None, None) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -463,7 +463,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Comparison({ Item = Variable({ Item = Identifier("ABC") }, None, None) }, { Item = Equal }, { Item = Variable({ Item = Identifier("DEF") }, None, None) }) }
+            let expected = { Item = Comparison({ Item = Variable({ Item = Identifier("ABC") }, None, None) }, { Item = Equal }, { Item = Variable({ Item = Identifier("DEF") }, None, None) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -474,7 +474,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Boolean(42.0 = 1.0) }) }
+            let expected = { Item = Constant({ Item = Boolean(42.0 = 1.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -485,7 +485,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Boolean(42.0 <> 1.0) }) }
+            let expected = { Item = Constant({ Item = Boolean(42.0 <> 1.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -496,7 +496,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Boolean(42.0 > 1.0) }) }
+            let expected = { Item = Constant({ Item = Boolean(42.0 > 1.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -507,7 +507,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Boolean(42.0 < 1.0) }) }
+            let expected = { Item = Constant({ Item = Boolean(42.0 < 1.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -518,7 +518,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Boolean(42.0 >= 1.0) }) }
+            let expected = { Item = Constant({ Item = Boolean(42.0 >= 1.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -529,7 +529,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Boolean(42.0 <= 1.0) }) }
+            let expected = { Item = Constant({ Item = Boolean(42.0 <= 1.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -540,7 +540,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Constant({ Item = Number(42.0) }) }
+            let expected = { Item = Constant({ Item = Number(42.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -551,7 +551,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Constant({ Item = Number(1.0) }) }
+            let expected = { Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -562,7 +562,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Branch({ Item = Variable({ Item = Identifier("ABC") }, None, None) }, { Item = Constant({ Item = Number(42.0) }) }, { Item = Constant({ Item = Text("Not") }) }) }
+            let expected = { Item = Branch({ Item = Variable({ Item = Identifier("ABC") }, None, None) }, { Item = Constant({ Item = Number(42.0) }) }, { Item = Constant({ Item = Text("Not") }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -573,7 +573,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Nothing }) }
+            let expected = { Item = Constant({ Item = Nothing }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -584,7 +584,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Nothing }) }
+            let expected = { Item = Constant({ Item = Nothing }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -595,7 +595,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstantsFunctions ast DefaultFunctionProvider.Instance)
-            let expected = { Item = Constant({ Item = Number(0.0) }) }
+            let expected = { Item = Constant({ Item = Number(0.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -606,7 +606,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstantsFunctions ast DefaultFunctionProvider.Instance)
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Constant({ Item = Number(1.0 + 42.0) }) }; { Item = Variable({ Item = Identifier("MyVar") }, None, None) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Constant({ Item = Number(1.0 + 42.0) }) }; { Item = Variable({ Item = Identifier("MyVar") }, None, None) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -617,7 +617,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstantsFunctions ast DefaultFunctionProvider.Instance)
-            let expected = { Item = Constant({ Item = Number(1.0) }) }
+            let expected = { Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -628,7 +628,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstantsFunctions ast DefaultFunctionProvider.Instance)
-            let expected = { Item = Constant({ Item = Number(System.Math.PI * 3.0) }) }
+            let expected = { Item = Constant({ Item = Number(System.Math.PI * 3.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -639,7 +639,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstantsFunctions ast DefaultFunctionProvider.Instance)
-            let expected = { Item = Constant({ Item = Number(2.0) }) }
+            let expected = { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -650,7 +650,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Number(5.0) }) }
+            let expected = { Item = Constant({ Item = Number(5.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -661,7 +661,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = foldConstants ast
-            let expected = { Item = Constant({ Item = Number(2.0) }) }
+            let expected = { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -672,7 +672,7 @@ type ConstantFolderTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let folded = TestHelper.stripPositions (foldConstants ast)
-            let expected = { Item = Constant({ Item = Nothing }) }
+            let expected = { Item = Constant({ Item = Nothing }) } :> IAstItem<expr>
             Assert.AreEqual(expected, folded);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

@@ -20,14 +20,14 @@ type ParserTests () =
 
     [<TestMethod>]
     member this.TestParseFailure () =
-        Assert.ThrowsException<ParserException>(Action(fun x -> parseFormula "+" |> ignore)) |> ignore
+        Assert.ThrowsExactly<ParserException>(Action(fun x -> parseFormula "+" |> ignore)) |> ignore
 
     [<TestMethod>]
     member this.TestParseNumberConstant () =
         let result = parseFormulaString "42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Constant({ Item = Number(42.0) }) }
+            let expected = { Item = Constant({ Item = Number(42.0) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -37,7 +37,7 @@ type ParserTests () =
         let result = parseFormulaString "null"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Constant({ Item = Nothing }) }
+            let expected = { Item = Constant({ Item = Nothing }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -47,7 +47,7 @@ type ParserTests () =
         let result = parseFormulaString "true"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Constant({ Item = Boolean(true) }) }
+            let expected = { Item = Constant({ Item = Boolean(true) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -55,7 +55,7 @@ type ParserTests () =
         let result = parseFormulaString "false"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Constant({ Item = Boolean(false) }) }
+            let expected = { Item = Constant({ Item = Boolean(false) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -65,7 +65,7 @@ type ParserTests () =
         let result = parseFormulaString "\"123\""
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Constant({ Item = Text("123") }) }
+            let expected = { Item = Constant({ Item = Text("123") }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -77,7 +77,7 @@ type ParserTests () =
         let result = parseFormulaString inp
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Constant({ Item = Text(expected) }) }
+            let expected = { Item = Constant({ Item = Text(expected) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -87,7 +87,7 @@ type ParserTests () =
         let result = parseFormulaString "-42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Negation({ Item = Constant({ Item = Number(42.0) }) }) }
+            let expected = { Item = Negation({ Item = Constant({ Item = Number(42.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -97,7 +97,7 @@ type ParserTests () =
         let result = parseFormulaString "1 + 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Constant({ Item = Number(42.0) }) }) }
+            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Constant({ Item = Number(42.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -107,7 +107,7 @@ type ParserTests () =
         let result = parseFormulaString "1 - 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Subtract }, { Item = Constant({ Item = Number(42.0) }) }) }
+            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Subtract }, { Item = Constant({ Item = Number(42.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -117,7 +117,7 @@ type ParserTests () =
         let result = parseFormulaString "1 * 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Multiply }, { Item = Constant({ Item = Number(42.0) }) }) }
+            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Multiply }, { Item = Constant({ Item = Number(42.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -127,7 +127,7 @@ type ParserTests () =
         let result = parseFormulaString "1 / 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Divide }, { Item = Constant({ Item = Number(42.0) }) }) }
+            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Divide }, { Item = Constant({ Item = Number(42.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -137,7 +137,7 @@ type ParserTests () =
         let result = parseFormulaString "1 ^ 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Power }, { Item = Constant({ Item = Number(42.0) }) }) }
+            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Power }, { Item = Constant({ Item = Number(42.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -147,7 +147,7 @@ type ParserTests () =
         let result = parseFormulaString "1 % 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Modulus }, { Item = Constant({ Item = Number(42.0) }) }) }
+            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Modulus }, { Item = Constant({ Item = Number(42.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -157,7 +157,7 @@ type ParserTests () =
         let result = parseFormulaString "1 + 42 * 2"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Arithmetic({ Item = Constant({ Item = Number(42.0) }) }, { Item = Multiply }, { Item = Constant({ Item = Number(2.0) }) }) }) }
+            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Arithmetic({ Item = Constant({ Item = Number(42.0) }) }, { Item = Multiply }, { Item = Constant({ Item = Number(2.0) }) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -167,7 +167,7 @@ type ParserTests () =
         let result = parseFormulaString "(1 + 42) * 2"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Arithmetic({ Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Constant({ Item = Number(42.0) }) }) }, { Item = Multiply }, { Item = Constant({ Item = Number(2.0) }) }) }
+            let expected = { Item = Arithmetic({ Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Constant({ Item = Number(42.0) }) }) }, { Item = Multiply }, { Item = Constant({ Item = Number(2.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -177,7 +177,7 @@ type ParserTests () =
         let result = parseFormulaString "(1 + 42) * 2^3"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Arithmetic({ Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Constant({ Item = Number(42.0) }) }) }, { Item = Multiply }, { Item = Arithmetic({ Item = Constant({ Item = Number(2.0) }) }, { Item = Power }, { Item = Constant({ Item = Number(3.0) }) }) }) }
+            let expected = { Item = Arithmetic({ Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Constant({ Item = Number(42.0) }) }) }, { Item = Multiply }, { Item = Arithmetic({ Item = Constant({ Item = Number(2.0) }) }, { Item = Power }, { Item = Constant({ Item = Number(3.0) }) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -187,7 +187,7 @@ type ParserTests () =
         let result = parseFormulaString "1 + 42 % 2"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Arithmetic({ Item = Constant({ Item = Number(42.0) }) }, { Item = Modulus }, { Item = Constant({ Item = Number(2.0) }) }) }) }
+            let expected = { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Arithmetic({ Item = Constant({ Item = Number(42.0) }) }, { Item = Modulus }, { Item = Constant({ Item = Number(2.0) }) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -197,7 +197,7 @@ type ParserTests () =
         let result = parseFormulaString "MyVar"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("MyVar") }, None, None) }
+            let expected = { Item = Variable({ Item = Identifier("MyVar") }, None, None) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -207,7 +207,7 @@ type ParserTests () =
         let result = parseFormulaString "MyVar1"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("MyVar1") }, None, None) }
+            let expected = { Item = Variable({ Item = Identifier("MyVar1") }, None, None) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -217,7 +217,7 @@ type ParserTests () =
         let result = parseFormulaString "_MyVar_1"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("_MyVar_1") }, None, None) }
+            let expected = { Item = Variable({ Item = Identifier("_MyVar_1") }, None, None) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -227,7 +227,7 @@ type ParserTests () =
         let result = parseFormulaString "[My Long Variable]"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, None, None) }
+            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, None, None) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -237,7 +237,7 @@ type ParserTests () =
         let result = parseFormulaString "[My Long @$#% Variable 2]"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("My Long @$#% Variable 2") }, None, None) }
+            let expected = { Item = Variable({ Item = Identifier("My Long @$#% Variable 2") }, None, None) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -332,7 +332,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "COUNT(MyVar|1:2|)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>), None) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>), None) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -342,7 +342,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "COUNT(MyVar|true:\"2020/01/01\"|)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Boolean(true) }) } :> IAstItem<expr>, { Item = Constant({ Item = Text("2020/01/01") }) } :> IAstItem<expr>), None) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Boolean(true) }) } :> IAstItem<expr>, { Item = Constant({ Item = Text("2020/01/01") }) } :> IAstItem<expr>), None) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -352,7 +352,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "COUNT([My Long Variable]| 1 : 2 |)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>), None) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>), None) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -362,7 +362,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "COUNT([My Long Variable]|\"Test\" : false|)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Text("Test") }) } :> IAstItem<expr>, { Item = Constant({ Item = Boolean(false) }) } :> IAstItem<expr>), None) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("My Long Variable") }, Some({ Item = Constant({ Item = Text("Test") }) } :> IAstItem<expr>, { Item = Constant({ Item = Boolean(false) }) } :> IAstItem<expr>), None) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -372,7 +372,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "COUNT(MyVar|A:B|)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Variable({ Item = Identifier("A") }, None, None) } :> IAstItem<expr>, { Item = Variable({ Item = Identifier("B") }, None, None) } :> IAstItem<expr>), None) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Variable({ Item = Identifier("A") }, None, None) } :> IAstItem<expr>, { Item = Variable({ Item = Identifier("B") }, None, None) } :> IAstItem<expr>), None) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -382,7 +382,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "MyVar|1|"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("MyVar") }, None, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>)) }
+            let expected = { Item = Variable({ Item = Identifier("MyVar") }, None, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>)) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -392,7 +392,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "MyVar|true|"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("MyVar") }, None, Some({ Item = Constant({ Item = Boolean(true) }) } :> IAstItem<expr>)) }
+            let expected = { Item = Variable({ Item = Identifier("MyVar") }, None, Some({ Item = Constant({ Item = Boolean(true) }) } :> IAstItem<expr>)) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -402,7 +402,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "[My Long Variable]| 1 |"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, None, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>)) }
+            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, None, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>)) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -412,7 +412,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "[My Long Variable]|\"Test\" |"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, None, Some({ Item = Constant({ Item = Text("Test") }) } :> IAstItem<expr>)) }
+            let expected = { Item = Variable({ Item = Identifier("My Long Variable") }, None, Some({ Item = Constant({ Item = Text("Test") }) } :> IAstItem<expr>)) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -422,7 +422,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "MyVar|A|"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Variable({ Item = Identifier("MyVar") }, None, Some({ Item = Variable({ Item = Identifier("A") }, None, None) } :> IAstItem<expr>)) }
+            let expected = { Item = Variable({ Item = Identifier("MyVar") }, None, Some({ Item = Variable({ Item = Identifier("A") }, None, None) } :> IAstItem<expr>)) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -432,7 +432,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "V1 + V42 * V2"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Arithmetic({ Item = Variable({ Item = Identifier("V42") }, None, None) }, { Item = Multiply }, { Item = Variable({ Item = Identifier("V2") }, None, None) }) }) }
+            let expected = { Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Arithmetic({ Item = Variable({ Item = Identifier("V42") }, None, None) }, { Item = Multiply }, { Item = Variable({ Item = Identifier("V2") }, None, None) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -442,7 +442,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "(V1 + V42) * V2"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Arithmetic({ Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Variable({ Item = Identifier("V42") }, None, None) }) }, { Item = Multiply }, { Item = Variable({ Item = Identifier("V2") }, None, None) }) }
+            let expected = { Item = Arithmetic({ Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Variable({ Item = Identifier("V42") }, None, None) }) }, { Item = Multiply }, { Item = Variable({ Item = Identifier("V2") }, None, None) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -452,7 +452,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "(V1 + V42) * V2^V3"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Arithmetic({ Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Variable({ Item = Identifier("V42") }, None, None) }) }, { Item = Multiply }, { Item = Arithmetic({ Item = Variable({ Item = Identifier("V2") }, None, None) }, { Item = Power }, { Item = Variable({ Item = Identifier("V3") }, None, None) }) }) }
+            let expected = { Item = Arithmetic({ Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Variable({ Item = Identifier("V42") }, None, None) }) }, { Item = Multiply }, { Item = Arithmetic({ Item = Variable({ Item = Identifier("V2") }, None, None) }, { Item = Power }, { Item = Variable({ Item = Identifier("V3") }, None, None) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -462,7 +462,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "V1 + V42 % V2"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Arithmetic({ Item = Variable({ Item = Identifier("V42") }, None, None) }, { Item = Modulus }, { Item = Variable({ Item = Identifier("V2") }, None, None) }) }) }
+            let expected = { Item = Arithmetic({ Item = Variable({ Item = Identifier("V1") }, None, None) }, { Item = Add }, { Item = Arithmetic({ Item = Variable({ Item = Identifier("V42") }, None, None) }, { Item = Modulus }, { Item = Variable({ Item = Identifier("V2") }, None, None) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -472,7 +472,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "COUNT()"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, []) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, []) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -482,7 +482,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "COUNT(1 + 42, MyVar)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Constant({ Item = Number(42.0) }) }) }; { Item = Variable({ Item = Identifier("MyVar") }, None, None) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Constant({ Item = Number(42.0) }) }) }; { Item = Variable({ Item = Identifier("MyVar") }, None, None) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -492,7 +492,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "COUNT(COUNT())"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Function({ Item = Identifier("COUNT") }, []) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Function({ Item = Identifier("COUNT") }, []) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -502,7 +502,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "COUNT(COUNT(), SUM(1))"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Function({ Item = Identifier("COUNT") }, []) }; { Item = Function({ Item = Identifier("SUM") }, [{ Item = Constant { Item = Number(1.0) } }]) }]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Function({ Item = Identifier("COUNT") }, []) }; { Item = Function({ Item = Identifier("SUM") }, [{ Item = Constant { Item = Number(1.0) } }]) }]) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -512,7 +512,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "COUNT(1 + 42, MyVar|1:2|)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Constant({ Item = Number(42.0) }) }) }; { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>), None) } ]) }
+            let expected = { Item = Function({ Item = Identifier("COUNT") }, [ { Item = Arithmetic({ Item = Constant({ Item = Number(1.0) }) }, { Item = Add }, { Item = Constant({ Item = Number(42.0) }) }) }; { Item = Variable({ Item = Identifier("MyVar") }, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(2.0) }) } :> IAstItem<expr>), None) } ]) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -538,7 +538,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "true"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Constant({ Item = Boolean(true) }) }
+            let expected = { Item = Constant({ Item = Boolean(true) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -548,7 +548,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "false"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Constant({ Item = Boolean(false) }) }
+            let expected = { Item = Constant({ Item = Boolean(false) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -558,7 +558,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "!false"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Inversion({ Item = Constant({ Item = Boolean(false) }) }) }
+            let expected = { Item = Inversion({ Item = Constant({ Item = Boolean(false) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -568,7 +568,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "true && false"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Logical({ Item = Constant({ Item = Boolean(true) }) }, { Item = And }, { Item = Constant({ Item = Boolean(false) }) }) }
+            let expected = { Item = Logical({ Item = Constant({ Item = Boolean(true) }) }, { Item = And }, { Item = Constant({ Item = Boolean(false) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -578,7 +578,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "true || false"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Logical({ Item = Constant({ Item = Boolean(true) }) }, { Item = Or }, { Item = Constant({ Item = Boolean(false) }) }) }
+            let expected = { Item = Logical({ Item = Constant({ Item = Boolean(true) }) }, { Item = Or }, { Item = Constant({ Item = Boolean(false) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -588,7 +588,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "42 = 1"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = Equal }, { Item = Constant({ Item = Number(1.0) }) }) }
+            let expected = { Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = Equal }, { Item = Constant({ Item = Number(1.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -598,7 +598,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "42 <> 1"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = NotEqual }, { Item = Constant({ Item = Number(1.0) }) }) }
+            let expected = { Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = NotEqual }, { Item = Constant({ Item = Number(1.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -608,7 +608,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "42 > 1"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = GreaterThan }, { Item = Constant({ Item = Number(1.0) }) }) }
+            let expected = { Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = GreaterThan }, { Item = Constant({ Item = Number(1.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -618,7 +618,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "42 < 1"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = LessThan }, { Item = Constant({ Item = Number(1.0) }) }) }
+            let expected = { Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = LessThan }, { Item = Constant({ Item = Number(1.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -628,7 +628,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "42 >= 1"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = GreaterThanEqual }, { Item = Constant({ Item = Number(1.0) }) }) }
+            let expected = { Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = GreaterThanEqual }, { Item = Constant({ Item = Number(1.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -638,7 +638,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "42 <= 1"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = LessThanEqual }, { Item = Constant({ Item = Number(1.0) }) }) }
+            let expected = { Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = LessThanEqual }, { Item = Constant({ Item = Number(1.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -648,7 +648,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "IF true THEN 42 ELSE 1"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Branch({ Item = Constant({ Item = Boolean(true) }) }, { Item = Constant({ Item = Number(42.0) }) }, { Item = Constant({ Item = Number(1.0) }) }) }
+            let expected = { Item = Branch({ Item = Constant({ Item = Boolean(true) }) }, { Item = Constant({ Item = Number(42.0) }) }, { Item = Constant({ Item = Number(1.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -658,7 +658,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "IF(42<=1)THEN(42)ELSE(1)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Branch({ Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = LessThanEqual }, { Item = Constant({ Item = Number(1.0) }) }) }, { Item = Constant({ Item = Number(42.0) }) }, { Item = Constant({ Item = Number(1.0) }) }) }
+            let expected = { Item = Branch({ Item = Comparison({ Item = Constant({ Item = Number(42.0) }) }, { Item = LessThanEqual }, { Item = Constant({ Item = Number(1.0) }) }) }, { Item = Constant({ Item = Number(42.0) }) }, { Item = Constant({ Item = Number(1.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -668,7 +668,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "1 ?? 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Coalesce({ Item = Constant({ Item = Number(1.0) }) }, { Item = Constant({ Item = Number(42.0) }) }) }
+            let expected = { Item = Coalesce({ Item = Constant({ Item = Number(1.0) }) }, { Item = Constant({ Item = Number(42.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -678,7 +678,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "null ?? 42"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Coalesce({ Item = Constant({ Item = Nothing }) }, { Item = Constant({ Item = Number(42.0) }) }) }
+            let expected = { Item = Coalesce({ Item = Constant({ Item = Nothing }) }, { Item = Constant({ Item = Number(42.0) }) }) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -688,7 +688,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "IFNULL(1, 42)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Function({ Item = Identifier("IFNULL") }, [ { Item = Constant({ Item = Number(1.0) }) }; { Item = Constant({ Item = Number(42.0) }) } ] ) }
+            let expected = { Item = Function({ Item = Identifier("IFNULL") }, [ { Item = Constant({ Item = Number(1.0) }) }; { Item = Constant({ Item = Number(42.0) }) } ] ) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -698,7 +698,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "trueFunc(1, 42)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Function({ Item = Identifier("trueFunc") }, [ { Item = Constant({ Item = Number(1.0) }) }; { Item = Constant({ Item = Number(42.0) }) } ] ) }
+            let expected = { Item = Function({ Item = Identifier("trueFunc") }, [ { Item = Constant({ Item = Number(1.0) }) }; { Item = Constant({ Item = Number(42.0) }) } ] ) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -708,7 +708,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "falseFunc(1, 42)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Function({ Item = Identifier("falseFunc") }, [ { Item = Constant({ Item = Number(1.0) }) }; { Item = Constant({ Item = Number(42.0) }) } ] ) }
+            let expected = { Item = Function({ Item = Identifier("falseFunc") }, [ { Item = Constant({ Item = Number(1.0) }) }; { Item = Constant({ Item = Number(42.0) }) } ] ) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -718,7 +718,7 @@ Expecting: ')' or ','
         let result = parseFormulaString "nullFunc(1, 42)"
         match result with
         | Success (ast, userState, endPos) ->
-            let expected = { Item = Function({ Item = Identifier("nullFunc") }, [ { Item = Constant({ Item = Number(1.0) }) }; { Item = Constant({ Item = Number(42.0) }) } ] ) }
+            let expected = { Item = Function({ Item = Identifier("nullFunc") }, [ { Item = Constant({ Item = Number(1.0) }) }; { Item = Constant({ Item = Number(42.0) }) } ] ) } :> IAstItem<expr>
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
