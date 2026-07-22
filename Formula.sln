@@ -13,6 +13,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Formula.Parser.Tests", "For
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Formula.Parser.Benchmark", "Formula.Parser.Benchmark\Formula.Parser.Benchmark.csproj", "{D6F9ABB7-612F-4220-877B-6688F841F696}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Formula.Parser.RegressionTests", "Formula.Parser.RegressionTests\Formula.Parser.RegressionTests.fsproj", "{02E38990-E6AF-44B7-A1D9-EF8F530BE550}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{D6F9ABB7-612F-4220-877B-6688F841F696}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6F9ABB7-612F-4220-877B-6688F841F696}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6F9ABB7-612F-4220-877B-6688F841F696}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02E38990-E6AF-44B7-A1D9-EF8F530BE550}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02E38990-E6AF-44B7-A1D9-EF8F530BE550}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02E38990-E6AF-44B7-A1D9-EF8F530BE550}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02E38990-E6AF-44B7-A1D9-EF8F530BE550}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

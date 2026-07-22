@@ -31,6 +31,10 @@ A simple extensible formula language for .NET
 
 ## Version History
 
+### 1.4.2
+- Fix parser for functions starting with keywords (IFNULL, etc)
+- Fix comparison differences between folded & non-folded functions - all now follow F# structural equality
+
 ### 1.4.1
 - ABS function
 

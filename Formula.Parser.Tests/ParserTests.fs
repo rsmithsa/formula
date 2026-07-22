@@ -682,3 +682,43 @@ Expecting: ')' or ','
             Assert.AreEqual(expected, TestHelper.stripPositions ast);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseIfNullFunction () =
+        let result = parseFormulaString "IFNULL(1, 42)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Function({ Item = Identifier("IFNULL") }, [ { Item = Constant({ Item = Number(1.0) }) }; { Item = Constant({ Item = Number(42.0) }) } ] ) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseTrueKeywordFunction () =
+        let result = parseFormulaString "trueFunc(1, 42)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Function({ Item = Identifier("trueFunc") }, [ { Item = Constant({ Item = Number(1.0) }) }; { Item = Constant({ Item = Number(42.0) }) } ] ) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseFalseKeywordFunction () =
+        let result = parseFormulaString "falseFunc(1, 42)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Function({ Item = Identifier("falseFunc") }, [ { Item = Constant({ Item = Number(1.0) }) }; { Item = Constant({ Item = Number(42.0) }) } ] ) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParsenullKeywordFunction () =
+        let result = parseFormulaString "nullFunc(1, 42)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Function({ Item = Identifier("nullFunc") }, [ { Item = Constant({ Item = Number(1.0) }) }; { Item = Constant({ Item = Number(42.0) }) } ] ) }
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)

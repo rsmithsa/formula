@@ -1,0 +1,274 @@
+{
+  "cases": [
+    { "id": "const-number", "formula": "42" },
+    { "id": "const-bool-true", "formula": "true" },
+    { "id": "const-bool-false", "formula": "false" },
+    { "id": "const-text-number", "formula": "\"123\"" },
+    { "id": "negation", "formula": "-42" },
+
+    { "id": "arith-add", "formula": "1 + 42" },
+    { "id": "arith-sub", "formula": "100 - 58" },
+    { "id": "arith-mul", "formula": "6 * 7" },
+    { "id": "arith-div", "formula": "10 / 4" },
+    { "id": "arith-div-zero", "formula": "1 / 0" },
+    { "id": "arith-mod", "formula": "10 % 3" },
+    { "id": "arith-pow", "formula": "2 ^ 10" },
+
+    { "id": "precedence", "formula": "V1 + V42 * V2", "variables": { "V1": 1, "V42": 42, "V2": 2 } },
+    { "id": "parens", "formula": "(V1 + V42) * V2", "variables": { "V1": 1, "V42": 42, "V2": 2 } },
+    { "id": "power-precedence", "formula": "(V1 + V42) * V2 ^ V3", "variables": { "V1": 1, "V42": 42, "V2": 2, "V3": 3 } },
+
+    { "id": "cmp-lt", "formula": "1 < 2" },
+    { "id": "cmp-ge", "formula": "5 >= 5" },
+    { "id": "cmp-ne", "formula": "3 <> 4" },
+
+    { "id": "logical-and", "formula": "true && false" },
+    { "id": "logical-or", "formula": "true || false" },
+    { "id": "inversion", "formula": "!true" },
+
+    { "id": "coalesce-value", "formula": "1 ?? 42" },
+    { "id": "coalesce-null", "formula": "null ?? 42" },
+    { "id": "coalesce-nothing", "formula": "null ?? null" },
+
+    { "id": "branch-true", "formula": "IF true THEN 42 ELSE 1" },
+    { "id": "branch-expr", "formula": "IF (V42 <= 1) THEN (V42) ELSE (1)", "variables": { "V42": 42 } },
+    { "id": "branch-nested-fold", "formula": "IF 1 < 2 THEN SQRT(9) ELSE 0" },
+
+    { "id": "var-simple", "formula": "MyVar", "variables": { "MyVar": 42 } },
+    { "id": "var-spaces", "formula": "[My Long Variable]", "variables": { "My Long Variable": 0.42 } },
+    { "id": "var-range-sum", "formula": "SUM(MyVar|1:5|)", "variables": { "MyVar": 2 } },
+    { "id": "var-index", "formula": "MyVar|1|", "variables": { "MyVar": 7 } },
+
+    { "id": "fn-ifnull", "formula": "IFNULL(null, 9)" },
+
+    { "id": "abs-const", "formula": "ABS(-7.5)" },
+    { "id": "abs-var", "formula": "ABS(A)", "variables": { "A": -3.5 } },
+
+    { "id": "sqrt-const", "formula": "SQRT(2)" },
+    { "id": "sqrt-var", "formula": "SQRT(A)", "variables": { "A": 144 } },
+    { "id": "sqrt-negative", "formula": "SQRT(-1)" },
+
+    { "id": "pi-const", "formula": "PI()" },
+
+    { "id": "pow-const", "formula": "POW(3, 4)" },
+    { "id": "pow-var", "formula": "POW(A, B)", "variables": { "A": 2, "B": 8 } },
+    { "id": "pow-combo", "formula": "POW(A, 2)", "variables": { "A": 5 } },
+
+    { "id": "mod-const", "formula": "MOD(17, 5)" },
+    { "id": "mod-var", "formula": "MOD(A, B)", "variables": { "A": 20, "B": 6 } },
+    { "id": "mod-combo", "formula": "MOD(A, 4)", "variables": { "A": 10 } },
+
+    { "id": "div-const", "formula": "DIV(10, 4)" },
+    { "id": "div-zero-default", "formula": "DIV(10, 0)" },
+    { "id": "div-zero-fallback", "formula": "DIV(10, 0, -1)" },
+    { "id": "div-var", "formula": "DIV(A, B)", "variables": { "A": 9, "B": 3 } },
+    { "id": "div-combo", "formula": "DIV(A, 0, B)", "variables": { "A": 5, "B": 99 } },
+
+    { "id": "coalesce-const", "formula": "COALESCE(null, 5, 6)" },
+    { "id": "coalesce-var", "formula": "COALESCE(A, B)", "variables": { "A": 3, "B": 4 } },
+    { "id": "coalesce-combo", "formula": "COALESCE(null, A, 7)", "variables": { "A": 42 } },
+    { "id": "coalesce-range", "formula": "COALESCE(V|1:3|)", "variables": { "V": 8 } },
+
+    { "id": "count-const", "formula": "COUNT(1, 2, 3, 4)" },
+    { "id": "count-var", "formula": "COUNT(A, B, C)", "variables": { "A": 1, "B": 2, "C": 3 } },
+    { "id": "count-range", "formula": "COUNT(V|1:5|)", "variables": { "V": 1 } },
+    { "id": "count-combo", "formula": "COUNT(A, V|1:3|)", "variables": { "A": 9, "V": 2 } },
+
+    { "id": "sum-const", "formula": "SUM(1, 2, 3, 4)" },
+    { "id": "sum-var", "formula": "SUM(A, B, C)", "variables": { "A": 1, "B": 2, "C": 3 } },
+    { "id": "sum-range", "formula": "SUM(V|1:4|)", "variables": { "V": 5 } },
+    { "id": "sum-combo", "formula": "SUM(A, V|1:3|, 10)", "variables": { "A": 1, "V": 2 } },
+
+    { "id": "avg-const", "formula": "AVG(2, 4, 6)" },
+    { "id": "avg-var", "formula": "AVG(A, B, C)", "variables": { "A": 10, "B": 20, "C": 30 } },
+    { "id": "avg-range", "formula": "AVG(V|1:4|)", "variables": { "V": 7 } },
+    { "id": "avg-combo", "formula": "AVG(A, V|1:3|)", "variables": { "A": 0, "V": 3 } },
+
+    { "id": "min-const", "formula": "MIN(3, 1, 2)" },
+    { "id": "min-var", "formula": "MIN(A, B, C)", "variables": { "A": 5, "B": 2, "C": 8 } },
+    { "id": "min-range", "formula": "MIN(V|1:3|)", "variables": { "V": 4 } },
+    { "id": "min-combo", "formula": "MIN(A, V|1:3|)", "variables": { "A": 1, "V": 9 } },
+
+    { "id": "max-const", "formula": "MAX(3, 1, 2)" },
+    { "id": "max-var", "formula": "MAX(A, B, C)", "variables": { "A": 5, "B": 2, "C": 8 } },
+    { "id": "max-range", "formula": "MAX(V|1:3|)", "variables": { "V": 4 } },
+    { "id": "max-combo", "formula": "MAX(A, V|1:3|)", "variables": { "A": 99, "V": 9 } },
+
+    { "id": "first-const", "formula": "FIRST(3, 1, 2)" },
+    { "id": "first-var", "formula": "FIRST(A, B)", "variables": { "A": 9, "B": 1 } },
+    { "id": "first-range", "formula": "FIRST(V|1:3|)", "variables": { "V": 6 } },
+    { "id": "first-combo", "formula": "FIRST(A, V|1:2|)", "variables": { "A": 42, "V": 1 } },
+
+    { "id": "last-const", "formula": "LAST(3, 1, 2)" },
+    { "id": "last-var", "formula": "LAST(A, B, C)", "variables": { "A": 1, "B": 2, "C": 3 } },
+    { "id": "last-range", "formula": "LAST(V|1:3|)", "variables": { "V": 6 } },
+    { "id": "last-combo", "formula": "LAST(A, V|1:2|)", "variables": { "A": 1, "V": 8 } },
+
+    { "id": "sumproduct-const", "formula": "SUMPRODUCT(2, 3, 4, 5)" },
+    { "id": "sumproduct-var", "formula": "SUMPRODUCT(A, B, C, D)", "variables": { "A": 1, "B": 2, "C": 3, "D": 4 } },
+    { "id": "sumproduct-range", "formula": "SUMPRODUCT(V|1:2|, W|1:2|)", "variables": { "V": 3, "W": 5 } },
+    { "id": "sumproduct-combo", "formula": "SUMPRODUCT(A, V|1:2|, 2, 3, 4)", "variables": { "A": 1, "V": 2 } },
+
+    { "id": "nested-fn", "formula": "SUM(SUM(1, 2), 3)" },
+
+    { "id": "ddb-const", "formula": "DDB(20000, 8000, 5, 1)", "functionProvider": "financial" },
+    { "id": "ddb-var", "formula": "DDB(Cost, Salvage, Life, Per)", "functionProvider": "financial", "variables": { "Cost": 20000, "Salvage": 8000, "Life": 5, "Per": 1 } },
+    { "id": "ddb-combo", "formula": "DDB(Cost, Salvage, 5, Per, 2)", "functionProvider": "financial", "variables": { "Cost": 10000, "Salvage": 2000, "Per": 2 } },
+
+    { "id": "fv-const", "formula": "FV(0.1, 10, 1000)", "functionProvider": "financial", "tolerance": 0.000001 },
+    { "id": "fv-var", "formula": "FV(Rate, Nper, Pmt)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Nper": 10, "Pmt": 1000 }, "tolerance": 0.000001 },
+    { "id": "fv-combo", "formula": "FV(Rate, 10, 1000, 1000, 1)", "functionProvider": "financial", "variables": { "Rate": 0.1 }, "tolerance": 0.000001 },
+
+    { "id": "pv-const", "formula": "PV(0.1, 10, 1000)", "functionProvider": "financial", "tolerance": 0.000001 },
+    { "id": "pv-var", "formula": "PV(Rate, Nper, Pmt)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Nper": 10, "Pmt": 1000 }, "tolerance": 0.000001 },
+    { "id": "pv-combo", "formula": "PV(Rate, 10, 1000, 1000, 1)", "functionProvider": "financial", "variables": { "Rate": 0.1 }, "tolerance": 0.000001 },
+
+    { "id": "pmt-const", "formula": "PMT(0.1, 10, 1000)", "functionProvider": "financial", "tolerance": 0.000001 },
+    { "id": "pmt-var", "formula": "PMT(Rate, Nper, Pv)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Nper": 10, "Pv": 1000 }, "tolerance": 0.000001 },
+    { "id": "pmt-combo", "formula": "PMT(Rate, 10, 1000, 0, 1)", "functionProvider": "financial", "variables": { "Rate": 0.1 }, "tolerance": 0.000001 },
+
+    { "id": "nper-const", "formula": "NPER(0.1, 10, 1000)", "functionProvider": "financial", "tolerance": 0.000001 },
+    { "id": "nper-var", "formula": "NPER(Rate, Pmt, Pv)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Pmt": 10, "Pv": 1000 }, "tolerance": 0.000001 },
+    { "id": "nper-combo", "formula": "NPER(Rate, 10, 1000, -100)", "functionProvider": "financial", "variables": { "Rate": 0.1 }, "tolerance": 0.000001 },
+
+    { "id": "ipmt-const", "formula": "IPMT(0.1, 3, 10, 1000)", "functionProvider": "financial", "tolerance": 0.000001 },
+    { "id": "ipmt-var", "formula": "IPMT(Rate, Per, Nper, Pv)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Per": 3, "Nper": 10, "Pv": 1000 }, "tolerance": 0.000001 },
+    { "id": "ipmt-combo", "formula": "IPMT(Rate, 3, 10, 1000, 0, 1)", "functionProvider": "financial", "variables": { "Rate": 0.1 }, "tolerance": 0.000001 },
+
+    { "id": "ppmt-const", "formula": "PPMT(0.1, 3, 10, 1000)", "functionProvider": "financial", "tolerance": 0.000001 },
+    { "id": "ppmt-var", "formula": "PPMT(Rate, Per, Nper, Pv)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Per": 3, "Nper": 10, "Pv": 1000 }, "tolerance": 0.000001 },
+    { "id": "ppmt-combo", "formula": "PPMT(Rate, 3, 10, 1000, 1000)", "functionProvider": "financial", "variables": { "Rate": 0.1 }, "tolerance": 0.000001 },
+
+    { "id": "rate-const", "formula": "RATE(10, -100, 800)", "functionProvider": "financial", "tolerance": 0.000001 },
+    { "id": "rate-var", "formula": "RATE(Nper, Pmt, Pv)", "functionProvider": "financial", "variables": { "Nper": 10, "Pmt": -100, "Pv": 800 }, "tolerance": 0.000001 },
+    { "id": "rate-combo", "formula": "RATE(10, -100, 800, 100, 0, 0.2)", "functionProvider": "financial", "tolerance": 0.000001 },
+
+    { "id": "sln-const", "formula": "SLN(10000, 1000, 5)", "functionProvider": "financial" },
+    { "id": "sln-var", "formula": "SLN(Cost, Salvage, Life)", "functionProvider": "financial", "variables": { "Cost": 10000, "Salvage": 1000, "Life": 5 } },
+    { "id": "sln-combo", "formula": "SLN(Cost, 1000, Life)", "functionProvider": "financial", "variables": { "Cost": 10000, "Life": 5 } },
+
+    { "id": "syd-const", "formula": "SYD(10000, 1000, 5, 1)", "functionProvider": "financial" },
+    { "id": "syd-var", "formula": "SYD(Cost, Salvage, Life, Per)", "functionProvider": "financial", "variables": { "Cost": 10000, "Salvage": 1000, "Life": 5, "Per": 1 } },
+    { "id": "syd-combo", "formula": "SYD(Cost, 1000, 5, Per)", "functionProvider": "financial", "variables": { "Cost": 10000, "Per": 1 } },
+
+    { "id": "npv-const", "formula": "NPV(0.1, -100000, 10000, 10000)", "functionProvider": "financial", "tolerance": 0.000001 },
+    { "id": "npv-var", "formula": "NPV(Rate, A, B)", "functionProvider": "financial", "variables": { "Rate": 0.1, "A": -100000, "B": 105000 }, "tolerance": 0.000001 },
+    { "id": "npv-range", "formula": "NPV(Rate, Flow|1:4|)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Flow": 10000 }, "tolerance": 0.000001 },
+    { "id": "npv-combo", "formula": "NPV(Rate, -100000, Flow|1:3|)", "functionProvider": "financial", "variables": { "Rate": 0.1, "Flow": 10000 }, "tolerance": 0.000001 },
+
+    { "id": "irr-const", "formula": "IRR(0.1, -100000, 105000)", "functionProvider": "financial", "tolerance": 0.000001 },
+    { "id": "irr-var", "formula": "IRR(Guess, A, B)", "functionProvider": "financial", "variables": { "Guess": 0.1, "A": -100000, "B": 105000 }, "tolerance": 0.000001 },
+    { "id": "irr-combo", "formula": "IRR(Guess, A, Flow|1:3|)", "functionProvider": "financial", "variables": { "Guess": 0.1, "A": -100000, "Flow": 40000 }, "tolerance": 0.000001 },
+
+    { "id": "mirr-const", "formula": "MIRR(0.1, 0.1, -100000, 105000)", "functionProvider": "financial", "tolerance": 0.000001 },
+    { "id": "mirr-var", "formula": "MIRR(FinRate, ReinvRate, A, B)", "functionProvider": "financial", "variables": { "FinRate": 0.1, "ReinvRate": 0.1, "A": -100000, "B": 105000 }, "tolerance": 0.000001 },
+    { "id": "mirr-combo", "formula": "MIRR(FinRate, ReinvRate, A, Flow|1:3|)", "functionProvider": "financial", "variables": { "FinRate": 0.1, "ReinvRate": 0.12, "A": -1000, "Flow": 5000 }, "tolerance": 0.000001 },
+
+
+    { "id": "ses-const", "formula": "SES(0.5, 10, 12, 14)", "functionProvider": "forecast", "tolerance": 0.000001 },
+    { "id": "ses-var", "formula": "SES(Alpha, D1, D2, D3)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "D1": 10, "D2": 12, "D3": 14 }, "tolerance": 0.000001 },
+    { "id": "ses-range", "formula": "SES(Alpha, D|1:4|)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "D": 10 }, "tolerance": 0.000001 },
+    { "id": "ses-combo", "formula": "SES(Alpha, 10, D|1:3|)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "D": 14 }, "tolerance": 0.000001 },
+
+    { "id": "forecast-const", "formula": "FORECAST(0.5, 10, 12, 14)", "functionProvider": "forecast", "tolerance": 0.000001 },
+    { "id": "forecast-range", "formula": "FORECAST(Alpha, D|1:4|)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "D": 10 }, "tolerance": 0.000001 },
+
+    { "id": "holt-const", "formula": "HOLT(0.5, 0.3, 10, 12, 14)", "functionProvider": "forecast", "tolerance": 0.000001 },
+    { "id": "holt-var", "formula": "HOLT(Alpha, Beta, D1, D2, D3)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "Beta": 0.3, "D1": 10, "D2": 12, "D3": 14 }, "tolerance": 0.000001 },
+    { "id": "holt-range", "formula": "HOLT(0.5, 0.3, D|1:4|)", "functionProvider": "forecast", "variables": { "D": 10 }, "tolerance": 0.000001 },
+    { "id": "holt-combo", "formula": "HOLT(Alpha, 0.3, 10, D|1:2|)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "D": 14 }, "tolerance": 0.000001 },
+
+    { "id": "des-const", "formula": "DES(0.5, 0.3, 10, 12, 14)", "functionProvider": "forecast", "tolerance": 0.000001 },
+    { "id": "des-range", "formula": "DES(Alpha, Beta, D|1:4|)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "Beta": 0.3, "D": 10 }, "tolerance": 0.000001 },
+
+    { "id": "hwa-const", "formula": "HWA(0.5, 0.3, 0.4, 3, 10, 20, 30, 12, 22, 32)", "functionProvider": "forecast", "tolerance": 0.000001 },
+    { "id": "hwa-var", "formula": "HWA(Alpha, Beta, Gamma, Period, D1, D2, D3, D4, D5, D6)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "Beta": 0.3, "Gamma": 0.4, "Period": 3, "D1": 10, "D2": 20, "D3": 30, "D4": 12, "D5": 22, "D6": 32 }, "tolerance": 0.000001 },
+    { "id": "hwa-range", "formula": "HWA(0.5, 0.3, 0.4, 2, D|1:4|)", "functionProvider": "forecast", "variables": { "D": 10 }, "tolerance": 0.000001 },
+    { "id": "hwa-combo", "formula": "HWA(Alpha, 0.3, 0.4, 2, 10, D|1:3|)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "D": 20 }, "tolerance": 0.000001 },
+
+    { "id": "holtwinters-const", "formula": "HOLTWINTERS(0.5, 0.3, 0.4, 3, 10, 20, 30, 12, 22, 32)", "functionProvider": "all", "tolerance": 0.000001 },
+    { "id": "holtwinters-range", "formula": "HOLTWINTERS(0.5, 0.3, 0.4, 2, D|1:4|)", "functionProvider": "all", "variables": { "D": 10 }, "tolerance": 0.000001 },
+
+    { "id": "hwm-const", "formula": "HWM(0.5, 0.3, 0.4, 3, 10, 20, 30, 12, 22, 32)", "functionProvider": "forecast", "tolerance": 0.000001 },
+    { "id": "hwm-var", "formula": "HWM(Alpha, Beta, Gamma, Period, D1, D2, D3, D4, D5, D6)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "Beta": 0.3, "Gamma": 0.4, "Period": 3, "D1": 10, "D2": 20, "D3": 30, "D4": 12, "D5": 22, "D6": 32 }, "tolerance": 0.000001 },
+    { "id": "hwm-range", "formula": "HWM(0.5, 0.3, 0.4, 2, D|1:4|)", "functionProvider": "forecast", "variables": { "D": 10 }, "tolerance": 0.000001 },
+    { "id": "hwm-combo", "formula": "HWM(Alpha, 0.3, 0.4, 2, 10, D|1:3|)", "functionProvider": "forecast", "variables": { "Alpha": 0.5, "D": 20 }, "tolerance": 0.000001 },
+
+    { "id": "holtwintersm-const", "formula": "HOLTWINTERSM(0.5, 0.3, 0.4, 3, 10, 20, 30, 12, 22, 32)", "functionProvider": "all", "tolerance": 0.000001 },
+    { "id": "holtwintersm-range", "formula": "HOLTWINTERSM(0.5, 0.3, 0.4, 2, D|1:4|)", "functionProvider": "all", "variables": { "D": 10 }, "tolerance": 0.000001 },
+
+
+    { "id": "cmp-eq", "formula": "3 = 3" },
+    { "id": "cmp-eq-false", "formula": "3 = 4" },
+    { "id": "cmp-gt", "formula": "5 > 2" },
+    { "id": "cmp-gt-false", "formula": "2 > 5" },
+    { "id": "cmp-lt-false", "formula": "2 < 1" },
+    { "id": "cmp-le", "formula": "2 <= 2" },
+    { "id": "cmp-le-false", "formula": "3 <= 2" },
+    { "id": "cmp-ge-false", "formula": "2 >= 5" },
+    { "id": "cmp-ne-false", "formula": "3 <> 3" },
+
+    { "id": "cmp-text-eq-false", "formula": "\"true\" = \"false\"" },
+    { "id": "cmp-text-eq-true", "formula": "\"abc\" = \"abc\"" },
+    { "id": "cmp-text-ne", "formula": "\"abc\" <> \"xyz\"" },
+    { "id": "cmp-text-lt", "formula": "\"apple\" < \"banana\"" },
+    { "id": "cmp-bool-eq", "formula": "true = true" },
+    { "id": "cmp-bool-ne", "formula": "true <> false" },
+    { "id": "cmp-num-eq-bool", "formula": "1 = true" },
+    { "id": "cmp-num-lt-bool", "formula": "1 < true" },
+    { "id": "cmp-nothing-eq", "formula": "null = null" },
+    { "id": "cmp-num-gt-nothing", "formula": "5 > null" },
+
+    { "id": "logical-and-tt", "formula": "true && true" },
+    { "id": "logical-and-ff", "formula": "false && false" },
+    { "id": "logical-or-tt", "formula": "true || true" },
+    { "id": "logical-or-ff", "formula": "false || false" },
+    { "id": "logical-nested", "formula": "(1 < 2) && (3 > 2)" },
+    { "id": "logical-coerce-num", "formula": "1 && 1" },
+    { "id": "logical-coerce-text", "formula": "\"true\" || \"false\"" },
+    { "id": "logical-inversion-num", "formula": "!0" },
+
+    { "id": "abs-oversupply", "formula": "ABS(V|1:10|)", "variables": { "V": -7 } },
+    { "id": "sqrt-oversupply", "formula": "SQRT(V|1:3|)", "variables": { "V": 16 } },
+    { "id": "pow-oversupply", "formula": "POW(V|1:3|)", "variables": { "V": 2 } },
+    { "id": "mod-oversupply", "formula": "MOD(V|1:4|)", "variables": { "V": 10 } },
+    { "id": "div-oversupply", "formula": "DIV(V|1:4|)", "variables": { "V": 8 } },
+    { "id": "pi-oversupply", "formula": "PI(1, 2, 3)" },
+    { "id": "sln-oversupply", "formula": "SLN(V|1:5|)", "functionProvider": "financial", "variables": { "V": 100 } },
+    { "id": "syd-oversupply", "formula": "SYD(V|1:6|)", "functionProvider": "financial", "variables": { "V": 10 } },
+    { "id": "pow-too-few", "formula": "POW(5)" },
+    { "id": "abs-no-args", "formula": "ABS()" },
+
+    { "id": "coerce-sum-bool", "formula": "SUM(true)" },
+    { "id": "coerce-sum-bools", "formula": "SUM(true, false, true)" },
+    { "id": "coerce-sum-mixed", "formula": "SUM(1, true, \"2\", null)" },
+    { "id": "coerce-avg-text", "formula": "AVG(\"12345\")" },
+    { "id": "coerce-avg-texts", "formula": "AVG(\"10\", \"20\", \"30\")" },
+    { "id": "coerce-count-null", "formula": "COUNT(null)" },
+    { "id": "coerce-count-mixed", "formula": "COUNT(1, null, 3, null)" },
+    { "id": "coerce-count-bools", "formula": "COUNT(true, false)" },
+    { "id": "coerce-arith-bool", "formula": "true + 1" },
+    { "id": "coerce-arith-text", "formula": "\"10\" + \"5\"" },
+    { "id": "coerce-mul-bool-text", "formula": "true * \"10\"" },
+    { "id": "coerce-min-mixed", "formula": "MIN(3, true, \"2\")" },
+    { "id": "coerce-max-mixed", "formula": "MAX(3, true, \"2\")" },
+    { "id": "coerce-sumproduct-bool", "formula": "SUMPRODUCT(true, 2)" },
+    { "id": "coerce-branch-num-cond", "formula": "IF 5 THEN 1 ELSE 0" },
+    { "id": "coerce-branch-text-cond", "formula": "IF \"true\" THEN 1 ELSE 0" },
+    { "id": "coerce-coalesce-text", "formula": "COALESCE(null, \"7\", 9)" },
+
+    { "id": "typed-bool-sum", "formula": "SUM(Flag)", "variables": { "Flag": false } },
+    { "id": "typed-bool-arith", "formula": "Flag + 1", "variables": { "Flag": true } },
+    { "id": "typed-bool-range", "formula": "SUM(Flag|1:3|)", "variables": { "Flag": true } },
+    { "id": "typed-bool-eq", "formula": "Flag = false", "variables": { "Flag": false } },
+    { "id": "typed-bool-eq-num", "formula": "Flag = 0", "variables": { "Flag": false } },
+    { "id": "typed-bool-index", "formula": "Flag|1|", "variables": { "Flag": true } },
+    { "id": "typed-bool-branch", "formula": "IF Flag THEN 1 ELSE 2", "variables": { "Flag": false } },
+    { "id": "typed-text-avg", "formula": "AVG(Code)", "variables": { "Code": "12345" } },
+    { "id": "typed-text-arith", "formula": "Code + 5", "variables": { "Code": "10" } },
+    { "id": "typed-null-count", "formula": "COUNT(Val)", "variables": { "Val": null } },
+    { "id": "typed-null-coalesce", "formula": "Val ?? 99", "variables": { "Val": null } },
+    { "id": "typed-null-arith", "formula": "Val + 1", "variables": { "Val": null } },
+    { "id": "typed-mixed-precedence", "formula": "V1 + V42 * V2", "variables": { "V1": false, "V42": 42, "V2": 2 } }
+  ]
+}
