@@ -20,7 +20,7 @@ type MutableVariableProvider(map: System.Collections.Generic.IDictionary<string,
     member this.LookupRange name lower upper =
         let value = this.KnownVariables.[name]
         match (lower, upper) with
-        | (Number a, Number b) -> Array.init (int(b - a) + 1) (fun x -> Number(value))
+        | (Number a, Number b) -> ValueArray(Array.init (int(b - a) + 1) (fun x -> Number(value)))
         | _ -> invalidArg "range" "Numeric range expected."
     member this.LookupIndex name index =
         this.Lookup name

@@ -18,8 +18,9 @@ type SesFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let alpha = (Helpers.asDoubles(input.[0..0])).[0]
-        let data = input.[1..] |> Array.choose Helpers.castToDouble
+        let values = Helpers.castToDoubles input
+        let alpha = (values[0..0] |> Array.choose id).[0]
+        let data = values.[1..] |> Array.choose id
 
         if data.Length < 2 then Nothing
         else
@@ -53,10 +54,11 @@ type HoltFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let params' = Helpers.asDoubles(input.[0..1])
+        let values = Helpers.castToDoubles input
+        let params' = values.[0..1] |> Array.choose id
         let alpha = params'.[0]
         let beta = params'.[1]
-        let data = input.[2..] |> Array.choose Helpers.castToDouble
+        let data = values.[2..] |> Array.choose id
 
         if data.Length < 2 then Nothing
         else
@@ -95,12 +97,13 @@ type HwaFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let params' = Helpers.asDoubles(input.[0..3])
+        let values = Helpers.castToDoubles input
+        let params' = values.[0..3] |> Array.choose id
         let alpha = params'.[0]
         let beta = params'.[1]
         let gamma = params'.[2]
         let period = int params'.[3]
-        let data = input.[4..] |> Array.choose Helpers.castToDouble
+        let data = values.[4..] |> Array.choose id
 
         let n = data.Length
         if n < period * 2 then Nothing
@@ -147,12 +150,13 @@ type HwmFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let params' = Helpers.asDoubles(input.[0..3])
+        let values = Helpers.castToDoubles input
+        let params' = values.[0..3] |> Array.choose id
         let alpha = params'.[0]
         let beta = params'.[1]
         let gamma = params'.[2]
         let period = int params'.[3]
-        let data = input.[4..] |> Array.choose Helpers.castToDouble
+        let data = values.[4..] |> Array.choose id
 
         let n = data.Length
         if n < period * 2 then Nothing

@@ -299,7 +299,7 @@ type ILCompilerTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
-            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "SUM").Execute (List.toArray [(DefaultFunctionProvider.Instance.Lookup "SUM").Execute (Array.concat [ [| Number(1.0 + 42.0) |]; varMap.LookupRange "MyVar" (Number(1.0)) (Number(10.0))]); Number(1.0)]))
+            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "SUM").Execute (List.toArray [(DefaultFunctionProvider.Instance.Lookup "SUM").Execute ([| Number(1.0 + 42.0); varMap.LookupRange "MyVar" (Number(1.0)) (Number(10.0)) |]); Number(1.0)]))
             Assert.AreEqual(expected, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
@@ -310,7 +310,7 @@ type ILCompilerTests () =
         match result with
         | Success (ast, userState, endPos) ->
             let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
-            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "SUM").Execute (Array.concat [ [| Number(1.0 + 42.0) |]; varMap.LookupRange "MyVar" (Number(1.0)) (Number(10.0))]))
+            let expected = Helpers.castToDouble((DefaultFunctionProvider.Instance.Lookup "SUM").Execute ([| Number(1.0 + 42.0); varMap.LookupRange "MyVar" (Number(1.0)) (Number(10.0)) |]))
             Assert.AreEqual(expected, value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

@@ -12,10 +12,12 @@ module Interpreter =
 
     let interpretFormula ast (vars: IVariableProvider) (functions: IFunctionProvider) =
 
-        let rec interpretFormulaInternal (ast: IAstItem<expr>) (vars: IVariableProvider) (functions: IFunctionProvider): value[] =
+        let rec interpretFormulaInternal (ast: IAstItem<expr>) (vars: IVariableProvider) (functions: IFunctionProvider) =
 
             let interpretConstant constant =
-                [| constant |]
+                match constant with
+                | ValueArray a -> invalidOp $"Array constants are not supported."
+                | constant -> constant
 
             let interpretVariable variable range index =
                 match variable with
@@ -24,84 +26,81 @@ module Interpreter =
                     | Some (a, b) ->
                         let valueA = interpretFormulaInternal a vars functions
                         let valueB = interpretFormulaInternal b vars functions
-                        let t = vars.LookupRange (id, valueA.[0], valueB.[0])
+                        let t = vars.LookupRange (id, valueA, valueB)
                         t
                     | None ->
                         match index with
                         | Some i ->
                             let value = interpretFormulaInternal i vars functions
-                            [| vars.LookupIndex (id, value.[0]) |]
-                        | None -> [| vars.Lookup id |]
+                            vars.LookupIndex (id, value)
+                        | None -> vars.Lookup id
 
             let interpretCoalesce a b = 
                 let valueA = interpretFormulaInternal a vars functions
                 match valueA with
-                | [| single |] ->
-                    match single with
-                    | Nothing -> interpretFormulaInternal b vars functions
-                    | _ -> valueA
-                | _ -> invalidOp $"Unable to coalesce multiple values."
+                | Nothing -> interpretFormulaInternal b vars functions
+                | _ -> valueA
 
             let interpretNegation negation = 
                 match Helpers.castToDouble(interpretFormulaInternal negation vars functions) with
-                | Some value -> [| Number(-value) |]
-                | None -> [| Nothing |]
+                | Some value -> Number(-value)
+                | None -> Nothing
 
             let interpretArithmetic a op b =
                 match (Helpers.castToDouble(interpretFormulaInternal a vars functions), Helpers.castToDouble(interpretFormulaInternal b vars functions)) with
                 | (Some valueA, Some valueB) ->
                     match op with
                     | Add ->
-                        [| Number(valueA + valueB) |]
+                        Number(valueA + valueB)
                     | Subtract ->
-                        [| Number(valueA - valueB) |]
+                        Number(valueA - valueB)
                     | Multiply ->
-                        [| Number(valueA * valueB) |]
+                        Number(valueA * valueB)
                     | Divide ->
-                        [| Number(valueA / valueB) |]
+                        Number(valueA / valueB)
                     | Modulus ->
-                        [| Number(valueA % valueB) |]
+                        Number(valueA % valueB)
                     | Power ->
-                        [| Number(valueA ** valueB) |]
-                | _ -> [| Nothing |]
+                        Number(valueA ** valueB)
+                | _ -> Nothing
 
             let interpretInversion inversion =
                 let value = Helpers.castToBool(interpretFormulaInternal inversion vars functions)
-                [| Boolean(not value) |]
+                Boolean(not value)
 
             let interpretComparison a op b =
                 let valueA = interpretFormulaInternal a vars functions
                 let valueB = interpretFormulaInternal b vars functions
                 match op with
                 | Equal ->
-                    [| Boolean(valueA = valueB) |]
+                    Boolean(valueA = valueB)
                 | NotEqual ->
-                    [| Boolean(valueA <> valueB) |]
+                    Boolean(valueA <> valueB)
                 | GreaterThan ->
-                    [| Boolean(valueA > valueB) |]
+                    Boolean(valueA > valueB)
                 | LessThan ->
-                    [| Boolean(valueA < valueB) |]
+                    Boolean(valueA < valueB)
                 | GreaterThanEqual ->
-                    [| Boolean(valueA >= valueB) |]
+                    Boolean(valueA >= valueB)
                 | LessThanEqual ->
-                    [| Boolean(valueA <= valueB) |]
+                    Boolean(valueA <= valueB)
 
             let interpretLogical a op b =
                 let valueA = Helpers.castToBool (interpretFormulaInternal a vars functions)
                 let valueB = lazy (Helpers.castToBool (interpretFormulaInternal b vars functions))
                 match op with
                 | And ->
-                    [| Boolean(valueA && valueB.Force()) |]
+                    Boolean(valueA && valueB.Force())
                 | Or ->
-                    [| Boolean(valueA || valueB.Force()) |]
+                    Boolean(valueA || valueB.Force())
 
             let interpretFunction f args =
                 match f with
                 | Identifier id ->
                     let interpretArg arg = interpretFormulaInternal arg vars functions
-                    let interpretedArgs = args |> List.map interpretArg |> Array.concat
+                    let interpretedArgs = args |> List.map interpretArg// |> Array.concat
                     let imp = functions.Lookup id
-                    [| imp.Execute(interpretedArgs) |]
+                    imp.Execute(List.toArray interpretedArgs)
 
             let interpretBranch cond a b =
                 let valueCond = Helpers.castToBool(interpretFormulaInternal cond vars functions)

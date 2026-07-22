@@ -139,6 +139,7 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
         Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Nothing; Nothing]))
+        Assert.AreEqual(Number(4.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0); ValueArray([| Number(1.0); Number(2.0) |])]))
 
         let rand = Random(42)
         let a = rand.Next(500);
@@ -159,6 +160,7 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Number(3.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
+        Assert.AreEqual(Number(6.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0); ValueArray([| Number(1.0); Number(2.0) |])]))
 
         let rand = Random(42)
         let a = rand.Next(500);
@@ -178,6 +180,7 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Number(1.5), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
+        Assert.AreEqual(Number(1.5), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0); ValueArray([| Number(1.0); Number(2.0) |])]))
 
         let rand = Random(42)
         let a = rand.Next(500);
@@ -198,6 +201,7 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Boolean(false), functionImplementation.Execute (List.toArray [Boolean(false); Number(2.0)]))
         Assert.AreEqual(Text("123"), functionImplementation.Execute (List.toArray [Text("123"); Number(2.0)]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Number(2.0)]))
+        Assert.AreEqual(ValueArray([| Number(1.0); Number(2.0) |]), functionImplementation.Execute (List.toArray [ValueArray([| Number(1.0); Number(2.0) |]); Number(1.0); Number(2.0)]))
         
     [<TestMethod>]
     member this.TestDefaultFunctionLast () =
@@ -214,6 +218,7 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Boolean(false), functionImplementation.Execute (List.toArray [Number(2.0); Boolean(false)]))
         Assert.AreEqual(Text("123"), functionImplementation.Execute (List.toArray [Number(2.0); Text("123")]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
+        Assert.AreEqual(ValueArray([| Number(1.0); Number(3.0) |]), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0); ValueArray([| Number(1.0); Number(3.0) |])]))
         
     [<TestMethod>]
     member this.TestDefaultFunctionMin () =
@@ -231,6 +236,7 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(123.0)]))
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
+        Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0); ValueArray([| Number(2.0); Number(0.0) |])]))
         
     [<TestMethod>]
     member this.TestDefaultFunctionMax () =
@@ -248,6 +254,7 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Number(123.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(123.0)]))
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
+        Assert.AreEqual(Number(3.0), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0); ValueArray([| Number(0.0); Number(3.0) |])]))
         
     [<TestMethod>]
     member this.TestDefaultFunctionCoalesce () =
@@ -267,6 +274,7 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Nothing; Number(2.0); Number(3.0)]))
         Assert.AreEqual(Number(3.0), functionImplementation.Execute (List.toArray [Nothing; Nothing; Number(3.0)]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing; Nothing]))
+        Assert.AreEqual(Number(3.0), functionImplementation.Execute (List.toArray [Nothing; ValueArray([| Nothing; Number(3.0) |])]))
         
     [<TestMethod>]
     member this.TestDefaultFunctionIfNull () =
@@ -283,6 +291,8 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0); Nothing]))
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Nothing; Number(2.0)]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
+        Assert.AreEqual(Number(3.0), functionImplementation.Execute (List.toArray [ValueArray([| Nothing; Number(3.0) |])]))
+        Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [ValueArray([| Number(1.0); Number(3.0) |])]))
 
     [<TestMethod>]
     member this.TestDefaultFunctionDiv () =
@@ -300,18 +310,27 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(0.0)]))
         Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
         Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Nothing; Number(2.0)]))
+        Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Number(1.0) |])]))
+        Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing |])]))
+        Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [ValueArray([| Nothing; Number(2.0) |])]))
 
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0); Boolean(true)]))
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(2.0); Boolean(true)]))
         Assert.AreEqual(Boolean(true), functionImplementation.Execute (List.toArray [Number(2.0); Number(0.0); Boolean(true)]))
         Assert.AreEqual(Boolean(true), functionImplementation.Execute (List.toArray [Number(2.0); Nothing; Boolean(true)]))
         Assert.AreEqual(Boolean(true), functionImplementation.Execute (List.toArray [Nothing; Number(2.0); Boolean(true)]))
+        Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Number(1.0); Boolean(true) |])]))
+        Assert.AreEqual(Boolean(true), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing; Boolean(true) |])]))
+        Assert.AreEqual(Boolean(true), functionImplementation.Execute (List.toArray [ValueArray([| Nothing; Number(2.0); Boolean(true) |])]))
         
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0); Nothing]))
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(2.0); Nothing]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Number(2.0); Number(0.0); Nothing]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Number(2.0); Nothing; Nothing]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Number(2.0); Nothing]))
+        Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Number(1.0); Boolean(true) |])]))
+        Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing; Nothing |])]))
+        Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [ValueArray([| Nothing; Number(2.0); Nothing |])]))
         
         let rand = Random(42)
         let a = rand.NextDouble();
@@ -319,7 +338,7 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Number(a / b), functionImplementation.Execute (List.toArray [Number(a); Number(b)]))
         
     [<TestMethod>]
-    member this.TestDefaultFunctionSuProduct () =
+    member this.TestDefaultFunctionSumProduct () =
         let functionImplementation = DefaultFunctionProvider.Instance.Lookup "SUMPRODUCT"
         Assert.AreEqual("SUMPRODUCT", functionImplementation.Name)
 
@@ -334,3 +353,7 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Number(5.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0); Number(2.0); Number(1.0)]))
         Assert.AreEqual(Number(3.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(3.0); Nothing; Number(1.0)]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing; Nothing; Nothing]))
+
+        Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [ValueArray([| Number(1.0); Number(1.0) |])]))
+        Assert.AreEqual(Number(5.0), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Number(1.0) |]); Number(2.0); Number(1.0)]))
+        Assert.AreEqual(Number(3.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(3.0); ValueArray([| Nothing; Number(1.0) |])]))

@@ -72,7 +72,7 @@ type ExpressionVariableProvider(expressionMap: Map<string, IAstItem<expr>>, func
                 | None -> Nothing
             
             match (lower, upper) with
-            | (Number a, Number b) -> Array.init (int(b - a) + 1) (fun x -> result)
+            | (Number a, Number b) -> ValueArray(Array.init (int(b - a) + 1) (fun x -> result))
             | _ -> invalidArg "range" "Numeric range expected."
         | Some v ->
             match this.CompiledExpressions.TryGetValue name with
@@ -83,7 +83,7 @@ type ExpressionVariableProvider(expressionMap: Map<string, IAstItem<expr>>, func
                     | None -> Nothing
                     
                 match (lower, upper) with
-                | (Number a, Number b) -> Array.init (int(b - a) + 1) (fun x -> result)
+                | (Number a, Number b) -> ValueArray(Array.init (int(b - a) + 1) (fun x -> result))
                 | _ -> invalidArg "range" "Numeric range expected."
             | (false, f) -> v.LookupRange (name, lower, upper, this)
     member this.LookupIndex name index =

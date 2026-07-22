@@ -101,7 +101,8 @@ type PowFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        match (Helpers.castToDouble input.[0], Helpers.castToDouble input.[1]) with
+        let values = Helpers.castToDoubles input
+        match (values.[0], values.[1]) with
         | (Some a, Some b) -> Number(a ** b)
         | _ -> Nothing
 
@@ -130,7 +131,8 @@ type ModFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        match (Helpers.castToDouble input.[0], Helpers.castToDouble input.[1]) with
+        let values = Helpers.castToDoubles input
+        match (values.[0], values.[1]) with
         | (Some a, Some b) -> Number(a % b)
         | _ -> Nothing
 
@@ -161,7 +163,7 @@ type CountFunction() =
     member this.Execute (input: value[]) =
         match isNull input with
         | true -> Number(0.0)
-        | false -> Number(Array.fold (fun a x -> if x = Nothing then a else a + 1.0) 0.0 input)
+        | false -> Number(Array.fold (fun a x -> if x = Nothing then a else a + 1.0) 0.0 (Helpers.flattenValues input))
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         true
@@ -184,7 +186,7 @@ type SumFunction() =
         | false ->
             if input.Length = 0 then Number(0.0)
             else
-                let values = input |> Array.choose Helpers.castToDouble
+                let values = Helpers.castToDoubles input |> Array.choose id
                 if values.Length = 0 then Nothing else Number(Array.sum values)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
@@ -203,7 +205,7 @@ type AvgFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = input |> Array.choose Helpers.castToDouble
+        let values = Helpers.castToDoubles input |> Array.choose id
         if values.Length = 0 then Nothing else Number(Array.average values)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
@@ -285,7 +287,7 @@ type MinFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = input |> Array.choose Helpers.castToDouble
+        let values = Helpers.castToDoubles input |> Array.choose id
         if values.Length = 0 then Nothing else Number(Array.min values)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
@@ -313,7 +315,7 @@ type MaxFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = input |> Array.choose Helpers.castToDouble
+        let values = Helpers.castToDoubles input |> Array.choose id
         if values.Length = 0 then Nothing else Number(Array.max values)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
@@ -341,7 +343,7 @@ type CoalesceFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let value = input |> Array.tryFind (fun x -> if x = Nothing then false else true)
+        let value = Helpers.flattenValues input |> Array.tryFind (fun x -> if x = Nothing then false else true)
         match value with
         | Some value -> value
         | _ -> Nothing
@@ -371,9 +373,10 @@ type IfNullFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        match input.[0] with
-        | Nothing -> input.[1]
-        | _ -> input.[0]
+        let flat = Helpers.flattenValues input
+        match flat.[0] with
+        | Nothing -> flat.[1]
+        | _ -> flat.[0]
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -400,12 +403,13 @@ type DivFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
+        let flat = Helpers.flattenValues input
         let defaultValue =
-            match input.Length with
-            | 3 -> input.[2]
+            match flat.Length with
+            | 3 -> flat.[2]
             | _ -> Number(0.0)
  
-        match (Helpers.castToDouble input.[0], Helpers.castToDouble input.[1]) with
+        match (Helpers.castToDouble flat.[0], Helpers.castToDouble flat.[1]) with
         | (Some a, Some b) -> if b <> 0 then Number(a / b) else defaultValue
         | _ -> defaultValue
 
@@ -434,7 +438,8 @@ type SumProductFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let l, r = input |> Array.splitAt (input.Length / 2)
+        let flat = Helpers.flattenValues input
+        let l, r = flat |> Array.splitAt (flat.Length / 2)
         let sp =
             fun (x: value) (y: value) ->
                 match (Helpers.castToDouble x, Helpers.castToDouble y) with

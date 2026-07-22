@@ -20,12 +20,12 @@ module FunctionValidator =
             member this.Lookup (name, sender) = Number(0.0)
             member this.LookupRange (name, lower, upper) =
                 match (lower, upper) with
-                | (Number a, Number b) -> Array.init (int(b - a) + 1) (fun x -> Number(0.0))
-                | _ -> [| Number(0.0) |]
+                | (Number a, Number b) -> ValueArray(Array.init (int(b - a) + 1) (fun x -> Number(0.0)))
+                | _ -> ValueArray([| Number(0.0) |])
             member this.LookupRange (name, lower, upper, sender) =
                 match (lower, upper) with
-                | (Number a, Number b) -> Array.init (int(b - a) + 1) (fun x -> Number(0.0))
-                | _ -> [| Number(0.0) |]
+                | (Number a, Number b) -> ValueArray(Array.init (int(b - a) + 1) (fun x -> Number(0.0)))
+                | _ -> ValueArray([| Number(0.0) |])
             member this.LookupIndex (name, index) = Number(0.0)
             member this.LookupIndex (name, index, sender) = Number(0.0)
     }

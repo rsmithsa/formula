@@ -27,35 +27,31 @@ module Compiler =
             Expression.Parameter(typeof<IFunctionProvider>, "functionProvider")
 
         let castToBoolExpression (value: Expression) =
-            Expression.Call(typeof<Helpers>.GetMethod("castToBool", [| typeof<value[]> |]), value) :> Expression
+            Expression.Call(typeof<Helpers>.GetMethod("castToBool", [| typeof<value> |]), value) :> Expression
 
         let castToDoubleExpression (value: Expression) =
-            Expression.Call(typeof<Helpers>.GetMethod("castToDouble", [| typeof<value[]> |]), value) :> Expression
+            Expression.Call(typeof<Helpers>.GetMethod("castToDouble", [| typeof<value> |]), value) :> Expression
             
         let castToNullableDoubleExpression (value: Expression) =
-            Expression.Call(typeof<Helpers>.GetMethod("castToNullableDouble", [| typeof<value[]> |]), value) :> Expression
-
-        let arrayConcatExpression (value: seq<Expression>) =
-            let param = Expression.NewArrayInit(typeof<value[]>, value)
-            Expression.Call(typeof<Helpers>.GetMethod("arrayConcat").MakeGenericMethod(typeof<value>), param) :> Expression
+            Expression.Call(typeof<Helpers>.GetMethod("castToNullableDouble", [| typeof<value> |]), value) :> Expression
 
         let equalityExpression (left: Expression, right: Expression) =
-            Expression.Call(typeof<Helpers>.GetMethod("fsEquality").MakeGenericMethod(typeof<value[]>), left, right) :> Expression
+            Expression.Call(typeof<Helpers>.GetMethod("fsEquality").MakeGenericMethod(typeof<value>), left, right) :> Expression
 
         let inequalityExpression (left: Expression, right: Expression) =
-            Expression.Call(typeof<Helpers>.GetMethod("fsInequality").MakeGenericMethod(typeof<value[]>), left, right) :> Expression
+            Expression.Call(typeof<Helpers>.GetMethod("fsInequality").MakeGenericMethod(typeof<value>), left, right) :> Expression
 
         let lessThanOrEqualExpression (left: Expression, right: Expression) =
-            Expression.Call(typeof<Helpers>.GetMethod("fsLessThanOrEqual").MakeGenericMethod(typeof<value[]>), left, right) :> Expression
+            Expression.Call(typeof<Helpers>.GetMethod("fsLessThanOrEqual").MakeGenericMethod(typeof<value>), left, right) :> Expression
 
         let greaterThanOrEqualExpression (left: Expression, right: Expression) =
-            Expression.Call(typeof<Helpers>.GetMethod("fsGreaterThanOrEqual").MakeGenericMethod(typeof<value[]>), left, right) :> Expression
+            Expression.Call(typeof<Helpers>.GetMethod("fsGreaterThanOrEqual").MakeGenericMethod(typeof<value>), left, right) :> Expression
 
         let lessThanExpression (left: Expression, right: Expression) =
-            Expression.Call(typeof<Helpers>.GetMethod("fsLessThan").MakeGenericMethod(typeof<value[]>), left, right) :> Expression
+            Expression.Call(typeof<Helpers>.GetMethod("fsLessThan").MakeGenericMethod(typeof<value>), left, right) :> Expression
 
         let greaterThanExpression (left: Expression, right: Expression) =
-            Expression.Call(typeof<Helpers>.GetMethod("fsGreaterThan").MakeGenericMethod(typeof<value[]>), left, right) :> Expression
+            Expression.Call(typeof<Helpers>.GetMethod("fsGreaterThan").MakeGenericMethod(typeof<value>), left, right) :> Expression
             
         let isSomeExpression (value: Expression) =
             Expression.NotEqual(value, Expression.Constant(null, typeof<Object>)) :> Expression
@@ -71,10 +67,10 @@ module Compiler =
             Expression.Property(value, typeof<Option<double>>.GetProperty("Value")) :> Expression
             
         let nothingExpression =
-            Expression.NewArrayInit(typeof<value>, Expression.Call(typeof<value>.GetMethod("Empty", BindingFlags.Static ||| BindingFlags.NonPublic))) :> Expression
+            Expression.Call(typeof<value>.GetMethod("Empty", BindingFlags.Static ||| BindingFlags.NonPublic)) :> Expression
             
         let valueArrayExpression (value: Expression) =
-            Expression.NewArrayInit(typeof<value>, Expression.Convert(value, typeof<value>)) :> Expression
+            Expression.Convert(value, typeof<value>) :> Expression
 
         let rec compileInternal (ast: IAstItem<expr>): Expression =
 
@@ -85,34 +81,32 @@ module Compiler =
                     | Boolean b -> Expression.Constant(b) :> Expression
                     | Text t -> Expression.Constant(t) :> Expression
                     | Nothing -> Expression.Call(typeof<value>.GetMethod("Empty", BindingFlags.Static ||| BindingFlags.NonPublic)) :> Expression
+                    | ValueArray a -> invalidOperationEx(Expression.Constant("Array constants are not supported.")) :> Expression
 
-                Expression.NewArrayInit(typeof<value>, Expression.Convert(result, typeof<value>)) :> Expression
+                Expression.Convert(result, typeof<value>) :> Expression
 
             let compileVariable variable range index =
                 match variable with
                 | Identifier id ->
                     match range with
                     | Some (a, b) ->
-                        let valueA = Expression.ArrayIndex(compileInternal a, Expression.Constant(0))
-                        let valueB = Expression.ArrayIndex(compileInternal b, Expression.Constant(0))
+                        let valueA = compileInternal a
+                        let valueB = compileInternal b
                         Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("LookupRange", [| typeof<String>; typeof<value>; typeof<value> |]), Expression.Constant(id), valueA, valueB) :> Expression
                     | None ->
                         match index with
                         | Some i ->
-                            let value = Expression.ArrayIndex(compileInternal i, Expression.Constant(0))
-                            Expression.NewArrayInit(typeof<value>, Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("LookupIndex", [| typeof<String>; typeof<value> |]), Expression.Constant(id), value)) :> Expression
+                            let value = compileInternal i
+                            Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("LookupIndex", [| typeof<String>; typeof<value> |]), Expression.Constant(id), value) :> Expression
                         | None ->
-                            Expression.NewArrayInit(typeof<value>, Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("Lookup", [| typeof<String> |]), Expression.Constant(id))) :> Expression
+                            Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("Lookup", [| typeof<String> |]), Expression.Constant(id)) :> Expression
 
             let compileCoalesce a b = 
                 let valueA = compileInternal a
                 Expression.Condition(
-                    Expression.Equal(Expression.ArrayLength(valueA), Expression.Constant(1)),
-                    Expression.Condition(
-                        isSomeValueExpression (Expression.ArrayIndex(valueA, Expression.Constant(0))),
-                        valueA,
-                        (compileInternal b)),
-                    invalidOperationEx(Expression.Constant("Unable to coalesce multiple values."))) :> Expression
+                    isSomeValueExpression (valueA),
+                    valueA,
+                    (compileInternal b))
             
             let compileNegation negation = 
                 let value = castToDoubleExpression(compileInternal negation)
@@ -140,7 +134,7 @@ module Compiler =
 
             let compileInversion inversion =
                 let value = castToBoolExpression(compileInternal inversion)
-                Expression.NewArrayInit(typeof<value>, Expression.Convert(Expression.Not(value), typeof<value>)) :> Expression
+                Expression.Convert(Expression.Not(value), typeof<value>) :> Expression
 
             let compileComparison a op b =
                 let valueA = compileInternal a
@@ -160,7 +154,7 @@ module Compiler =
                     | LessThanEqual ->
                         lessThanOrEqualExpression(valueA, valueB)
 
-                Expression.NewArrayInit(typeof<value>, Expression.Convert(result, typeof<value>)) :> Expression
+                Expression.Convert(result, typeof<value>) :> Expression
 
             let compileLogical a op b =
                 let valueA = castToBoolExpression(compileInternal a)
@@ -172,17 +166,17 @@ module Compiler =
                     | Or ->
                         Expression.Or(valueA, valueB)
 
-                Expression.NewArrayInit(typeof<value>, Expression.Convert(result, typeof<value>)) :> Expression
+                Expression.Convert(result, typeof<value>) :> Expression
 
             let compileFunction f args =
                 match f with
                 | Identifier id ->
                     let compileArg arg = compileInternal arg
                     let compiledArgs = args |> List.map compileArg
-                    let argExpression = arrayConcatExpression(compiledArgs)
+                    let argExpression = Expression.NewArrayInit(typeof<value>, compiledArgs)
                     let imp = Expression.Call(functionProvider, typeof<IFunctionProvider>.GetMethod("Lookup"), Expression.Constant(id))
                     let result = Expression.Call(imp, typeof<IFunctionImplementation>.GetMethod("Execute"), argExpression)
-                    Expression.NewArrayInit(typeof<value>, result) :> Expression
+                    result :> Expression
 
             let compileBranch cond a b =
                 let valueCond = castToBoolExpression(compileInternal cond)

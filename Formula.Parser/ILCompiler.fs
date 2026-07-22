@@ -31,19 +31,17 @@ module ILCompiler =
         
         let valueProperty = typeof<float option>.GetProperty("Value")
         
-        let castToBool = typeof<Helpers>.GetMethod("castToBool", [| typeof<value[]> |])
-        let castToDouble = typeof<Helpers>.GetMethod("castToDouble", [| typeof<value[]> |])
+        let castToBool = typeof<Helpers>.GetMethod("castToBool", [| typeof<value> |])
+        let castToDouble = typeof<Helpers>.GetMethod("castToDouble", [| typeof<value> |])
                     
-        let castToNullableDouble = typeof<Helpers>.GetMethod("castToNullableDouble", [| typeof<value[]> |])
+        let castToNullableDouble = typeof<Helpers>.GetMethod("castToNullableDouble", [| typeof<value> |])
 
-        let arrayConcat = typeof<Helpers>.GetMethod("arrayConcat").MakeGenericMethod(typeof<value>)
-        
-        let equality = typeof<Helpers>.GetMethod("fsEquality").MakeGenericMethod(typeof<value[]>)
-        let inequality = typeof<Helpers>.GetMethod("fsInequality").MakeGenericMethod(typeof<value[]>)
-        let lessThanOrEqual = typeof<Helpers>.GetMethod("fsLessThanOrEqual").MakeGenericMethod(typeof<value[]>)
-        let greaterThanOrEqual = typeof<Helpers>.GetMethod("fsGreaterThanOrEqual").MakeGenericMethod(typeof<value[]>)
-        let lessThan = typeof<Helpers>.GetMethod("fsLessThan").MakeGenericMethod(typeof<value[]>)
-        let greaterThan = typeof<Helpers>.GetMethod("fsGreaterThan").MakeGenericMethod(typeof<value[]>)
+        let equality = typeof<Helpers>.GetMethod("fsEquality").MakeGenericMethod(typeof<value>)
+        let inequality = typeof<Helpers>.GetMethod("fsInequality").MakeGenericMethod(typeof<value>)
+        let lessThanOrEqual = typeof<Helpers>.GetMethod("fsLessThanOrEqual").MakeGenericMethod(typeof<value>)
+        let greaterThanOrEqual = typeof<Helpers>.GetMethod("fsGreaterThanOrEqual").MakeGenericMethod(typeof<value>)
+        let lessThan = typeof<Helpers>.GetMethod("fsLessThan").MakeGenericMethod(typeof<value>)
+        let greaterThan = typeof<Helpers>.GetMethod("fsGreaterThan").MakeGenericMethod(typeof<value>)
 
         let lookup = typeof<IVariableProvider>.GetMethod("Lookup", [| typeof<String> |])
         let lookupIndex = typeof<IVariableProvider>.GetMethod("LookupIndex", [| typeof<String>; typeof<value> |])
@@ -62,27 +60,14 @@ module ILCompiler =
         let method = DynamicMethod("CompiledFormula", returnType, parameterTypes, typeof<CompiledFormulae>.Module)
 
         let il = method.GetILGenerator(1024)
-        let fTemp = il.DeclareLocal(typeof<float>)
-        let vTemp = il.DeclareLocal(typeof<value>)
         let aImm = il.DeclareLocal(typeof<float option>)
         let bImm = il.DeclareLocal(typeof<float option>)
-        let aBoolImm = il.DeclareLocal(typeof<bool>)
-        let bBoolImm = il.DeclareLocal(typeof<bool>)
-        let arrImm = il.DeclareLocal(typeof<value[]>)
         
-        let argArray = il.DeclareLocal(typeof<value[]>)
-        let curArray = il.DeclareLocal(typeof<value[]>)
-        let nestedArgArray = il.DeclareLocal(typeof<value[][]>)
+        let argArray = il.DeclareLocal(typeof<value>)
         
         let rec compileInternal (ast: IAstItem<expr>) =
             
             let compileConstant constant =
-                il.Emit(OpCodes.Ldc_I4_1)
-                il.Emit(OpCodes.Newarr, typeof<value>)
-                il.Emit(OpCodes.Stloc, curArray)
-                il.Emit(OpCodes.Ldloc, curArray)
-                il.Emit(OpCodes.Ldc_I4_0)
-                
                 match constant with
                 | Number n ->
                     il.Emit(OpCodes.Ldc_R8, n)
@@ -95,9 +80,10 @@ module ILCompiler =
                     il.EmitCall(OpCodes.Call, text, null)
                 | Nothing ->
                     il.EmitCall(OpCodes.Call, empty, null)
-                
-                il.Emit(OpCodes.Stelem_Ref)
-                il.Emit(OpCodes.Ldloc, curArray)
+                | ValueArray a ->
+                    il.Emit(OpCodes.Ldstr, "Array constants are not supported.")
+                    il.Emit(OpCodes.Newobj, invalidOperationEx)
+                    il.Emit(OpCodes.Throw)
 
             let compileVariable variable range index =
                 match variable with
@@ -108,69 +94,39 @@ module ILCompiler =
                         il.Emit(OpCodes.Ldstr, id)
                         
                         compileInternal (a)
-                        il.Emit(OpCodes.Ldc_I4_0)
-                        il.Emit(OpCodes.Ldelem_Ref)
-                        
                         compileInternal (b)
-                        il.Emit(OpCodes.Ldc_I4_0)
-                        il.Emit(OpCodes.Ldelem_Ref)
                         
                         il.EmitCall(OpCodes.Callvirt, lookupRange, null)
                     | None ->
-                        il.Emit(OpCodes.Ldc_I4_1)
-                        il.Emit(OpCodes.Newarr, typeof<value>)
-                        il.Emit(OpCodes.Stloc, curArray)
-                        il.Emit(OpCodes.Ldloc, curArray)
-                        il.Emit(OpCodes.Ldloc, curArray)
-                        il.Emit(OpCodes.Ldc_I4_0)
-                        
                         match index with
                         | Some i ->
                             il.Emit(OpCodes.Ldarg_0)
                             il.Emit(OpCodes.Ldstr, id)
                             
                             compileInternal (i)
-                            il.Emit(OpCodes.Ldc_I4_0)
-                            il.Emit(OpCodes.Ldelem_Ref)
                             
                             il.EmitCall(OpCodes.Callvirt, lookupIndex, null)
                         | None ->
                             il.Emit(OpCodes.Ldarg_0)
                             il.Emit(OpCodes.Ldstr, id)
                             il.EmitCall(OpCodes.Callvirt, lookup, null)
-                        
-                        il.Emit(OpCodes.Stelem_Ref)
 
             let compileCoalesce a b = 
                 let ret = il.DefineLabel()
                 let nullish = il.DefineLabel()
-                let ex = il.DefineLabel()
                 
                 compileInternal (a)
+                il.Emit(OpCodes.Stloc, aImm)
+                il.Emit(OpCodes.Ldloc, aImm)
 
-                il.Emit(OpCodes.Dup)
-                il.Emit(OpCodes.Stloc, arrImm)
-                il.Emit(OpCodes.Ldlen)
-                il.Emit(OpCodes.Ldc_I4_1)
-                il.Emit(OpCodes.Bne_Un, ex)
-
-                il.Emit(OpCodes.Ldloc, arrImm)
-                il.Emit(OpCodes.Ldc_I4_0)
-                il.Emit(OpCodes.Ldelem_Ref)
                 il.EmitCall(OpCodes.Call, empty, null)
                 il.Emit(OpCodes.Beq, nullish)
 
-                il.Emit(OpCodes.Ldloc, arrImm)
+                il.Emit(OpCodes.Ldloc, aImm)
                 il.Emit(OpCodes.Br, ret)
         
                 il.MarkLabel(nullish)
                 compileInternal (b)
-                il.Emit(OpCodes.Br, ret)
-                
-                il.MarkLabel(ex)
-                il.Emit(OpCodes.Ldstr, "Unable to coalesce multiple values.")
-                il.Emit(OpCodes.Newobj, invalidOperationEx)
-                il.Emit(OpCodes.Throw)
 
                 il.MarkLabel(ret)
             
@@ -180,16 +136,12 @@ module ILCompiler =
                 
                 compileInternal (negation)
 
-                il.Emit(OpCodes.Stloc, curArray)
-                il.Emit(OpCodes.Ldloc, curArray)
                 il.EmitCall(OpCodes.Call, castToDouble, null)
                 il.Emit(OpCodes.Stloc, aImm)
                 il.Emit(OpCodes.Ldloc, aImm)
                 
                 il.Emit(OpCodes.Brtrue, notNull)
                 
-                il.Emit(OpCodes.Ldloc, curArray)
-                il.Emit(OpCodes.Ldc_I4_0)
                 il.EmitCall(OpCodes.Call, empty, null)
                 il.Emit(OpCodes.Br, store)
                 
@@ -197,34 +149,24 @@ module ILCompiler =
                 il.Emit(OpCodes.Ldloc, aImm)
                 il.EmitCall(OpCodes.Call, valueProperty.GetMethod, null)
                 il.Emit(OpCodes.Neg)
-                il.Emit(OpCodes.Stloc, fTemp)
-                il.Emit(OpCodes.Ldloc, curArray)
-                il.Emit(OpCodes.Ldc_I4_0)
-                il.Emit(OpCodes.Ldloc, fTemp)
                 il.EmitCall(OpCodes.Call, number, null)
                 
                 il.MarkLabel(store)
-                il.Emit(OpCodes.Stelem_Ref)
-                il.Emit(OpCodes.Ldloc, curArray)
 
             let compileArithmetic a op b =
-                let store = il.DefineLabel()
+                let ret = il.DefineLabel()
                 let notNull = il.DefineLabel()
                 let nullCase = il.DefineLabel()                
                 
                 compileInternal (b)
-                il.Emit(OpCodes.Stloc, curArray)
-                il.Emit(OpCodes.Ldloc, curArray)
                 il.EmitCall(OpCodes.Call, castToDouble, null)
                 il.Emit(OpCodes.Stloc, bImm)
-                il.Emit(OpCodes.Ldloc, curArray)
                 il.Emit(OpCodes.Ldloc, bImm)
 
                 compileInternal (a)
                 il.EmitCall(OpCodes.Call, castToDouble, null)
                 il.Emit(OpCodes.Stloc, aImm)
                 il.Emit(OpCodes.Stloc, bImm)
-                il.Emit(OpCodes.Stloc, curArray)
                 
                 il.Emit(OpCodes.Ldloc, aImm)
                 il.Emit(OpCodes.Brfalse, nullCase)
@@ -232,10 +174,8 @@ module ILCompiler =
                 il.Emit(OpCodes.Brtrue, notNull)
                 
                 il.MarkLabel(nullCase)
-                il.Emit(OpCodes.Ldloc, curArray)
-                il.Emit(OpCodes.Ldc_I4_0)
                 il.EmitCall(OpCodes.Call, empty, null)
-                il.Emit(OpCodes.Br, store)
+                il.Emit(OpCodes.Br, ret)
                 
                 il.MarkLabel(notNull)
                 il.Emit(OpCodes.Ldloc, aImm)
@@ -251,41 +191,21 @@ module ILCompiler =
                 | Modulus -> il.Emit(OpCodes.Rem)
                 | Power -> il.EmitCall(OpCodes.Call, pow, null)
                 
-                il.Emit(OpCodes.Stloc, fTemp)
-                il.Emit(OpCodes.Ldloc, curArray)
-                il.Emit(OpCodes.Ldc_I4_0)
-                il.Emit(OpCodes.Ldloc, fTemp)
                 il.EmitCall(OpCodes.Call, number, null)
                 
-                il.MarkLabel(store)
-                il.Emit(OpCodes.Stelem_Ref)
-                il.Emit(OpCodes.Ldloc, curArray)
+                il.MarkLabel(ret)
 
             let compileInversion inversion =
                 compileInternal (inversion)
 
-                il.Emit(OpCodes.Dup)
-                il.Emit(OpCodes.Dup)
                 il.EmitCall(OpCodes.Call, castToBool, null)
-                il.Emit(OpCodes.Stloc, aBoolImm)
-                il.Emit(OpCodes.Ldc_I4_0)
-                il.Emit(OpCodes.Ldloc, aBoolImm)
                 
                 il.Emit(OpCodes.Ldc_I4_0)
                 il.Emit(OpCodes.Ceq)
                 il.EmitCall(OpCodes.Call, boolean, null)
 
-                il.Emit(OpCodes.Stelem_Ref)
-
             let compileComparison a op b =
                 compileInternal (a)
-                
-                il.Emit(OpCodes.Dup)
-                il.Emit(OpCodes.Dup)
-                il.Emit(OpCodes.Stloc, arrImm)
-                il.Emit(OpCodes.Ldc_I4_0)
-                il.Emit(OpCodes.Ldloc, arrImm)
-                                
                 compileInternal (b)
                 
                 match op with
@@ -298,17 +218,9 @@ module ILCompiler =
                 
                 il.EmitCall(OpCodes.Call, boolean, null)
 
-                il.Emit(OpCodes.Stelem_Ref)
-
             let compileLogical a op b =
                 compileInternal (b)
-
-                il.Emit(OpCodes.Dup)
-                il.Emit(OpCodes.Dup)
                 il.EmitCall(OpCodes.Call, castToBool, null)
-                il.Emit(OpCodes.Stloc, bBoolImm)
-                il.Emit(OpCodes.Ldc_I4_0)
-                il.Emit(OpCodes.Ldloc, bBoolImm)
                 
                 compileInternal (a)
                 il.EmitCall(OpCodes.Call, castToBool, null)
@@ -318,45 +230,30 @@ module ILCompiler =
                 | Or -> il.Emit(OpCodes.Or)
                 il.EmitCall(OpCodes.Call, boolean, null)
 
-                il.Emit(OpCodes.Stelem_Ref)
-
             let compileFunction f (args: IAstItem<expr> list) =
                 match f with
                 | Identifier id ->
                     il.Emit(OpCodes.Ldc_I4, args.Length)
-                    il.Emit(OpCodes.Newarr, typeof<value[]>)
-                    il.Emit(OpCodes.Stloc, nestedArgArray)
+                    il.Emit(OpCodes.Newarr, typeof<value>)
+                    il.Emit(OpCodes.Stloc, argArray)
                     args |> List.iteri (
                         fun i x ->
-                            il.Emit(OpCodes.Ldloc, nestedArgArray)
-                            compileInternal (x)
-                            il.Emit(OpCodes.Stloc, arrImm)
-                            il.Emit(OpCodes.Stloc, nestedArgArray)
+                            il.Emit(OpCodes.Ldloc, argArray)
+                            compileInternal(x)
+                            il.Emit(OpCodes.Stloc, aImm)
+                            il.Emit(OpCodes.Stloc, argArray)
 
-                            il.Emit(OpCodes.Ldloc, nestedArgArray)
+                            il.Emit(OpCodes.Ldloc, argArray)
                             il.Emit(OpCodes.Ldc_I4, i)
-                            il.Emit(OpCodes.Ldloc, arrImm)
+                            il.Emit(OpCodes.Ldloc, aImm)
                             il.Emit(OpCodes.Stelem_Ref)
                     )
-                    il.Emit(OpCodes.Ldloc, nestedArgArray)
-                    il.EmitCall(OpCodes.Call, arrayConcat, null)
-                    il.Emit(OpCodes.Stloc, argArray)
 
                     il.Emit(OpCodes.Ldarg_1)
                     il.Emit(OpCodes.Ldstr, id)
                     il.EmitCall(OpCodes.Callvirt, funcLookup, null)
                     il.Emit(OpCodes.Ldloc, argArray)
                     il.EmitCall(OpCodes.Callvirt, funcExecute, null)
-                    il.Emit(OpCodes.Stloc, vTemp)
-
-                    il.Emit(OpCodes.Ldc_I4_1)
-                    il.Emit(OpCodes.Newarr, typeof<value>)
-                    il.Emit(OpCodes.Stloc, curArray)
-                    il.Emit(OpCodes.Ldloc, curArray)
-                    il.Emit(OpCodes.Ldc_I4_0)
-                    il.Emit(OpCodes.Ldloc, vTemp)
-                    il.Emit(OpCodes.Stelem_Ref)
-                    il.Emit(OpCodes.Ldloc, curArray)
 
             let compileBranch cond a b =
                 let ret = il.DefineLabel()

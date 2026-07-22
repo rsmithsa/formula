@@ -30,7 +30,7 @@ type DdbFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
+        let values = Helpers.castToDoubles input |> Array.choose id
 
         let factor =
             match values.Length with
@@ -65,7 +65,7 @@ type FvFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input.[0..3])
+        let values = Helpers.castToDoubles input |> Array.choose id
 
         let pv =
             match values.Length with
@@ -73,8 +73,8 @@ type FvFunction() =
             | _ -> 0.0
 
         let annuityDue =
-            match input.Length with
-            | 5 -> input.[4]
+            match values.Length with
+            | 5 -> Number(values.[4])
             | _ -> Boolean(false)
 
         let fv = values.[2] * ((1.0 + values.[0]) ** values.[1] - 1.0) / values.[0]
@@ -109,8 +109,9 @@ type NpvFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let rate = (Helpers.asDoubles(input.[0..0])).[0]
-        let flows = input.[1..] |> Array.choose Helpers.castToDouble
+        let values = Helpers.castToDoubles input
+        let rate = (values.[0..0] |> Array.choose id).[0]
+        let flows = values.[1..] |> Array.choose id
 
         if flows.Length = 0 then Nothing
         else
@@ -145,8 +146,9 @@ type IrrFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let guess = (Helpers.asDoubles(input.[0..0])).[0]
-        let flows = input.[1..] |> Array.choose Helpers.castToDouble |> Array.map Number
+        let values = Helpers.castToDoubles input
+        let guess = (values.[0..0] |> Array.choose id).[0]
+        let flows = values.[1..] |> Array.choose id |> Array.map Number
 
         if flows.Length < 2 then Nothing
         else
@@ -186,10 +188,11 @@ type MirrFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let params' = Helpers.asDoubles(input.[0..1])
+        let values = Helpers.castToDoubles input
+        let params' = values.[0..1] |> Array.choose id
         let financeRate = params'.[0]
         let reinvestmentRate = params'.[1]
-        let flows = input.[2..] |> Array.choose Helpers.castToDouble
+        let flows = values.[2..] |> Array.choose id
 
         if flows.Length < 2 then Nothing
         else
@@ -242,7 +245,7 @@ type NperFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input.[0..3])
+        let values = Helpers.castToDoubles input |> Array.choose id
 
         let rate = values.[0]
         let pmt = values.[1]
@@ -253,8 +256,8 @@ type NperFunction() =
             | _ -> 0.0
 
         let annuityDue =
-            match input.Length with
-            | 5 -> input.[4]
+            match values.Length with
+            | 5 -> Number(values.[4])
             | _ -> Boolean(false)
 
         match values.[0] with
@@ -292,7 +295,7 @@ type PmtFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input.[0..3])
+        let values = Helpers.castToDoubles input |> Array.choose id
 
         let fv =
             match values.Length with
@@ -300,8 +303,8 @@ type PmtFunction() =
             | _ -> 0.0
 
         let annuityDue =
-            match input.Length with
-            | 5 -> input.[4]
+            match values.Length with
+            | 5 -> Number(values.[4])
             | _ -> Boolean(false)
 
         let pvPmt = values.[0] * values.[2] / (1.0 - (1.0 + values.[0]) ** -values.[1])
@@ -341,14 +344,14 @@ type IpmtFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input.[0..4])
+        let values = Helpers.castToDoubles input |> Array.choose id
 
         let annuityDue =
-            match input.Length with
-            | 6 -> input.[5]
+            match values.Length with
+            | 6 -> Number(values.[5])
             | _ -> Boolean(false)
-        let pmt = pmtImplementation.Execute(Array.append input.[0..0] input.[2..])
-        let fv = fvImplementation.Execute(List.toArray [input.[0]; Number(values.[1] - 1.0); pmt; input.[3]; annuityDue])
+        let pmt = pmtImplementation.Execute(Array.append (values.[0..0] |> Array.map Number) (values.[2..] |> Array.map Number))
+        let fv = fvImplementation.Execute(List.toArray [Number(values.[0]); Number(values.[1] - 1.0); pmt; Number(values.[3]); annuityDue])
 
         match Helpers.castToBool annuityDue with
         | true ->
@@ -413,7 +416,7 @@ type PvFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input.[0..3])
+        let values = Helpers.castToDoubles input |> Array.choose id
 
         let fv =
             match values.Length with
@@ -421,8 +424,8 @@ type PvFunction() =
             | _ -> 0.0
 
         let annuityDue =
-            match input.Length with
-            | 5 -> input.[4]
+            match values.Length with
+            | 5 -> Number(values.[4])
             | _ -> Boolean(false)
 
         let pv = values.[2] * (1.0 - (1.0 + values.[0]) ** -values.[1]) / values.[0]
@@ -457,7 +460,7 @@ type RateFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(Array.append input.[0..3] input.[5..5])
+        let values = Helpers.castToDoubles input |> Array.choose id
 
         let nper = values.[0]
         let pmt = values.[1]
@@ -468,13 +471,13 @@ type RateFunction() =
             | _ -> 0.0
 
         let annuityDue =
-            match input.Length with
-            | 5 | 6 -> input.[4]
+            match values.Length with
+            | 5 | 6 -> Number(values.[4])
             | _ -> Boolean(false)
 
         let guess =
             match values.Length with
-            | 5 -> values.[4]
+            | 6 -> values.[5]
             | _ -> 0.1
 
         let delta = 0.01
@@ -513,7 +516,7 @@ type SlnFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
+        let values = Helpers.castToDoubles input |> Array.choose id
 
         Number((values.[0] - values.[1]) / values.[2])
 
@@ -542,7 +545,7 @@ type SydFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.asDoubles(input)
+        let values = Helpers.castToDoubles input |> Array.choose id
 
         Number(((values.[0] - values.[1]) * (values.[2] - values.[3] + 1.0) * 2.0) / (values.[2] * (values.[2] + 1.0)))
 

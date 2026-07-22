@@ -19,12 +19,8 @@ type Helpers =
         | Text x when x.ToLowerInvariant() = "true" -> true
         | Text x when x.ToLowerInvariant() = "false" -> false
         | Nothing -> false
+        | ValueArray x -> Helpers.castToBool(x.[0])
         | _ -> invalidOp $"Unable to cast '{value}' to boolean."
-
-    static member castToBool (value: value[]) =
-        match value.Length with
-        | 1 -> Helpers.castToBool value.[0]
-        | _ -> invalidOp $"Unable to cast multiple values to a single value."
 
     static member castToDouble value =
         match value with
@@ -33,32 +29,26 @@ type Helpers =
         | Boolean x when x = false -> Some(0.0)
         | Text x -> Some(float(x))
         | Nothing -> None
+        | ValueArray x -> Helpers.castToDouble(x.[0])
         | _ -> invalidOp $"Unable to cast '{value}' to numeric."
 
-    static member castToDouble (value: value[]) =
-        match value.Length with
-        | 1 -> Helpers.castToDouble value.[0]
-        | _ -> invalidOp $"Unable to cast multiple values to a single value."
-
+    static let flatten vals = seq {
+        for v in vals do
+            match v with
+            | ValueArray x -> yield! x//flatten x
+            | x -> yield x
+    }
+    
+    static member flattenValues values =
+        flatten values |> Seq.toArray
+    
     static member castToNullableDouble (value: value) =
         match Helpers.castToDouble value with
         | Some x -> Nullable(x)
-        |_ -> Nullable()
+        | _ -> Nullable()
     
-    static member castToNullableDouble (value: value[]) =
-        match Helpers.castToDouble value with
-        | Some x -> Nullable(x)
-        |_ -> Nullable()
-    
-    static member asDoubles values =
-        values |> Array.map (
-            function
-            | Number x -> x
-            | _ -> invalidArg "input" "Numeric input expected."
-        )
-
-    static member arrayConcat input =
-        Array.concat input
+    static member castToDoubles values =
+        flatten values |> Seq.map Helpers.castToDouble |> Seq.toArray
 
     static member fsEquality x y =
         x = y

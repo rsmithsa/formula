@@ -27,7 +27,7 @@ type TypedMapVariableProvider(map: Map<string, value>) =
     member _.Lookup name = map.[name]
     member _.LookupRange (name, lower, upper) =
         match lower, upper with
-        | Number a, Number b -> Array.init (int (b - a) + 1) (fun _ -> map.[name])
+        | Number a, Number b -> ValueArray(Array.init (int (b - a) + 1) (fun _ -> map.[name]))
         | _ -> invalidArg "range" "Numeric range expected."
     member _.LookupIndex (name, _index) = map.[name]
 

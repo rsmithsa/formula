@@ -37,6 +37,7 @@ module Ast =
                | Boolean of bool
                | Text of string
                | Nothing
+               | ValueArray of value array
     with
                static member inline op_Implicit(x: float) = Number(x)
                static member inline op_Implicit(x: bool) = Boolean(x)
