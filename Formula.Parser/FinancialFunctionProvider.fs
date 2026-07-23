@@ -30,7 +30,7 @@ type DdbFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castToDoubles input |> Array.choose id
+        let values = Helpers.castFilterToNonNullDoubles input
 
         let factor =
             match values.Length with
@@ -66,7 +66,7 @@ type FvFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castToDoubles input |> Array.choose id
+        let values = Helpers.castFilterToNonNullDoubles input
 
         let pv =
             match values.Length with
@@ -250,7 +250,7 @@ type NperFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castToDoubles input |> Array.choose id
+        let values = Helpers.castFilterToNonNullDoubles input
 
         let rate = values.[0]
         let pmt = values.[1]
@@ -301,7 +301,7 @@ type PmtFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castToDoubles input |> Array.choose id
+        let values = Helpers.castFilterToNonNullDoubles input
 
         let fv =
             match values.Length with
@@ -351,7 +351,7 @@ type IpmtFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castToDoubles input |> Array.choose id
+        let values = Helpers.castFilterToNonNullDoubles input
 
         let annuityDue =
             match values.Length with
@@ -425,7 +425,7 @@ type PvFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castToDoubles input |> Array.choose id
+        let values = Helpers.castFilterToNonNullDoubles input
 
         let fv =
             match values.Length with
@@ -470,7 +470,7 @@ type RateFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castToDoubles input |> Array.choose id
+        let values = Helpers.castFilterToNonNullDoubles input
 
         let nper = values.[0]
         let pmt = values.[1]
@@ -527,7 +527,7 @@ type SlnFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castToDoubles input |> Array.choose id
+        let values = Helpers.castFilterToNonNullDoubles input
 
         Number((values.[0] - values.[1]) / values.[2])
 
@@ -557,7 +557,7 @@ type SydFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castToDoubles input |> Array.choose id
+        let values = Helpers.castFilterToNonNullDoubles input
 
         Number(((values.[0] - values.[1]) * (values.[2] - values.[3] + 1.0) * 2.0) / (values.[2] * (values.[2] + 1.0)))
 

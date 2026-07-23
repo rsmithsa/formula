@@ -7,6 +7,7 @@
 namespace Formula.Parser
 
 open System
+open System.Buffers
 open Formula.Parser.Ast
 
 type Helpers = 
@@ -23,33 +24,109 @@ type Helpers =
         | _ -> invalidOp $"Unable to cast '{value}' to boolean."
 
     static member castToDouble value =
-        match value with
-        | Number x -> Some(x)
-        | Boolean x when x = true -> Some(1.0)
-        | Boolean x when x = false -> Some(0.0)
-        | Text x -> Some(float(x))
-        | Nothing -> None
-        | ValueArray x -> Helpers.castToDouble(x.[0])
-        | _ -> invalidOp $"Unable to cast '{value}' to numeric."
+        Option.ofNullable (Helpers.castToNullableDouble value)
+   
+    static member flattenValues (values: value[]) =
+        let pool = ArrayPool<value>.Shared
+        let mutable requiredCap = values.Length
+        let mutable buffer = pool.Rent(requiredCap)
+        let mutable count = 0
+        
+        try
+            for v in values do 
+                match v with
+                | ValueArray a ->
+                    requiredCap <- requiredCap + a.Length
+                    if requiredCap > buffer.Length then
+                        let newBuffer = pool.Rent(requiredCap)
+                        Array.blit buffer 0 newBuffer 0 count
+                        pool.Return(buffer)
+                        buffer <- newBuffer
 
-    static let flatten vals = seq {
-        for v in vals do
-            match v with
-            | ValueArray x -> yield! x//flatten x
-            | x -> yield x
-    }
-    
-    static member flattenValues values =
-        flatten values |> Seq.toArray
+                    for x in a do
+                        buffer.[count] <- x
+                        count <- count + 1
+                | x ->
+                    buffer.[count] <- x
+                    count <- count + 1
+
+            let result = buffer.[0 .. count - 1]
+            result
+        finally
+            pool.Return(buffer)
     
     static member castToNullableDouble (value: value) =
-        match Helpers.castToDouble value with
-        | Some x -> Nullable(x)
-        | _ -> Nullable()
+        match value with
+        | Number x -> Nullable(x)
+        | Boolean x when x = true -> Nullable(1.0)
+        | Boolean x when x = false -> Nullable(0.0)
+        | Text x -> Nullable(float(x))
+        | Nothing -> Nullable()
+        | ValueArray x -> Helpers.castToNullableDouble(x.[0])
+        | _ -> invalidOp $"Unable to cast '{value}' to numeric."
     
-    static member castToDoubles values =
-        flatten values |> Seq.map Helpers.castToDouble |> Seq.toArray
+    static member castToDoubles (values: value[]) =
+        let pool = ArrayPool<float option>.Shared
+        let mutable requiredCap = values.Length
+        let mutable buffer = pool.Rent(requiredCap)
+        let mutable count = 0
 
+        try
+            for v in values do 
+                match v with
+                | ValueArray a ->
+                    requiredCap <- requiredCap + a.Length
+                    if requiredCap > buffer.Length then
+                        let newBuffer = pool.Rent(requiredCap)
+                        Array.blit buffer 0 newBuffer 0 count
+                        pool.Return(buffer)
+                        buffer <- newBuffer
+
+                    for x in a do
+                        buffer.[count] <- (Helpers.castToDouble x)
+                        count <- count + 1
+                | x ->
+                    buffer.[count] <- (Helpers.castToDouble x)
+                    count <- count + 1
+
+            let result = buffer.[0 .. count - 1]
+            result
+        finally
+            pool.Return(buffer)
+
+    static member castFilterToNonNullDoubles (values: value[]) =
+        let pool = ArrayPool<float>.Shared
+        let mutable requiredCap = values.Length
+        let mutable buffer = pool.Rent(requiredCap)
+        let mutable count = 0
+
+        try
+            for v in values do 
+                match v with
+                | ValueArray a ->
+                    requiredCap <- requiredCap + a.Length
+                    if requiredCap > buffer.Length then
+                        let newBuffer = pool.Rent(requiredCap)
+                        Array.blit buffer 0 newBuffer 0 count
+                        pool.Return(buffer)
+                        buffer <- newBuffer
+
+                    for x in a do
+                        let n = Helpers.castToNullableDouble x
+                        if n.HasValue then
+                            buffer.[count] <- n.GetValueOrDefault()
+                            count <- count + 1
+                | x ->
+                    let n = Helpers.castToNullableDouble x
+                    if n.HasValue then
+                        buffer.[count] <- n.GetValueOrDefault()
+                        count <- count + 1
+
+            let result = buffer.[0 .. count - 1]
+            result
+        finally
+            pool.Return(buffer)
+    
     static member fsEquality x y =
         x = y
 

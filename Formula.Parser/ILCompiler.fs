@@ -29,7 +29,8 @@ module ILCompiler =
         
         let pow = typeof<Math>.GetMethod("Pow", [| typeof<double>; typeof<double> |])
         
-        let valueProperty = typeof<float option>.GetProperty("Value")
+        let nullableDoubleHasValue = typeof<Nullable<double>>.GetProperty("HasValue").GetGetMethod()
+        let nullableDoubleGetValueOrDefault = typeof<Nullable<double>>.GetMethod("GetValueOrDefault", [||])
         
         let castToBool = typeof<Helpers>.GetMethod("castToBool", [| typeof<value> |])
         let castToDouble = typeof<Helpers>.GetMethod("castToDouble", [| typeof<value> |])
@@ -60,10 +61,10 @@ module ILCompiler =
         let method = DynamicMethod("CompiledFormula", returnType, parameterTypes, typeof<CompiledFormulae>.Module)
 
         let il = method.GetILGenerator(1024)
-        let aImm = il.DeclareLocal(typeof<float option>)
-        let bImm = il.DeclareLocal(typeof<float option>)
         
-        let argArray = il.DeclareLocal(typeof<value>)
+        let valueImm = il.DeclareLocal(typeof<value>)
+        let nullableA = il.DeclareLocal(typeof<Nullable<double>>)
+        let nullableB = il.DeclareLocal(typeof<Nullable<double>>)
         
         let rec compileInternal (ast: IAstItem<expr>) =
             
@@ -116,13 +117,13 @@ module ILCompiler =
                 let nullish = il.DefineLabel()
                 
                 compileInternal (a)
-                il.Emit(OpCodes.Stloc, aImm)
-                il.Emit(OpCodes.Ldloc, aImm)
+                il.Emit(OpCodes.Stloc, valueImm)
+                il.Emit(OpCodes.Ldloc, valueImm)
 
                 il.EmitCall(OpCodes.Call, empty, null)
                 il.Emit(OpCodes.Beq, nullish)
 
-                il.Emit(OpCodes.Ldloc, aImm)
+                il.Emit(OpCodes.Ldloc, valueImm)
                 il.Emit(OpCodes.Br, ret)
         
                 il.MarkLabel(nullish)
@@ -131,57 +132,58 @@ module ILCompiler =
                 il.MarkLabel(ret)
             
             let compileNegation negation = 
-                let store = il.DefineLabel()
+                let ret = il.DefineLabel()
                 let notNull = il.DefineLabel()
                 
                 compileInternal (negation)
+                il.EmitCall(OpCodes.Call, castToNullableDouble, null)
+                il.Emit(OpCodes.Stloc, nullableA)
 
-                il.EmitCall(OpCodes.Call, castToDouble, null)
-                il.Emit(OpCodes.Stloc, aImm)
-                il.Emit(OpCodes.Ldloc, aImm)
-                
+                il.Emit(OpCodes.Ldloca, nullableA)
+                il.EmitCall(OpCodes.Call, nullableDoubleHasValue, null)
                 il.Emit(OpCodes.Brtrue, notNull)
                 
                 il.EmitCall(OpCodes.Call, empty, null)
-                il.Emit(OpCodes.Br, store)
+                il.Emit(OpCodes.Br, ret)
                 
                 il.MarkLabel(notNull)
-                il.Emit(OpCodes.Ldloc, aImm)
-                il.EmitCall(OpCodes.Call, valueProperty.GetMethod, null)
+                il.Emit(OpCodes.Ldloca, nullableA)
+                il.EmitCall(OpCodes.Call, nullableDoubleGetValueOrDefault, null)
                 il.Emit(OpCodes.Neg)
                 il.EmitCall(OpCodes.Call, number, null)
                 
-                il.MarkLabel(store)
+                il.MarkLabel(ret)
 
             let compileArithmetic a op b =
                 let ret = il.DefineLabel()
                 let notNull = il.DefineLabel()
                 let nullCase = il.DefineLabel()                
                 
-                compileInternal (b)
-                il.EmitCall(OpCodes.Call, castToDouble, null)
-                il.Emit(OpCodes.Stloc, bImm)
-                il.Emit(OpCodes.Ldloc, bImm)
-
                 compileInternal (a)
-                il.EmitCall(OpCodes.Call, castToDouble, null)
-                il.Emit(OpCodes.Stloc, aImm)
-                il.Emit(OpCodes.Stloc, bImm)
-                
-                il.Emit(OpCodes.Ldloc, aImm)
+                il.EmitCall(OpCodes.Call, castToNullableDouble, null)
+
+                compileInternal (b)
+                il.EmitCall(OpCodes.Call, castToNullableDouble, null)
+
+                il.Emit(OpCodes.Stloc, nullableB)
+                il.Emit(OpCodes.Stloc, nullableA)
+
+                il.Emit(OpCodes.Ldloca, nullableA)
+                il.EmitCall(OpCodes.Call, nullableDoubleHasValue, null)
                 il.Emit(OpCodes.Brfalse, nullCase)
-                il.Emit(OpCodes.Ldloc, bImm)
+                il.Emit(OpCodes.Ldloca, nullableB)
+                il.EmitCall(OpCodes.Call, nullableDoubleHasValue, null)
                 il.Emit(OpCodes.Brtrue, notNull)
-                
+
                 il.MarkLabel(nullCase)
                 il.EmitCall(OpCodes.Call, empty, null)
                 il.Emit(OpCodes.Br, ret)
                 
                 il.MarkLabel(notNull)
-                il.Emit(OpCodes.Ldloc, aImm)
-                il.EmitCall(OpCodes.Call, valueProperty.GetMethod, null)
-                il.Emit(OpCodes.Ldloc, bImm)
-                il.EmitCall(OpCodes.Call, valueProperty.GetMethod, null)
+                il.Emit(OpCodes.Ldloca, nullableA)
+                il.EmitCall(OpCodes.Call, nullableDoubleGetValueOrDefault, null)
+                il.Emit(OpCodes.Ldloca, nullableB)
+                il.EmitCall(OpCodes.Call, nullableDoubleGetValueOrDefault, null)
                 
                 match op with
                 | Add -> il.Emit(OpCodes.Add)
@@ -233,26 +235,20 @@ module ILCompiler =
             let compileFunction f (args: IAstItem<expr> list) =
                 match f with
                 | Identifier id ->
-                    il.Emit(OpCodes.Ldc_I4, args.Length)
-                    il.Emit(OpCodes.Newarr, typeof<value>)
-                    il.Emit(OpCodes.Stloc, argArray)
-                    args |> List.iteri (
-                        fun i x ->
-                            il.Emit(OpCodes.Ldloc, argArray)
-                            compileInternal(x)
-                            il.Emit(OpCodes.Stloc, aImm)
-                            il.Emit(OpCodes.Stloc, argArray)
-
-                            il.Emit(OpCodes.Ldloc, argArray)
-                            il.Emit(OpCodes.Ldc_I4, i)
-                            il.Emit(OpCodes.Ldloc, aImm)
-                            il.Emit(OpCodes.Stelem_Ref)
-                    )
-
                     il.Emit(OpCodes.Ldarg_1)
                     il.Emit(OpCodes.Ldstr, id)
                     il.EmitCall(OpCodes.Callvirt, funcLookup, null)
-                    il.Emit(OpCodes.Ldloc, argArray)
+
+                    il.Emit(OpCodes.Ldc_I4, args.Length)
+                    il.Emit(OpCodes.Newarr, typeof<value>)
+                    args |> List.iteri (
+                        fun i x ->
+                            il.Emit(OpCodes.Dup)
+                            il.Emit(OpCodes.Ldc_I4, i)
+                            compileInternal(x)
+                            il.Emit(OpCodes.Stelem_Ref)
+                    )
+
                     il.EmitCall(OpCodes.Callvirt, funcExecute, null)
 
             let compileBranch cond a b =

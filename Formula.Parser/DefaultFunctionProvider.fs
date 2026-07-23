@@ -191,7 +191,7 @@ type SumFunction() =
         | false ->
             if input.Length = 0 then Number(0.0)
             else
-                let values = Helpers.castToDoubles input |> Array.choose id
+                let values = Helpers.castFilterToNonNullDoubles input
                 if values.Length = 0 then Nothing else Number(Array.sum values)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
@@ -210,7 +210,7 @@ type AvgFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castToDoubles input |> Array.choose id
+        let values = Helpers.castFilterToNonNullDoubles input
         if values.Length = 0 then Nothing else Number(Array.average values)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
@@ -293,7 +293,7 @@ type MinFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castToDoubles input |> Array.choose id
+        let values = Helpers.castFilterToNonNullDoubles input
         if values.Length = 0 then Nothing else Number(Array.min values)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
@@ -322,7 +322,7 @@ type MaxFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castToDoubles input |> Array.choose id
+        let values = Helpers.castFilterToNonNullDoubles input
         if values.Length = 0 then Nothing else Number(Array.max values)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
