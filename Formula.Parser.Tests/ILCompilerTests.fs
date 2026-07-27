@@ -528,3 +528,33 @@ type ILCompilerTests () =
             Assert.AreEqual(Some(42.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestCompileWildcard () =
+        let result = parseFormulaString "SUM({V*})"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
+            Assert.AreEqual(Some(48.0), value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestCompileWildcardWithIndex () =
+        let result = parseFormulaString "SUM({V*}|1|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
+            Assert.AreEqual(Some(48.0), value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestCompileWildcardWithRange () =
+        let result = parseFormulaString "SUM({V*}|1:2|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
+            Assert.AreEqual(Some(96.0), value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)

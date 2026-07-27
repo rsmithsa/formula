@@ -18,22 +18,26 @@ module Interpreter =
                 constant
 
             let interpretVariable variable range index =
-                match variable with
-                | Identifier id ->
-                    match range with
-                    | Some (a, b) ->
-                        let valueA = interpretFormulaInternal a vars functions
-                        let valueB = interpretFormulaInternal b vars functions
-                        let t = vars.LookupRange (id, valueA, valueB)
-                        t
+                match range with
+                | Some (a, b) ->
+                    let valueA = interpretFormulaInternal a vars functions
+                    let valueB = interpretFormulaInternal b vars functions
+                    match variable with
+                    | Identifier id -> vars.LookupRange (id, valueA, valueB)
+                    | WildcardIdentifier pattern -> Helpers.expandWildcardRange vars pattern valueA valueB
+                | None ->
+                    match index with
+                    | Some i ->
+                        let value = interpretFormulaInternal i vars functions
+                        match variable with
+                        | Identifier id -> vars.LookupIndex (id, value)
+                        | WildcardIdentifier pattern -> Helpers.expandWildcardIndex vars pattern value
                     | None ->
-                        match index with
-                        | Some i ->
-                            let value = interpretFormulaInternal i vars functions
-                            vars.LookupIndex (id, value)
-                        | None -> vars.Lookup id
+                        match variable with
+                        | Identifier id -> vars.Lookup id
+                        | WildcardIdentifier pattern -> Helpers.expandWildcard vars pattern
 
-            let interpretCoalesce a b = 
+            let interpretCoalesce a b =
                 let valueA = interpretFormulaInternal a vars functions
                 match valueA with
                 | Nothing -> interpretFormulaInternal b vars functions
@@ -92,13 +96,12 @@ module Interpreter =
                 | Or ->
                     Boolean(valueA || valueB.Force())
 
-            let interpretFunction f args =
-                match f with
-                | Identifier id ->
-                    let interpretArg arg = interpretFormulaInternal arg vars functions
-                    let interpretedArgs = args |> List.map interpretArg// |> Array.concat
-                    let imp = functions.Lookup id
-                    imp.Execute(List.toArray interpretedArgs)
+            let interpretFunction (f: identifier) args =
+                let id = f.IdentifierValue
+                let interpretArg arg = interpretFormulaInternal arg vars functions
+                let interpretedArgs = args |> List.map interpretArg// |> Array.concat
+                let imp = functions.Lookup id
+                imp.Execute(List.toArray interpretedArgs)
 
             let interpretBranch cond a b =
                 let valueCond = Helpers.castToBool(interpretFormulaInternal cond vars functions)

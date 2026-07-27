@@ -58,8 +58,13 @@ type CompositeVariableProvider(providers: seq<IVariableProvider>) =
             toSearch
             |> Seq.find (fun x -> x.IsDefined name)
         provider.LookupIndex (name, index)
+    member this.MatchNames pattern sender =
+        knownVariables.Force()
+        |> Seq.where (fun x -> LanguagePrimitives.PhysicalEquality x sender = false)
+        |> Seq.collect (fun x -> x.MatchNames pattern)
+        |> Seq.distinct
 
-    interface IVariableProvider with 
+    interface IVariableProvider with
         member this.IsDefined (name) = this.IsDefined name null
         member this.IsDefined (name, sender) = this.IsDefined name sender
         member this.Lookup (name) = this.Lookup name null
@@ -68,3 +73,5 @@ type CompositeVariableProvider(providers: seq<IVariableProvider>) =
         member this.LookupRange (name, lower, upper, sender) = this.LookupRange name lower upper sender
         member this.LookupIndex (name, index) = this.LookupIndex name index null
         member this.LookupIndex (name, index, sender) = this.LookupIndex name index sender
+        member this.MatchNames (pattern) = this.MatchNames pattern null
+        member this.MatchNames (pattern, sender) = this.MatchNames pattern sender

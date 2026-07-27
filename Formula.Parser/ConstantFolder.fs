@@ -110,30 +110,29 @@ module ConstantFolder =
                     { Item = Constant({ Item = Boolean(valueA || valueB) }) } :> IAstItem<expr>
             | _ -> { Item = Logical(resA, op, resB) } :> IAstItem<expr>
         | Function (f, args) ->
-            match f.Item with
-            | Identifier id ->
-                let foldArg arg = foldConstantsFunctions arg functions
-                let res = args |> List.map foldArg
+            let id = f.Item.IdentifierValue
+            let foldArg arg = foldConstantsFunctions arg functions
+            let res = args |> List.map foldArg
                 
-                match (functions.IsDefined id) with
-                | true ->
-                    let imp = functions.Lookup id
-                    match imp.IsNonDeterministic with
-                    | false ->
-                        let constArgs =
-                            res |> List.choose (
-                                fun x ->
-                                    match x.Item with
-                                    | Constant c -> Some(c.Item)
-                                    | _ -> None
-                            ) |> List.toArray
-                        match constArgs.Length = res.Length with
-                        | true ->
-                            let result = imp.Execute constArgs
-                            { Item = Constant({ Item = result}) } :> IAstItem<expr>
-                        | false -> { Item = Function(f, res) } :> IAstItem<expr>
-                    | true -> { Item = Function(f, res) } :> IAstItem<expr>
-                | false -> { Item = Function(f, res) } :> IAstItem<expr>
+            match (functions.IsDefined id) with
+            | true ->
+                let imp = functions.Lookup id
+                match imp.IsNonDeterministic with
+                | false ->
+                    let constArgs =
+                        res |> List.choose (
+                            fun x ->
+                                match x.Item with
+                                | Constant c -> Some(c.Item)
+                                | _ -> None
+                        ) |> List.toArray
+                    match constArgs.Length = res.Length with
+                    | true ->
+                        let result = imp.Execute constArgs
+                        { Item = Constant({ Item = result}) } :> IAstItem<expr>
+                    | false -> { Item = Function(f, res) } :> IAstItem<expr>
+                | true -> { Item = Function(f, res) } :> IAstItem<expr>
+            | false -> { Item = Function(f, res) } :> IAstItem<expr>
         | Branch (cond, a, b) ->
             let resCond  = foldConstantsFunctions cond functions
             match resCond.Item with

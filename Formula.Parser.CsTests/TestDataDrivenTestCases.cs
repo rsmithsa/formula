@@ -15,6 +15,7 @@ namespace Formula.Parser.CsTests
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Text;
 
     [TestClass]
@@ -43,7 +44,7 @@ namespace Formula.Parser.CsTests
                         {
                             expressions.Add(expressionEntry.Name, expressionEntry.Expression);
                             assertions.Add(new Tuple<string, double>(expressionEntry.Name, expressionEntry.Expected));
-                            dependencyMap.Add(expressionEntry.Name, CsWrapper.ExtractExpressionDependencies(CsWrapper.ParseFormula(expressionEntry.Expression)));
+                            dependencyMap.Add(expressionEntry.Name, new HashSet<string>(CsWrapper.ExtractExpressionDependencies(CsWrapper.ParseFormula(expressionEntry.Expression)).Where(x => x.IsIdentifier).Select(x => (string)x)));
                         }
 
                         var variableProvider = new ExpressionVariableProvider(expressions, DefaultFunctionProvider.Instance);

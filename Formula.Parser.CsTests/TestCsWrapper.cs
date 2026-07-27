@@ -9,6 +9,7 @@ namespace Formula.Parser.CsTests
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using System.Text;
     using Formula.Parser;
     using Formula.Parser.Integration;
@@ -65,6 +66,44 @@ namespace Formula.Parser.CsTests
             
             var ilFolded = CsWrapper.ILCompileExpression(folded)(vp, DefaultFunctionProvider.Instance);
             Assert.AreEqual(175, ilFolded);
+        }
+
+        [TestMethod]
+        public void TestWildcardVariables()
+        {
+            var input = "SUM({V*})";
+            var vp = new MapVariableProvider(new Dictionary<string, double>()
+                { { "V1", 1 }, { "V2", 2 }, { "V3", 3 }, { "MyVar", 42 } });
+
+            var result = CsWrapper.InterpretFormula(input, vp);
+            Assert.AreEqual(6, result);
+
+            var ast = CsWrapper.ParseFormula(input);
+            Assert.AreEqual(6, CsWrapper.CompileExpression(ast)(vp, DefaultFunctionProvider.Instance));
+            Assert.AreEqual(6, CsWrapper.ILCompileExpression(ast)(vp, DefaultFunctionProvider.Instance));
+        }
+
+        [TestMethod]
+        public void TestWildcardDependencies()
+        {
+            var input = "SUM({V*}) + MyVar";
+            var ast = CsWrapper.ParseFormula(input);
+            var vp = new MapVariableProvider(new Dictionary<string, double>()
+                { { "V1", 1 }, { "V2", 2 }, { "V3", 3 }, { "MyVar", 42 } });
+
+            // Combined, DU-tagged dependency list; distinguish via Is*, get the string via the
+            // implicit identifier -> string conversion.
+            var deps = CsWrapper.ExtractExpressionDependencies(ast);
+
+            var names = new HashSet<string>(deps.Where(x => x.IsIdentifier).Select(x => (string)x));
+            Assert.IsTrue(names.SetEquals(new HashSet<string> { "MyVar" }));
+
+            var patterns = new HashSet<string>(deps.Where(x => x.IsWildcardIdentifier).Select(x => (string)x));
+            Assert.IsTrue(patterns.SetEquals(new HashSet<string> { "V*" }));
+
+            // Provider-aware extraction expands the pattern to the concrete matched names.
+            var expanded = CsWrapper.ExtractExpressionDependencies(ast, vp);
+            Assert.IsTrue(expanded.SetEquals(new HashSet<string> { "MyVar", "V1", "V2", "V3" }));
         }
 
         [TestMethod]
@@ -279,7 +318,7 @@ namespace Formula.Parser.CsTests
             dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
             
             Assert.AreEqual(1, dependencies.Count);
-            var dep = dependencies["A"];
+            var dep = dependencies[Ast.identifier.NewIdentifier("A")];
             Assert.AreEqual("A", dep.Item1);
             Assert.AreEqual(0, dep.Item2);
             Assert.AreEqual(0, dep.Item3);
@@ -291,7 +330,7 @@ namespace Formula.Parser.CsTests
             dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
             
             Assert.AreEqual(1, dependencies.Count);
-            dep = dependencies["A"];
+            dep = dependencies[Ast.identifier.NewIdentifier("A")];
             Assert.AreEqual("A", dep.Item1);
             Assert.AreEqual(-1, dep.Item2);
             Assert.AreEqual(0, dep.Item3);
@@ -303,7 +342,7 @@ namespace Formula.Parser.CsTests
             dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
             
             Assert.AreEqual(1, dependencies.Count);
-            dep = dependencies["A"];
+            dep = dependencies[Ast.identifier.NewIdentifier("A")];
             Assert.AreEqual("A", dep.Item1);
             Assert.AreEqual("ABC", dep.Item2);
             Assert.AreEqual(0, dep.Item3);
@@ -315,7 +354,7 @@ namespace Formula.Parser.CsTests
             dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
             
             Assert.AreEqual(2, dependencies.Count);
-            dep = dependencies["A"];
+            dep = dependencies[Ast.identifier.NewIdentifier("A")];
             Assert.AreEqual("A", dep.Item1);
             Assert.AreEqual(null, dep.Item2);
             Assert.AreEqual(0, dep.Item3);
@@ -327,7 +366,7 @@ namespace Formula.Parser.CsTests
             dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
             
             Assert.AreEqual(2, dependencies.Count);
-            dep = dependencies["A"];
+            dep = dependencies[Ast.identifier.NewIdentifier("A")];
             Assert.AreEqual("A", dep.Item1);
             Assert.AreEqual(-1, dep.Item2);
             Assert.AreEqual(null, dep.Item3);
@@ -339,7 +378,7 @@ namespace Formula.Parser.CsTests
             dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
             
             Assert.AreEqual(3, dependencies.Count);
-            dep = dependencies["A"];
+            dep = dependencies[Ast.identifier.NewIdentifier("A")];
             Assert.AreEqual("A", dep.Item1);
             Assert.AreEqual(null, dep.Item2);
             Assert.AreEqual(null, dep.Item3);
@@ -350,7 +389,7 @@ namespace Formula.Parser.CsTests
             dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
             
             Assert.AreEqual(1, dependencies.Count);
-            dep = dependencies["A"];
+            dep = dependencies[Ast.identifier.NewIdentifier("A")];
             Assert.AreEqual(42, dep.Item2);
             Assert.AreEqual(42, dep.Item3);
             
@@ -360,7 +399,7 @@ namespace Formula.Parser.CsTests
             dependencies = CsWrapper.ExtractExpressionDependenciesWithRanges(ast);
             
             Assert.AreEqual(2, dependencies.Count);
-            dep = dependencies["A"];
+            dep = dependencies[Ast.identifier.NewIdentifier("A")];
             Assert.AreEqual(null, dep.Item2);
             Assert.AreEqual(null, dep.Item3);
         }

@@ -88,8 +88,18 @@ type ExpressionVariableProvider(expressionMap: Map<string, IAstItem<expr>>, func
             | (false, f) -> v.LookupRange (name, lower, upper, this)
     member this.LookupIndex name index =
         this.Lookup name
+    member this.MatchNames pattern =
+        match variableProvider with
+        | None ->
+            this.KnownExpressions.Keys
+            |> Seq.filter (Helpers.isGlobMatch pattern)
+        | Some v ->
+            this.KnownExpressions.Keys
+            |> Seq.filter (Helpers.isGlobMatch pattern)
+            |> Seq.append (v.MatchNames (pattern, this))
+            |> Seq.distinct
 
-    interface IVariableProvider with 
+    interface IVariableProvider with
         member this.IsDefined (name) = this.IsDefined name
         member this.IsDefined (name, sender) = this.IsDefined name
         member this.Lookup (name) = this.Lookup name
@@ -98,3 +108,5 @@ type ExpressionVariableProvider(expressionMap: Map<string, IAstItem<expr>>, func
         member this.LookupRange (name, lower, upper, sender) = this.LookupRange name lower upper
         member this.LookupIndex (name, index) = this.LookupIndex name index
         member this.LookupIndex (name, index, sender) = this.LookupIndex name index
+        member this.MatchNames (pattern) = this.MatchNames pattern
+        member this.MatchNames (pattern, sender) = this.MatchNames pattern

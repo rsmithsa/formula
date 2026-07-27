@@ -223,6 +223,36 @@ type ParserTests () =
             Assert.Fail(msg)
 
     [<TestMethod>]
+    member this.TestParseWildcard () =
+        let result = parseFormulaString "{V*}"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Variable({ Item = WildcardIdentifier("V*") }, None, None) } :> IAstItem<expr>
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseWildcardWithIndex () =
+        let result = parseFormulaString "{V*}|1|"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Variable({ Item = WildcardIdentifier("V*") }, None, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>)) } :> IAstItem<expr>
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestParseWildcardWithRange () =
+        let result = parseFormulaString "SUM({V*}|1:3|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let expected = { Item = Function({ Item = Identifier("SUM") }, [ { Item = Variable({ Item = WildcardIdentifier("V*") }, Some({ Item = Constant({ Item = Number(1.0) }) } :> IAstItem<expr>, { Item = Constant({ Item = Number(3.0) }) } :> IAstItem<expr>), None) } ]) } :> IAstItem<expr>
+            Assert.AreEqual(expected, TestHelper.stripPositions ast);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
     member this.TestParseVariable4 () =
         let result = parseFormulaString "[My Long Variable]"
         match result with

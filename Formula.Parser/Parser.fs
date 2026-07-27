@@ -113,6 +113,9 @@ module Parser =
 
     let pidentifier = (wrapPos psimpleidentifier) <|> (wrapPos pescapedidentifier)
 
+    let pwildcardidentifier =
+        wrapPos (between (str_ws "{") (str_ws "}") (many1Satisfy ((<>) '}')) <?> "wildcard" |>> WildcardIdentifier)
+
     let pexpr, pexprImpl = createParserForwardedToRef()
 
     let rangePart =
@@ -141,7 +144,17 @@ module Parser =
                     | None -> Variable(id :> IAstItem<identifier>, None, Some(((index) :> IAstItem<expr>)))
                 )
 
-    let argList = sepBy ( attempt (wrapPos (funcParam)) <|> pexpr) (str_ws ",")
+    let wildcardFuncParam =
+        pipe2 pwildcardidentifier indexOrRange
+            (fun id indexOrRange ->
+                match indexOrRange with
+                | (index, optRange) ->
+                    match optRange with
+                    | Some range -> Variable(id :> IAstItem<identifier>, Some(((index) :> IAstItem<expr>, (range) :> IAstItem<expr>)), None)
+                    | None -> Variable(id :> IAstItem<identifier>, None, Some(((index) :> IAstItem<expr>)))
+                )
+
+    let argList = sepBy ( attempt (wrapPos (funcParam)) <|> attempt (wrapPos (wildcardFuncParam)) <|> pexpr) (str_ws ",")
     
     let argListInParens =
         (str_ws "(") >>. argList .>> (str_ws ")")
@@ -182,12 +195,24 @@ module Parser =
                     | None ->
                         Variable(id :> IAstItem<identifier>, None, None)
                 )
-    
+
+    let wildcardWithOptIndex =
+        pipe2 pwildcardidentifier (opt (indexNoRange))
+            (fun id optIndexNoRange ->
+                match optIndexNoRange with
+                | Some (index, noRange) ->
+                    match noRange with
+                    | Some range -> invalidOp "Range parsing error - this should never be hit"
+                    | None -> Variable(id :> IAstItem<identifier>, None, Some(((index) :> IAstItem<expr>)))
+                | None ->
+                    Variable(id :> IAstItem<identifier>, None, None)
+                )
+
     let branchExpr = pipe3 (keyword "IF" >>. pexpr .>> ws)  (keyword "THEN" >>. pexpr .>> ws) (keyword "ELSE" >>. pexpr .>> ws) (fun cond a b -> Branch(cond, a, b))
 
     let oppa = new OperatorPrecedenceParser<IPositionedAstItem<expr>,_,_>()
     do pexprImpl := oppa.ExpressionParser
-    let terma = wrapPos (branchExpr .>> ws) <|> wrapPos (pconstant .>> ws) <|> wrapPos (identWithOptArgs .>> ws) <|> between (str_ws "(") (str_ws ")") pexpr
+    let terma = wrapPos (branchExpr .>> ws) <|> wrapPos (pconstant .>> ws) <|> wrapPos (identWithOptArgs .>> ws) <|> wrapPos (wildcardWithOptIndex .>> ws) <|> between (str_ws "(") (str_ws ")") pexpr
     oppa.TermParser <- terma
     oppa.AddOperator(getInfixOperator "??" 1 Associativity.Left (fun p x y -> getInfixAst Coalesce x y p))
     oppa.AddOperator(getInfixOperator "||" 2 Associativity.Left (fun p x y -> getInfixOperatorAst Logical x y Or p))

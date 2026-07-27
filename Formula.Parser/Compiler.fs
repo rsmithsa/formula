@@ -86,22 +86,32 @@ module Compiler =
                 Expression.Convert(result, typeof<value>) :> Expression
 
             let compileVariable variable range index =
-                match variable with
-                | Identifier id ->
-                    match range with
-                    | Some (a, b) ->
-                        let valueA = compileInternal a
-                        let valueB = compileInternal b
+                match range with
+                | Some (a, b) ->
+                    let valueA = compileInternal a
+                    let valueB = compileInternal b
+                    match variable with
+                    | Identifier id ->
                         Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("LookupRange", [| typeof<String>; typeof<value>; typeof<value> |]), Expression.Constant(id), valueA, valueB) :> Expression
-                    | None ->
-                        match index with
-                        | Some i ->
-                            let value = compileInternal i
+                    | WildcardIdentifier pattern ->
+                        Expression.Call(typeof<Helpers>.GetMethod("expandWildcardRange", [| typeof<IVariableProvider>; typeof<String>; typeof<value>; typeof<value> |]), variableProvider, Expression.Constant(pattern), valueA, valueB) :> Expression
+                | None ->
+                    match index with
+                    | Some i ->
+                        let value = compileInternal i
+                        match variable with
+                        | Identifier id ->
                             Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("LookupIndex", [| typeof<String>; typeof<value> |]), Expression.Constant(id), value) :> Expression
-                        | None ->
+                        | WildcardIdentifier pattern ->
+                            Expression.Call(typeof<Helpers>.GetMethod("expandWildcardIndex", [| typeof<IVariableProvider>; typeof<String>; typeof<value> |]), variableProvider, Expression.Constant(pattern), value) :> Expression
+                    | None ->
+                        match variable with
+                        | Identifier id ->
                             Expression.Call(variableProvider, typeof<IVariableProvider>.GetMethod("Lookup", [| typeof<String> |]), Expression.Constant(id)) :> Expression
+                        | WildcardIdentifier pattern ->
+                            Expression.Call(typeof<Helpers>.GetMethod("expandWildcard", [| typeof<IVariableProvider>; typeof<String> |]), variableProvider, Expression.Constant(pattern)) :> Expression
 
-            let compileCoalesce a b = 
+            let compileCoalesce a b =
                 let valueA = compileInternal a
                 Expression.Condition(
                     isSomeValueExpression (valueA),
@@ -168,15 +178,14 @@ module Compiler =
 
                 Expression.Convert(result, typeof<value>) :> Expression
 
-            let compileFunction f args =
-                match f with
-                | Identifier id ->
-                    let compileArg arg = compileInternal arg
-                    let compiledArgs = args |> List.map compileArg
-                    let argExpression = Expression.NewArrayInit(typeof<value>, compiledArgs)
-                    let imp = Expression.Call(functionProvider, typeof<IFunctionProvider>.GetMethod("Lookup"), Expression.Constant(id))
-                    let result = Expression.Call(imp, typeof<IFunctionImplementation>.GetMethod("Execute"), argExpression)
-                    result :> Expression
+            let compileFunction (f: identifier) args =
+                let id = f.IdentifierValue
+                let compileArg arg = compileInternal arg
+                let compiledArgs = args |> List.map compileArg
+                let argExpression = Expression.NewArrayInit(typeof<value>, compiledArgs)
+                let imp = Expression.Call(functionProvider, typeof<IFunctionProvider>.GetMethod("Lookup"), Expression.Constant(id))
+                let result = Expression.Call(imp, typeof<IFunctionImplementation>.GetMethod("Execute"), argExpression)
+                result :> Expression
 
             let compileBranch cond a b =
                 let valueCond = castToBoolExpression(compileInternal cond)

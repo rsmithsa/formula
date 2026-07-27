@@ -30,6 +30,8 @@ type TypedMapVariableProvider(map: Map<string, value>) =
         | Number a, Number b -> ValueArray(Array.init (int (b - a) + 1) (fun _ -> map.[name]))
         | _ -> invalidArg "range" "Numeric range expected."
     member _.LookupIndex (name, _index) = map.[name]
+    member _.MatchNames pattern =
+        map.Keys |> Seq.filter (Helpers.isGlobMatch pattern)
 
     interface IVariableProvider with
         member this.IsDefined name = this.IsDefined name
@@ -40,6 +42,8 @@ type TypedMapVariableProvider(map: Map<string, value>) =
         member this.LookupRange (name, lower, upper, _sender) = this.LookupRange (name, lower, upper)
         member this.LookupIndex (name, index) = this.LookupIndex (name, index)
         member this.LookupIndex (name, index, _sender) = this.LookupIndex (name, index)
+        member this.MatchNames pattern = this.MatchNames pattern
+        member this.MatchNames (pattern, _sender) = this.MatchNames pattern
 
 /// Build the variable provider named by a case. Unknown names fail loudly.
 let buildVariableProvider (name: string) (variables: Map<string, value>) : IVariableProvider =

@@ -18,3 +18,5 @@ type IVariableProvider =
     abstract member LookupRange: name: string * lower: value * upper: value * sender: IVariableProvider -> value
     abstract member LookupIndex: name: string * index: value -> value
     abstract member LookupIndex: name: string * index: value * sender: IVariableProvider -> value
+    abstract member MatchNames: pattern: string -> seq<string>
+    abstract member MatchNames: pattern: string * sender: IVariableProvider -> seq<string>

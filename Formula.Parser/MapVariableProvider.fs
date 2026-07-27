@@ -38,8 +38,11 @@ type MapVariableProvider(map: Map<string, float>) =
         match (index) with
         | (Number a) -> Number(value)
         | _ -> invalidArg "index" "Numeric index expected."
+    member this.MatchNames pattern =
+        this.KnownVariables.Keys
+        |> Seq.filter (Helpers.isGlobMatch pattern)
 
-    interface IVariableProvider with 
+    interface IVariableProvider with
         member this.IsDefined (name) = this.IsDefined name
         member this.IsDefined (name, sender) = this.IsDefined name
         member this.Lookup (name) = this.Lookup name
@@ -48,4 +51,6 @@ type MapVariableProvider(map: Map<string, float>) =
         member this.LookupRange (name, lower, upper, sender) = this.LookupRange name lower upper
         member this.LookupIndex (name, index) = this.LookupIndex name index
         member this.LookupIndex (name, index, sender) = this.LookupIndex name index
+        member this.MatchNames (pattern) = this.MatchNames pattern
+        member this.MatchNames (pattern, sender) = this.MatchNames pattern
 

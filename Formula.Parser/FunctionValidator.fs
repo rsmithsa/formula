@@ -28,6 +28,8 @@ module FunctionValidator =
                 | _ -> ValueArray([| Number(0.0) |])
             member this.LookupIndex (name, index) = Number(0.0)
             member this.LookupIndex (name, index, sender) = Number(0.0)
+            member this.MatchNames (pattern) = Seq.empty
+            member this.MatchNames (pattern, sender) = Seq.empty
     }
     
     let rec validateFunctions (ast: IAstItem<expr>) (functions: IFunctionProvider) errors =
@@ -56,16 +58,15 @@ module FunctionValidator =
         | Logical (a, op, b) ->
             validateFunctions b functions (validateFunctions a functions errors)
         | Function (f, args) ->
-            match f.Item with
-            | Identifier id ->
-                let item =
-                    match f with
-                    | :? IPositionedAstItem<identifier> as positionedAstItem -> positionedAstItem
-                    | _ -> { Item = f.Item; StartPosition = Position("", -1L, -1L, -1L); EndPosition = Position("", -1L, -1L, -1L) } :> IPositionedAstItem<identifier>
-                match functions.IsDefined id with
-                | true ->
-                    // TODO Validate parameter counts? Non-deterministic though?
-                    (args |> List.map (fun a -> validateFunctions a functions errors) |> List.concat) @ errors
-                | false -> ($"Unknown function: {id}", item)::errors
+            let id = f.Item.IdentifierValue
+            let item =
+                match f with
+                | :? IPositionedAstItem<identifier> as positionedAstItem -> positionedAstItem
+                | _ -> { Item = f.Item; StartPosition = Position("", -1L, -1L, -1L); EndPosition = Position("", -1L, -1L, -1L) } :> IPositionedAstItem<identifier>
+            match functions.IsDefined id with
+            | true ->
+                // TODO Validate parameter counts? Non-deterministic though?
+                (args |> List.map (fun a -> validateFunctions a functions errors) |> List.concat) @ errors
+            | false -> ($"Unknown function: {id}", item)::errors
         | Branch (cond, a, b) ->
             validateFunctions b functions (validateFunctions a functions (validateFunctions cond functions errors))

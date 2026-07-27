@@ -31,7 +31,18 @@ module Ast =
             member x.StartPosition = x.StartPosition
             member x.EndPosition = x.EndPosition
 
-    type identifier = Identifier of string
+    type identifier =
+               | Identifier of string
+               | WildcardIdentifier of string
+    with
+               member x.IdentifierValue =
+                   match x with
+                   | Identifier s -> s
+                   | _ -> invalidOp "Not an 'Identifier'"
+
+               member x.Value = match x with | Identifier s | WildcardIdentifier s -> s
+               static member op_Implicit(x: identifier) : string = x.Value
+    
     type value =
                | Number of float
                | Boolean of bool
@@ -67,7 +78,7 @@ module Ast =
     type expr =
               | Constant of IAstItem<value>
               | Variable of IAstItem<identifier> * option<IAstItem<expr> * IAstItem<expr>> * option<IAstItem<expr>>
-              | Coalesce of IAstItem<expr> * IAstItem<expr> 
+              | Coalesce of IAstItem<expr> * IAstItem<expr>
               | Negation of IAstItem<expr>
               | Arithmetic of IAstItem<expr> * IAstItem<arithmetic> * IAstItem<expr>
               | Inversion of IAstItem<expr>

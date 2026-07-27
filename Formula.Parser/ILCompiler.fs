@@ -48,6 +48,10 @@ module ILCompiler =
         let lookup = typeof<IVariableProvider>.GetMethod("Lookup", [| typeof<String> |])
         let lookupIndex = typeof<IVariableProvider>.GetMethod("LookupIndex", [| typeof<String>; typeof<value> |])
         let lookupRange = typeof<IVariableProvider>.GetMethod("LookupRange", [| typeof<String>; typeof<value>; typeof<value> |])
+
+        let expandWildcard = typeof<Helpers>.GetMethod("expandWildcard", [| typeof<IVariableProvider>; typeof<String> |])
+        let expandWildcardIndex = typeof<Helpers>.GetMethod("expandWildcardIndex", [| typeof<IVariableProvider>; typeof<String>; typeof<value> |])
+        let expandWildcardRange = typeof<Helpers>.GetMethod("expandWildcardRange", [| typeof<IVariableProvider>; typeof<String>; typeof<value>; typeof<value> |])
         
         let funcLookup = typeof<IFunctionProvider>.GetMethod("Lookup")
         let funcExecute = typeof<IFunctionImplementation>.GetMethod("Execute")
@@ -93,32 +97,55 @@ module ILCompiler =
                     il.EmitCall(OpCodes.Call, valueArray, null)
 
             let compileVariable variable range index =
-                match variable with
-                | Identifier id ->
-                    match range with
-                    | Some (a, b) ->
+                match range with
+                | Some (a, b) ->
+                    match variable with
+                    | Identifier id ->
                         il.Emit(OpCodes.Ldarg_0)
                         il.Emit(OpCodes.Ldstr, id)
-                        
+
                         compileInternal (a)
                         compileInternal (b)
-                        
+
                         il.EmitCall(OpCodes.Callvirt, lookupRange, null)
-                    | None ->
-                        match index with
-                        | Some i ->
+                    | WildcardIdentifier pattern ->
+                        il.Emit(OpCodes.Ldarg_0)
+                        il.Emit(OpCodes.Ldstr, pattern)
+
+                        compileInternal (a)
+                        compileInternal (b)
+
+                        il.EmitCall(OpCodes.Call, expandWildcardRange, null)
+                | None ->
+                    match index with
+                    | Some i ->
+                        match variable with
+                        | Identifier id ->
                             il.Emit(OpCodes.Ldarg_0)
                             il.Emit(OpCodes.Ldstr, id)
-                            
+
                             compileInternal (i)
-                            
+
                             il.EmitCall(OpCodes.Callvirt, lookupIndex, null)
-                        | None ->
+                        | WildcardIdentifier pattern ->
+                            il.Emit(OpCodes.Ldarg_0)
+                            il.Emit(OpCodes.Ldstr, pattern)
+
+                            compileInternal (i)
+
+                            il.EmitCall(OpCodes.Call, expandWildcardIndex, null)
+                    | None ->
+                        match variable with
+                        | Identifier id ->
                             il.Emit(OpCodes.Ldarg_0)
                             il.Emit(OpCodes.Ldstr, id)
                             il.EmitCall(OpCodes.Callvirt, lookup, null)
+                        | WildcardIdentifier pattern ->
+                            il.Emit(OpCodes.Ldarg_0)
+                            il.Emit(OpCodes.Ldstr, pattern)
+                            il.EmitCall(OpCodes.Call, expandWildcard, null)
 
-            let compileCoalesce a b = 
+            let compileCoalesce a b =
                 let ret = il.DefineLabel()
                 let nullish = il.DefineLabel()
                 
@@ -238,24 +265,22 @@ module ILCompiler =
                 | Or -> il.Emit(OpCodes.Or)
                 il.EmitCall(OpCodes.Call, boolean, null)
 
-            let compileFunction f (args: IAstItem<expr> list) =
-                match f with
-                | Identifier id ->
-                    il.Emit(OpCodes.Ldarg_1)
-                    il.Emit(OpCodes.Ldstr, id)
-                    il.EmitCall(OpCodes.Callvirt, funcLookup, null)
+            let compileFunction (f: identifier) (args: IAstItem<expr> list) =
+                il.Emit(OpCodes.Ldarg_1)
+                il.Emit(OpCodes.Ldstr, f.IdentifierValue)
+                il.EmitCall(OpCodes.Callvirt, funcLookup, null)
 
-                    il.Emit(OpCodes.Ldc_I4, args.Length)
-                    il.Emit(OpCodes.Newarr, typeof<value>)
-                    args |> List.iteri (
-                        fun i x ->
-                            il.Emit(OpCodes.Dup)
-                            il.Emit(OpCodes.Ldc_I4, i)
-                            compileInternal(x)
-                            il.Emit(OpCodes.Stelem_Ref)
-                    )
+                il.Emit(OpCodes.Ldc_I4, args.Length)
+                il.Emit(OpCodes.Newarr, typeof<value>)
+                args |> List.iteri (
+                    fun i x ->
+                        il.Emit(OpCodes.Dup)
+                        il.Emit(OpCodes.Ldc_I4, i)
+                        compileInternal(x)
+                        il.Emit(OpCodes.Stelem_Ref)
+                )
 
-                    il.EmitCall(OpCodes.Callvirt, funcExecute, null)
+                il.EmitCall(OpCodes.Callvirt, funcExecute, null)
 
             let compileBranch cond a b =
                 let ret = il.DefineLabel()

@@ -27,48 +27,51 @@ type CsWrapper private() =
     static member ExtractExpressionDependencies ast =
         let deps =
             extractDependencies ast []
-            |> Seq.map (fun x ->
-                match x.Item with
-                | Identifier i -> i
-            )
-        new System.Collections.Generic.HashSet<string>(deps)
+            |> Seq.map (fun x -> x.Item)
+        new System.Collections.Generic.HashSet<identifier>(deps)
 
     static member ExtractExpressionDependenciesWithRanges ast =
         let deps =
             extractDependenciesWithRanges (foldConstants ast) []
             |> Seq.map (fun x ->
                 let (i, r) = x
-                match (i.Item, r) with
-                | (Identifier i, r) ->
-                    match r with
-                    | Some (a, b) ->
-                        match (a.Item, b.Item) with
-                        | (Constant a, Constant b) -> (i, struct (i, a.Item, b.Item))
-                        | (Constant a, _) -> (i, struct (i, a.Item, Unchecked.defaultof<value>))
-                        | (_, Constant b) -> (i, struct (i, Unchecked.defaultof<value>, b.Item))
-                        | _ -> (i, struct (i, Unchecked.defaultof<value>, Unchecked.defaultof<value>))
-                    | _ -> (i, struct (i, Number(0), Number(0)))
+                match r with
+                | Some (a, b) ->
+                    match (a.Item, b.Item) with
+                    | (Constant a, Constant b) -> (i.Item, struct (i.Item, a.Item, b.Item))
+                    | (Constant a, _) -> (i.Item, struct (i.Item, a.Item, Unchecked.defaultof<value>))
+                    | (_, Constant b) -> (i.Item, struct (i.Item, Unchecked.defaultof<value>, b.Item))
+                    | _ -> (i.Item, struct (i.Item, Unchecked.defaultof<value>, Unchecked.defaultof<value>))
+                | _ -> (i.Item, struct (i.Item, Number(0), Number(0)))
             )
             |> Map.ofSeq
-        new System.Collections.Generic.Dictionary<string, ValueTuple<string, value, value>>(deps)
-    
+        new System.Collections.Generic.Dictionary<identifier, ValueTuple<identifier, value, value>>(deps)
+
     static member ExtractExpressionDependenciesWithPositions (ast: IPositionedAstItem<expr>) =
         let deps =
             extractDependencies ast []
             |> Seq.map (fun x ->
                 let t = x :?> IPositionedAstItem<identifier>
-                match t.Item with
-                | Identifier i -> (i, struct (t.StartPosition, t.EndPosition))
+                (t.Item, struct (t.StartPosition, t.EndPosition))
             )
             |> Seq.groupBy (fun x -> fst x)
         deps.ToDictionary(fst, fun x -> (snd x |> Seq.map snd).ToList())
+
+    static member ExtractExpressionDependencies (ast, (variableProvider: IVariableProvider)) =
+        let names =
+            extractDependencies ast []
+            |> Seq.collect (fun x ->
+                match x.Item with
+                | Identifier i -> Seq.singleton i
+                | WildcardIdentifier p -> variableProvider.MatchNames p
+            )
+        new System.Collections.Generic.HashSet<string>(names)
 
     static member ValidateFunctions (ast, (functionProvider: IFunctionProvider)) =
         let errors =
             validateFunctions ast functionProvider []
             |> Seq.map (fun (m, x) ->
-                match x.Item with
-                | Identifier i -> struct (m, i, x.StartPosition, x.EndPosition)
+                struct (m, x.Item.IdentifierValue, x.StartPosition, x.EndPosition)
             )
         errors.ToList()
     

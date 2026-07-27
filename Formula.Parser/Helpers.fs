@@ -8,6 +8,7 @@ namespace Formula.Parser
 
 open System
 open System.Buffers
+open System.Text.RegularExpressions
 open Formula.Parser.Ast
 
 type Helpers = 
@@ -155,7 +156,32 @@ type Helpers =
             result
         finally
             pool.Return(buffer)
-    
+
+    static member isGlobMatch (pattern: string) (name: string) =
+        let regexPattern = "^" + Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".") + "$"
+        Regex.IsMatch(name, regexPattern)
+
+    static member expandWildcard (provider: IVariableProvider) (pattern: string) : value =
+        provider.MatchNames pattern
+        |> Seq.map (fun n -> provider.Lookup n)
+        |> Seq.toArray
+        |> ValueArray
+
+    static member expandWildcardIndex (provider: IVariableProvider) (pattern: string) (index: value) : value =
+        provider.MatchNames pattern
+        |> Seq.map (fun n -> provider.LookupIndex (n, index))
+        |> Seq.toArray
+        |> ValueArray
+
+    static member expandWildcardRange (provider: IVariableProvider) (pattern: string) (lower: value) (upper: value) : value =
+        provider.MatchNames pattern
+        |> Seq.collect (fun n ->
+            match provider.LookupRange (n, lower, upper) with
+            | ValueArray a -> Array.toSeq a
+            | v -> Seq.singleton v)
+        |> Seq.toArray
+        |> ValueArray
+
     static member fsEquality x y =
         x = y
 

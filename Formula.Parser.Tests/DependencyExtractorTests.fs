@@ -420,3 +420,25 @@ type DependencyExtractorTests () =
             Assert.AreEqual(expected, deps);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestWildcardInCombinedDependencies () =
+        let result = parseFormulaString "SUM({V*}) + [My Var]"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let deps = getSimpleDependencyList (extractDependencies ast [])
+            let expected = [ Identifier("My Var"); WildcardIdentifier("V*") ]
+            Assert.AreEqual(expected, deps);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestWildcardRangeBoundsAreLiteralDependencies () =
+        let result = parseFormulaString "SUM({V*}|[A]:0|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let deps = getSimpleDependencyList (extractDependencies ast [])
+            let expected = [ Identifier("A"); WildcardIdentifier("V*") ]
+            Assert.AreEqual(expected, deps);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
