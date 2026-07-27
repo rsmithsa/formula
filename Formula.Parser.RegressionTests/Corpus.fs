@@ -54,13 +54,15 @@ let buildFunctionProvider (name: string) : IFunctionProvider =
     | "default" -> DefaultFunctionProvider.Instance :> IFunctionProvider
     | "financial" -> FinancialFunctionProvider.Instance :> IFunctionProvider
     | "forecast" -> ForecastFunctionProvider.Instance :> IFunctionProvider
+    | "array" -> ArrayFunctionProvider.Instance :> IFunctionProvider
     | "all" ->
         CompositeFunctionProvider(
             [ DefaultFunctionProvider.Instance :> IFunctionProvider
               FinancialFunctionProvider.Instance :> IFunctionProvider
-              ForecastFunctionProvider.Instance :> IFunctionProvider ])
+              ForecastFunctionProvider.Instance :> IFunctionProvider
+              ArrayFunctionProvider.Instance :> IFunctionProvider ])
         :> IFunctionProvider
-    | other -> failwithf "Unknown function provider '%s' (expected 'default', 'financial', 'forecast' or 'all')." other
+    | other -> failwithf "Unknown function provider '%s' (expected 'default', 'financial', 'forecast', 'array' or 'all')." other
 
 let private optString (node: JsonNode) (key: string) =
     match node.[key] with

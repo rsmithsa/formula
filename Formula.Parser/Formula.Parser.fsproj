@@ -41,6 +41,7 @@
 	<Compile Include="DefaultFunctionProvider.fs" />
 	<Compile Include="FinancialFunctionProvider.fs" />
 	<Compile Include="ForecastFunctionProvider.fs" />
+	<Compile Include="ArrayFunctionProvider.fs" />
 	<Compile Include="CompositeFunctionProvider.fs" />
 	<Compile Include="CsWrapper.fs" />
   </ItemGroup>

@@ -26,6 +26,7 @@ module ILCompiler =
         let number = typeof<value>.GetMethod("NewNumber", BindingFlags.Public ||| BindingFlags.Static)
         let boolean = typeof<value>.GetMethod("NewBoolean", BindingFlags.Public ||| BindingFlags.Static)
         let text = typeof<value>.GetMethod("NewText", BindingFlags.Public ||| BindingFlags.Static)
+        let valueArray = typeof<value>.GetMethod("NewValueArray", BindingFlags.Public ||| BindingFlags.Static)
         
         let pow = typeof<Math>.GetMethod("Pow", [| typeof<double>; typeof<double> |])
         
@@ -68,7 +69,7 @@ module ILCompiler =
         
         let rec compileInternal (ast: IAstItem<expr>) =
             
-            let compileConstant constant =
+            let rec compileConstant constant =
                 match constant with
                 | Number n ->
                     il.Emit(OpCodes.Ldc_R8, n)
@@ -82,9 +83,14 @@ module ILCompiler =
                 | Nothing ->
                     il.EmitCall(OpCodes.Call, empty, null)
                 | ValueArray a ->
-                    il.Emit(OpCodes.Ldstr, "Array constants are not supported.")
-                    il.Emit(OpCodes.Newobj, invalidOperationEx)
-                    il.Emit(OpCodes.Throw)
+                    il.Emit(OpCodes.Ldc_I4, a.Length)
+                    il.Emit(OpCodes.Newarr, typeof<value>)
+                    for i = 0 to a.Length - 1 do
+                        il.Emit(OpCodes.Dup)
+                        il.Emit(OpCodes.Ldc_I4, i)
+                        compileConstant a.[i]
+                        il.Emit(OpCodes.Stelem_Ref)
+                    il.EmitCall(OpCodes.Call, valueArray, null)
 
             let compileVariable variable range index =
                 match variable with

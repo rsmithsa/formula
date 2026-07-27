@@ -44,6 +44,7 @@ module Ast =
                static member inline op_Implicit(x: string) = if String.IsNullOrEmpty x then Nothing else Text(x)
                static member inline op_Implicit(x: Nullable<float>) = if x.HasValue then Number(x.GetValueOrDefault()) else Nothing 
                static member inline op_Implicit(x: Nullable<bool>) = if x.HasValue then Boolean(x.GetValueOrDefault()) else Nothing 
+               static member inline op_Implicit(x: value array) = ValueArray(x)
 
                static member op_Equality(a: value, b: value) = a = b
                static member op_Inequality(a: value, b: value) = a <> b

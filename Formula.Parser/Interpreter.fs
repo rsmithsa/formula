@@ -15,9 +15,7 @@ module Interpreter =
         let rec interpretFormulaInternal (ast: IAstItem<expr>) (vars: IVariableProvider) (functions: IFunctionProvider) =
 
             let interpretConstant constant =
-                match constant with
-                | ValueArray a -> invalidOp $"Array constants are not supported."
-                | constant -> constant
+                constant
 
             let interpretVariable variable range index =
                 match variable with

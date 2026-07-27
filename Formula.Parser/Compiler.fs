@@ -81,7 +81,7 @@ module Compiler =
                     | Boolean b -> Expression.Constant(b) :> Expression
                     | Text t -> Expression.Constant(t) :> Expression
                     | Nothing -> Expression.Call(typeof<value>.GetMethod("Empty", BindingFlags.Static ||| BindingFlags.NonPublic)) :> Expression
-                    | ValueArray a -> invalidOperationEx(Expression.Constant("Array constants are not supported.")) :> Expression
+                    | ValueArray a -> Expression.Constant(a) :> Expression
 
                 Expression.Convert(result, typeof<value>) :> Expression
 

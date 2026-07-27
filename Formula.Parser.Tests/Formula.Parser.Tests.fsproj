@@ -20,6 +20,7 @@
     <Compile Include="DefaultFunctionsTests.fs" />
     <Compile Include="FinancialFunctionsTests.fs" />
     <Compile Include="ForecastFunctionsTests.fs" />
+    <Compile Include="ArrayFunctionsTests.fs" />
   </ItemGroup>
 
   <ItemGroup>

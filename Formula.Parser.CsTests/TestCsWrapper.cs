@@ -47,6 +47,27 @@ namespace Formula.Parser.CsTests
         }
 
         [TestMethod]
+        public void TestArrayConstants()
+        {
+            var input = "SUM(FILTER(\"<>\", 5, 1, 2, 4, 5), MyVar|1:4|)";
+
+            var ast = CsWrapper.ParseFormula(input);
+
+            // Force the "FILTER" to fold to an array constant
+            var folded = CsWrapper.ConstantFoldExpression(ast, ArrayFunctionProvider.Instance);
+            var vp = new MapVariableProvider(new Dictionary<string, double>() { { "MyVar", 42 } });
+
+            var intFolded = CsWrapper.InterpretExpression(folded, vp, DefaultFunctionProvider.Instance);
+            Assert.AreEqual(175, intFolded);
+
+            var compFolded = CsWrapper.CompileExpression(folded)(vp, DefaultFunctionProvider.Instance);
+            Assert.AreEqual(175, compFolded);
+            
+            var ilFolded = CsWrapper.ILCompileExpression(folded)(vp, DefaultFunctionProvider.Instance);
+            Assert.AreEqual(175, ilFolded);
+        }
+
+        [TestMethod]
         public void TestInterpeterDepth()
         {
 #if DEBUG

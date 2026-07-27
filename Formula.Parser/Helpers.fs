@@ -94,6 +94,35 @@ type Helpers =
         finally
             pool.Return(buffer)
 
+    static member castToNullableDoubles (values: value[]) =
+        let pool = ArrayPool<Nullable<float>>.Shared
+        let mutable requiredCap = values.Length
+        let mutable buffer = pool.Rent(requiredCap)
+        let mutable count = 0
+
+        try
+            for v in values do 
+                match v with
+                | ValueArray a ->
+                    requiredCap <- requiredCap + a.Length
+                    if requiredCap > buffer.Length then
+                        let newBuffer = pool.Rent(requiredCap)
+                        Array.blit buffer 0 newBuffer 0 count
+                        pool.Return(buffer)
+                        buffer <- newBuffer
+
+                    for x in a do
+                        buffer.[count] <- (Helpers.castToNullableDouble x)
+                        count <- count + 1
+                | x ->
+                    buffer.[count] <- (Helpers.castToNullableDouble x)
+                    count <- count + 1
+
+            let result = buffer.[0 .. count - 1]
+            result
+        finally
+            pool.Return(buffer)
+    
     static member castFilterToNonNullDoubles (values: value[]) =
         let pool = ArrayPool<float>.Shared
         let mutable requiredCap = values.Length
