@@ -62,7 +62,7 @@ type CompositeVariableProvider(providers: seq<IVariableProvider>) =
         knownVariables.Force()
         |> Seq.where (fun x -> LanguagePrimitives.PhysicalEquality x sender = false)
         |> Seq.collect (fun x -> x.MatchNames pattern)
-        |> Seq.distinct
+        |> Seq.distinct |> Seq.toArray
 
     interface IVariableProvider with
         member this.IsDefined (name) = this.IsDefined name null

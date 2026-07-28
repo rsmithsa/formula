@@ -39,6 +39,11 @@
     { "id": "var-range-sum", "formula": "SUM(MyVar|1:5|)", "variables": { "MyVar": 2 } },
     { "id": "var-index", "formula": "MyVar|1|", "variables": { "MyVar": 7 } },
 
+    { "id": "wildcard-sum", "formula": "SUM({V*})", "variables": { "V1": 1, "V2": 2, "V3": 3, "MyVar": 42 } },
+    { "id": "wildcard-sum-index", "formula": "SUM({V*}|1|)", "variables": { "V1": 1, "V2": 2, "V3": 3 } },
+    { "id": "wildcard-sum-range", "formula": "SUM({V*}|1:2|)", "variables": { "V1": 1, "V2": 2, "V3": 3 } },
+    { "id": "wildcard-single-char", "formula": "SUM({V?})", "variables": { "V1": 1, "V2": 2, "V42": 42 } },
+
     { "id": "fn-ifnull", "formula": "IFNULL(null, 9)" },
 
     { "id": "abs-const", "formula": "ABS(-7.5)" },

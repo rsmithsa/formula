@@ -157,30 +157,96 @@ type Helpers =
         finally
             pool.Return(buffer)
 
-    static member isGlobMatch (pattern: string) (name: string) =
+    static member pooledCollectionFilter (collection: System.Collections.Generic.ICollection<string>) filter =
+        let pool = ArrayPool<string>.Shared
+        let mutable requiredCap = collection.Count
+        let mutable buffer = pool.Rent(requiredCap)
+        let mutable count = 0
+
+        try
+            for item in collection do
+                if filter item then
+                    buffer.[count] <- item
+                    count <- count + 1
+            let result = buffer.[0 .. count - 1]
+            result
+        finally
+            pool.Return(buffer)
+    
+    static member inline private matchWrapper pattern input = Regex.IsMatch(input, pattern)
+
+    static member getGlobMatcher (pattern: string) =
         let regexPattern = "^" + Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".") + "$"
-        Regex.IsMatch(name, regexPattern)
+        Helpers.matchWrapper regexPattern
 
     static member expandWildcard (provider: IVariableProvider) (pattern: string) : value =
-        provider.MatchNames pattern
-        |> Seq.map (fun n -> provider.Lookup n)
-        |> Seq.toArray
-        |> ValueArray
+        let names = provider.MatchNames pattern
+        
+        let pool = ArrayPool<value>.Shared
+        let mutable requiredCap = names.Length
+        let mutable buffer = pool.Rent(requiredCap)
+        let mutable count = 0
+
+        try
+            for n in names do
+                let v = provider.Lookup (n)
+                buffer.[count] <- v
+                count <- count + 1
+
+            let result = buffer.[0 .. count - 1]
+            ValueArray(result)
+        finally
+            pool.Return(buffer)
 
     static member expandWildcardIndex (provider: IVariableProvider) (pattern: string) (index: value) : value =
-        provider.MatchNames pattern
-        |> Seq.map (fun n -> provider.LookupIndex (n, index))
-        |> Seq.toArray
-        |> ValueArray
+        let names = provider.MatchNames pattern
+        
+        let pool = ArrayPool<value>.Shared
+        let mutable requiredCap = names.Length
+        let mutable buffer = pool.Rent(requiredCap)
+        let mutable count = 0
+
+        try
+            for n in names do
+                let v = provider.LookupIndex (n, index)
+                buffer.[count] <- v
+                count <- count + 1
+
+            let result = buffer.[0 .. count - 1]
+            ValueArray(result)
+        finally
+            pool.Return(buffer)
 
     static member expandWildcardRange (provider: IVariableProvider) (pattern: string) (lower: value) (upper: value) : value =
-        provider.MatchNames pattern
-        |> Seq.collect (fun n ->
-            match provider.LookupRange (n, lower, upper) with
-            | ValueArray a -> Array.toSeq a
-            | v -> Seq.singleton v)
-        |> Seq.toArray
-        |> ValueArray
+        let names = provider.MatchNames pattern
+        
+        let pool = ArrayPool<value>.Shared
+        let mutable requiredCap = names.Length
+        let mutable buffer = pool.Rent(requiredCap)
+        let mutable count = 0
+
+        try
+            for n in names do
+                match provider.LookupRange (n, lower, upper) with
+                | ValueArray a ->
+                    requiredCap <- requiredCap + a.Length
+                    if requiredCap > buffer.Length then
+                        let newBuffer = pool.Rent(requiredCap)
+                        Array.blit buffer 0 newBuffer 0 count
+                        pool.Return(buffer)
+                        buffer <- newBuffer
+
+                    for x in a do
+                        buffer.[count] <- x
+                        count <- count + 1
+                | v ->
+                    buffer.[count] <- v
+                    count <- count + 1
+
+            let result = buffer.[0 .. count - 1]
+            ValueArray(result)
+        finally
+            pool.Return(buffer)
 
     static member fsEquality x y =
         x = y

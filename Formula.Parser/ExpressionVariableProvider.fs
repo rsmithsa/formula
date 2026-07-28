@@ -91,13 +91,11 @@ type ExpressionVariableProvider(expressionMap: Map<string, IAstItem<expr>>, func
     member this.MatchNames pattern =
         match variableProvider with
         | None ->
-            this.KnownExpressions.Keys
-            |> Seq.filter (Helpers.isGlobMatch pattern)
+            Helpers.pooledCollectionFilter this.KnownExpressions.Keys (Helpers.getGlobMatcher pattern)
         | Some v ->
-            this.KnownExpressions.Keys
-            |> Seq.filter (Helpers.isGlobMatch pattern)
-            |> Seq.append (v.MatchNames (pattern, this))
-            |> Seq.distinct
+            Helpers.pooledCollectionFilter this.KnownExpressions.Keys (Helpers.getGlobMatcher pattern)
+            |> Array.append (v.MatchNames (pattern, this))
+            |> Array.distinct
 
     interface IVariableProvider with
         member this.IsDefined (name) = this.IsDefined name

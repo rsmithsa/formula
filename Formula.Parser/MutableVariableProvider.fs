@@ -25,8 +25,7 @@ type MutableVariableProvider(map: System.Collections.Generic.IDictionary<string,
     member this.LookupIndex name index =
         this.Lookup name
     member this.MatchNames pattern =
-        this.KnownVariables.Keys
-        |> Seq.filter (Helpers.isGlobMatch pattern)
+        Helpers.pooledCollectionFilter this.KnownVariables.Keys (Helpers.getGlobMatcher pattern)
 
     interface IVariableProvider with
         member this.IsDefined (name) = this.IsDefined name
