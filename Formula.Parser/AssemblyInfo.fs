@@ -10,7 +10,7 @@ open System.Reflection
 open System.Runtime.InteropServices
 
 [<assembly: AssemblyFileVersionAttribute("2.0.0.0")>]
-[<assembly: AssemblyInformationalVersionAttribute("2.0.0-alpha001")>]
+[<assembly: AssemblyInformationalVersionAttribute("2.0.0-alpha002")>]
 [<assembly: AssemblyProductAttribute("Formula.Parser")>]
 [<assembly: AssemblyTitleAttribute("Formula.Parser")>]
 [<assembly: AssemblyVersionAttribute("2.0.0.0")>]

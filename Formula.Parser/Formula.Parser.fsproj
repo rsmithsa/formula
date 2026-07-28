@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.0.0-alpha001</Version>
+    <Version>2.0.0-alpha002</Version>
     <Authors>Richard Smith</Authors>
     <Copyright>Richard Smith</Copyright>
     <RepositoryUrl>https://github.com/rsmithsa/formula</RepositoryUrl>
