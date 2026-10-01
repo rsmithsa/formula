@@ -462,6 +462,173 @@ type SumProductFunction() =
         member this.Execute input = this.Execute input
         member this.Validate (input, message) = this.Validate (input, &message)
 
+type MedianFunction() =
+    member this.Name =
+        "MEDIAN"
+        
+    member this.IsNonDeterministic = false
+
+    member this.Execute (input: value[]) =
+        let values = input |> Seq.choose Helpers.castToDouble |> Seq.sort |> Seq.toArray
+        if values.Length = 0 then
+            Nothing
+        elif values.Length % 2 = 1 then
+            Number(values[values.Length / 2])
+        else
+            let a = values[values.Length / 2 - 1]
+            let b = values[values.Length / 2]
+            Number((a + b) / 2.0)
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "MEDIAN expects at least one argument."
+            false
+        | false ->
+            match input.Length with
+            | 0 ->
+                message <- "MEDIAN expects at least one argument."
+                false
+            | _ -> true
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
+type VarianceFunction() =
+    member this.Name =
+        "VARIANCE"
+        
+    member this.IsNonDeterministic = false
+
+    member this.Execute (input: value[]) =
+        let values = input |> Array.choose Helpers.castToDouble
+        if values.Length < 2 then
+            Nothing
+        else
+            let mean = Array.average values
+            let sumSquares = values |> Array.sumBy (fun x -> (x - mean) ** 2.0)
+            Number(sumSquares / (float values.Length - 1.0))
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "VARIANCE expects at least two arguments."
+            false
+        | false ->
+            match input.Length with
+            | 0 | 1 ->
+                message <- "VARIANCE expects at least two arguments."
+                false
+            | _ -> true
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
+type VariancePFunction() =
+    member this.Name =
+        "VARIANCEP"
+        
+    member this.IsNonDeterministic = false
+
+    member this.Execute (input: value[]) =
+        let values = input |> Array.choose Helpers.castToDouble
+        if values.Length = 0 then
+            Nothing
+        else
+            let mean = Array.average values
+            let sumSquares = values |> Array.sumBy (fun x -> (x - mean) ** 2.0)
+            Number(sumSquares / float values.Length)
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "VARIANCEP expects at least one argument."
+            false
+        | false ->
+            match input.Length with
+            | 0 ->
+                message <- "VARIANCEP expects at least one argument."
+                false
+            | _ -> true
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
+type StDevFunction() =
+    member this.Name =
+        "STDEV"
+        
+    member this.IsNonDeterministic = false
+
+    member this.Execute (input: value[]) =
+        let values = input |> Array.choose Helpers.castToDouble
+        if values.Length < 2 then
+            Nothing
+        else
+            let mean = Array.average values
+            let sumSquares = values |> Array.sumBy (fun x -> (x - mean) ** 2.0)
+            Number(sqrt (sumSquares / (float values.Length - 1.0)))
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "STDEV expects at least two arguments."
+            false
+        | false ->
+            match input.Length with
+            | 0 | 1 ->
+                message <- "STDEV expects at least two arguments."
+                false
+            | _ -> true
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
+type StDevPFunction() =
+    member this.Name =
+        "STDEVP"
+        
+    member this.IsNonDeterministic = false
+
+    member this.Execute (input: value[]) =
+        let values = input |> Array.choose Helpers.castToDouble
+        if values.Length = 0 then
+            Nothing
+        else
+            let mean = Array.average values
+            let sumSquares = values |> Array.sumBy (fun x -> (x - mean) ** 2.0)
+            Number(sqrt (sumSquares / float values.Length))
+
+    member this.Validate (input: value[], [<Out>]message: string byref) =
+        match isNull input with
+        | true ->
+            message <- "STDEVP expects at least one argument."
+            false
+        | false ->
+            match input.Length with
+            | 0 ->
+                message <- "STDEVP expects at least one argument."
+                false
+            | _ -> true
+
+    interface IFunctionImplementation with
+        member this.Name = this.Name
+        member this.IsNonDeterministic = this.IsNonDeterministic
+        member this.Execute input = this.Execute input
+        member this.Validate (input, message) = this.Validate (input, &message)
+
 type DefaultFunctionProvider() =
 
     static let instance = DefaultFunctionProvider()
@@ -483,7 +650,13 @@ type DefaultFunctionProvider() =
             Add("COALESCE", CoalesceFunction()).
             Add("IFNULL", IfNullFunction()).
             Add("DIV", DivFunction()).
-            Add("SUMPRODUCT", SumProductFunction())
+            Add("SUMPRODUCT", SumProductFunction()).
+            Add("MEAN", AvgFunction()).
+            Add("MEDIAN", MedianFunction()).
+            Add("VARIANCE", VarianceFunction()).
+            Add("VARIANCEP", VariancePFunction()).
+            Add("STDEV", StDevFunction()).
+            Add("STDEVP", StDevPFunction())
 
     static member Instance = instance
 
