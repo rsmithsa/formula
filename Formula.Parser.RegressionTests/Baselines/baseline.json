@@ -1,6 +1,6 @@
 {
-  "libraryVersion": "1.4.2",
-  "generatedUtc": "2026-07-22T06:04:52.5562640Z",
+  "libraryVersion": "1.4.3",
+  "generatedUtc": "2026-10-01T11:23:50.5396491Z",
   "engines": [
     "Interpreter",
     "Interpreter+ConstantFold",
@@ -4829,6 +4829,294 @@
       "value": 8
     },
     {
+      "caseId": "mean-combo",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 2.25
+    },
+    {
+      "caseId": "mean-combo",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 2.25
+    },
+    {
+      "caseId": "mean-combo",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 2.25
+    },
+    {
+      "caseId": "mean-combo",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 2.25
+    },
+    {
+      "caseId": "mean-combo",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 2.25
+    },
+    {
+      "caseId": "mean-combo",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 2.25
+    },
+    {
+      "caseId": "mean-const",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "mean-const",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "mean-const",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "mean-const",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "mean-const",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "mean-const",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "mean-range",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "mean-range",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "mean-range",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "mean-range",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "mean-range",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "mean-range",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "mean-var",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 20
+    },
+    {
+      "caseId": "mean-var",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 20
+    },
+    {
+      "caseId": "mean-var",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 20
+    },
+    {
+      "caseId": "mean-var",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 20
+    },
+    {
+      "caseId": "mean-var",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 20
+    },
+    {
+      "caseId": "mean-var",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 20
+    },
+    {
+      "caseId": "median-combo",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "median-combo",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "median-combo",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "median-combo",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "median-combo",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "median-combo",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "median-const",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "median-const",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "median-const",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "median-const",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "median-const",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "median-const",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "median-range",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "median-range",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "median-range",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "median-range",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "median-range",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "median-range",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 7
+    },
+    {
+      "caseId": "median-var",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 20
+    },
+    {
+      "caseId": "median-var",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 20
+    },
+    {
+      "caseId": "median-var",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 20
+    },
+    {
+      "caseId": "median-var",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 20
+    },
+    {
+      "caseId": "median-var",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 20
+    },
+    {
+      "caseId": "median-var",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 20
+    },
+    {
       "caseId": "min-combo",
       "engine": "Compiler",
       "kind": "value",
@@ -6773,6 +7061,294 @@
       "value": 12
     },
     {
+      "caseId": "stdev-combo",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 1.5
+    },
+    {
+      "caseId": "stdev-combo",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 1.5
+    },
+    {
+      "caseId": "stdev-combo",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 1.5
+    },
+    {
+      "caseId": "stdev-combo",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 1.5
+    },
+    {
+      "caseId": "stdev-combo",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 1.5
+    },
+    {
+      "caseId": "stdev-combo",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 1.5
+    },
+    {
+      "caseId": "stdev-const",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 2
+    },
+    {
+      "caseId": "stdev-const",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 2
+    },
+    {
+      "caseId": "stdev-const",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 2
+    },
+    {
+      "caseId": "stdev-const",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 2
+    },
+    {
+      "caseId": "stdev-const",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 2
+    },
+    {
+      "caseId": "stdev-const",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 2
+    },
+    {
+      "caseId": "stdev-range",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "stdev-range",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "stdev-range",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "stdev-range",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "stdev-range",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "stdev-range",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "stdev-var",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "stdev-var",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "stdev-var",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "stdev-var",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "stdev-var",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "stdev-var",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 10
+    },
+    {
+      "caseId": "stdevp-combo",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 1.299038105676658
+    },
+    {
+      "caseId": "stdevp-combo",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 1.299038105676658
+    },
+    {
+      "caseId": "stdevp-combo",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 1.299038105676658
+    },
+    {
+      "caseId": "stdevp-combo",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 1.299038105676658
+    },
+    {
+      "caseId": "stdevp-combo",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 1.299038105676658
+    },
+    {
+      "caseId": "stdevp-combo",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 1.299038105676658
+    },
+    {
+      "caseId": "stdevp-const",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 1.632993161855452
+    },
+    {
+      "caseId": "stdevp-const",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 1.632993161855452
+    },
+    {
+      "caseId": "stdevp-const",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 1.632993161855452
+    },
+    {
+      "caseId": "stdevp-const",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 1.632993161855452
+    },
+    {
+      "caseId": "stdevp-const",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 1.632993161855452
+    },
+    {
+      "caseId": "stdevp-const",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 1.632993161855452
+    },
+    {
+      "caseId": "stdevp-range",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "stdevp-range",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "stdevp-range",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "stdevp-range",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "stdevp-range",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "stdevp-range",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "stdevp-var",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 8.16496580927726
+    },
+    {
+      "caseId": "stdevp-var",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 8.16496580927726
+    },
+    {
+      "caseId": "stdevp-var",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 8.16496580927726
+    },
+    {
+      "caseId": "stdevp-var",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 8.16496580927726
+    },
+    {
+      "caseId": "stdevp-var",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 8.16496580927726
+    },
+    {
+      "caseId": "stdevp-var",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 8.16496580927726
+    },
+    {
       "caseId": "sum-combo",
       "engine": "Compiler",
       "kind": "value",
@@ -7809,6 +8385,294 @@
       "engine": "Interpreter+ConstantFold",
       "kind": "value",
       "value": 0.42
+    },
+    {
+      "caseId": "variance-combo",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 2.25
+    },
+    {
+      "caseId": "variance-combo",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 2.25
+    },
+    {
+      "caseId": "variance-combo",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 2.25
+    },
+    {
+      "caseId": "variance-combo",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 2.25
+    },
+    {
+      "caseId": "variance-combo",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 2.25
+    },
+    {
+      "caseId": "variance-combo",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 2.25
+    },
+    {
+      "caseId": "variance-const",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "variance-const",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "variance-const",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "variance-const",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "variance-const",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "variance-const",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 4
+    },
+    {
+      "caseId": "variance-range",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "variance-range",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "variance-range",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "variance-range",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "variance-range",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "variance-range",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "variance-var",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 100
+    },
+    {
+      "caseId": "variance-var",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 100
+    },
+    {
+      "caseId": "variance-var",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 100
+    },
+    {
+      "caseId": "variance-var",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 100
+    },
+    {
+      "caseId": "variance-var",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 100
+    },
+    {
+      "caseId": "variance-var",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 100
+    },
+    {
+      "caseId": "variancep-combo",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 1.6875
+    },
+    {
+      "caseId": "variancep-combo",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 1.6875
+    },
+    {
+      "caseId": "variancep-combo",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 1.6875
+    },
+    {
+      "caseId": "variancep-combo",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 1.6875
+    },
+    {
+      "caseId": "variancep-combo",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 1.6875
+    },
+    {
+      "caseId": "variancep-combo",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 1.6875
+    },
+    {
+      "caseId": "variancep-const",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 2.6666666666666665
+    },
+    {
+      "caseId": "variancep-const",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 2.6666666666666665
+    },
+    {
+      "caseId": "variancep-const",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 2.6666666666666665
+    },
+    {
+      "caseId": "variancep-const",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 2.6666666666666665
+    },
+    {
+      "caseId": "variancep-const",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 2.6666666666666665
+    },
+    {
+      "caseId": "variancep-const",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 2.6666666666666665
+    },
+    {
+      "caseId": "variancep-range",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "variancep-range",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "variancep-range",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "variancep-range",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "variancep-range",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "variancep-range",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 0
+    },
+    {
+      "caseId": "variancep-var",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 66.66666666666667
+    },
+    {
+      "caseId": "variancep-var",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 66.66666666666667
+    },
+    {
+      "caseId": "variancep-var",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 66.66666666666667
+    },
+    {
+      "caseId": "variancep-var",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 66.66666666666667
+    },
+    {
+      "caseId": "variancep-var",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 66.66666666666667
+    },
+    {
+      "caseId": "variancep-var",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 66.66666666666667
     }
   ]
 }
