@@ -486,7 +486,7 @@ type MedianFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = input |> Seq.choose Helpers.castToDouble |> Seq.sort |> Seq.toArray
+        let values = Helpers.castFilterToNonNullDoubles input |> Array.sort
         if values.Length = 0 then
             Nothing
         elif values.Length % 2 = 1 then
@@ -502,7 +502,8 @@ type MedianFunction() =
             message <- "MEDIAN expects at least one argument."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 ->
                 message <- "MEDIAN expects at least one argument."
                 false
@@ -521,7 +522,7 @@ type VarianceFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = input |> Array.choose Helpers.castToDouble
+        let values = Helpers.castFilterToNonNullDoubles input
         if values.Length < 2 then
             Nothing
         else
@@ -535,7 +536,8 @@ type VarianceFunction() =
             message <- "VARIANCE expects at least two arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 | 1 ->
                 message <- "VARIANCE expects at least two arguments."
                 false
@@ -554,7 +556,7 @@ type VariancePFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = input |> Array.choose Helpers.castToDouble
+        let values = Helpers.castFilterToNonNullDoubles input
         if values.Length = 0 then
             Nothing
         else
@@ -568,7 +570,8 @@ type VariancePFunction() =
             message <- "VARIANCEP expects at least one argument."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 ->
                 message <- "VARIANCEP expects at least one argument."
                 false
@@ -587,7 +590,7 @@ type StDevFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = input |> Array.choose Helpers.castToDouble
+        let values = Helpers.castFilterToNonNullDoubles input
         if values.Length < 2 then
             Nothing
         else
@@ -601,7 +604,8 @@ type StDevFunction() =
             message <- "STDEV expects at least two arguments."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 | 1 ->
                 message <- "STDEV expects at least two arguments."
                 false
@@ -620,7 +624,7 @@ type StDevPFunction() =
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = input |> Array.choose Helpers.castToDouble
+        let values = Helpers.castFilterToNonNullDoubles input
         if values.Length = 0 then
             Nothing
         else
@@ -634,7 +638,8 @@ type StDevPFunction() =
             message <- "STDEVP expects at least one argument."
             false
         | false ->
-            match input.Length with
+            let flat = Helpers.flattenValues input
+            match flat.Length with
             | 0 ->
                 message <- "STDEVP expects at least one argument."
                 false

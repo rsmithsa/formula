@@ -400,6 +400,7 @@ type DefaultFunctionsTests () =
         let functionImplementation = DefaultFunctionProvider.Instance.Lookup "MEAN"
         Assert.AreEqual("AVG", functionImplementation.Name)
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0); Number(3.0)]))
+        Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Number(1.0); ValueArray([| Nothing; Number(3.0) |])]))
 
     [<TestMethod>]
     member this.TestDefaultFunctionMedian () =
@@ -410,6 +411,8 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "MEDIAN expects at least one argument."), functionImplementation.Validate (List.toArray []))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0) |])]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0); Number(1.0) |]) ]))
 
         Assert.AreEqual(Number(1.0), functionImplementation.Execute (List.toArray [Number(1.0)]))
         Assert.AreEqual(Number(1.5), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
@@ -417,6 +420,8 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Nothing; Number(1.0); Number(2.0)]))
         Assert.AreEqual(Number(2.5), functionImplementation.Execute (List.toArray [Number(2.0); Nothing; Number(1.0); Number(3.0); Number(8.0)]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
+        Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing |]); Number(1.0); Number(2.0)]))
+        Assert.AreEqual(Number(2.5), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing |]); ValueArray([| Number(1.0); Number(3.0); Number(8.0) |])]))
 
     [<TestMethod>]
     member this.TestDefaultFunctionVariance () =
@@ -428,12 +433,16 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "VARIANCE expects at least two arguments."), functionImplementation.Validate (List.toArray [Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0); Number(1.0)]))
+        Assert.AreEqual((false, "VARIANCE expects at least two arguments."), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0) |])]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0); Number(1.0) |]) ]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0); Number(1.0) |]); Number(1.0)]))
 
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Number(1.0)]))
         Assert.AreEqual(Number(0.5), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
         Assert.AreEqual(Number(2.5), functionImplementation.Execute (List.toArray [Number(2.0); Nothing; Number(1.0); Number(3.0); Number(4.0); Number(5.0)]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
+        Assert.AreEqual(Number(2.5), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing |]); ValueArray([| Number(1.0); Number(3.0); Number(4.0); Number(5.0) |])]))
 
     [<TestMethod>]
     member this.TestDefaultFunctionVarianceP () =
@@ -444,12 +453,16 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "VARIANCEP expects at least one argument."), functionImplementation.Validate (List.toArray []))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0) |])]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0); Number(1.0) |]) ]))
 
         Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Number(1.0)]))
         Assert.AreEqual(Number(0.25), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
         Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
         Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Nothing; Number(1.0); Number(3.0); Number(4.0); Number(5.0)]))
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
+        Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing |])]))
+        Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing; Number(1.0); Number(3.0) |]); Number(4.0); Number(5.0)]))
 
     [<TestMethod>]
     member this.TestDefaultFunctionStDev () =
@@ -461,12 +474,18 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "STDEV expects at least two arguments."), functionImplementation.Validate (List.toArray [Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0); Number(1.0)]))
+        Assert.AreEqual((false, "STDEV expects at least two arguments."), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0) |])]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0); Number(1.0) |]) ]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0); Number(1.0) |]); Number(1.0)]))
 
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Number(1.0)]))
         Assert.AreEqual(sqrt 2.0 / 2.0, (functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)])).NumberValue, 0.000001)
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
         Assert.AreEqual(1.581139, (functionImplementation.Execute (List.toArray [Number(2.0); Nothing; Number(1.0); Number(3.0); Number(4.0); Number(5.0)])).NumberValue, 0.000001)
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
+        Assert.AreEqual(sqrt 2.0 / 2.0, (functionImplementation.Execute (List.toArray [ValueArray([| Number(1.0); Number(2.0) |])])).NumberValue, 0.000001)
+        Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing |])]))
+        Assert.AreEqual(1.581139, (functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing; Number(1.0) |]); Number(3.0); Number(4.0); Number(5.0)])).NumberValue, 0.000001)
 
     [<TestMethod>]
     member this.TestDefaultFunctionStDevP () =
@@ -477,9 +496,14 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((false, "STDEVP expects at least one argument."), functionImplementation.Validate (List.toArray []))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0)]))
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [Number(1.0); Number(1.0)]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0) |])]))
+        Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0); Number(1.0) |]) ]))
 
         Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Number(1.0)]))
         Assert.AreEqual(Number(0.5), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
         Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
         Assert.AreEqual(sqrt 2.0, (functionImplementation.Execute (List.toArray [Number(2.0); Nothing; Number(1.0); Number(3.0); Number(4.0); Number(5.0)])).NumberValue, 0.000001)
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
+        Assert.AreEqual(Number(0.5), functionImplementation.Execute (List.toArray [ValueArray([| Number(1.0); Number(2.0) |])]))
+        Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing |])]))
+        Assert.AreEqual(sqrt 2.0, (functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing; Number(1.0) |]); Number(3.0); Number(4.0); Number(5.0)])).NumberValue, 0.000001)
