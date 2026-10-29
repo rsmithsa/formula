@@ -117,3 +117,9 @@ type CsWrapper private() =
         match result with
         | Some x -> Nullable(x)
         | _ -> Nullable()
+
+    static member inline WildcardMatch (input: ReadOnlySpan<char>, pattern: ReadOnlySpan<char>) =
+        WildcardMatcher.isMatch input pattern
+
+    static member inline WildcardMatchIgnoreCase (input: ReadOnlySpan<char>, pattern: ReadOnlySpan<char>) =
+        WildcardMatcher.isMatchIgnoreCase input pattern

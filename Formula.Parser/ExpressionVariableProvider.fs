@@ -91,9 +91,9 @@ type ExpressionVariableProvider(expressionMap: Map<string, IAstItem<expr>>, func
     member this.MatchNames pattern =
         match variableProvider with
         | None ->
-            Helpers.pooledCollectionFilter this.KnownExpressions.Keys (Helpers.getGlobMatcher pattern)
+            Helpers.pooledCollectionWildcardFilter this.KnownExpressions.Keys pattern
         | Some v ->
-            Helpers.pooledCollectionFilter this.KnownExpressions.Keys (Helpers.getGlobMatcher pattern)
+            Helpers.pooledCollectionWildcardFilter this.KnownExpressions.Keys pattern
             |> Array.append (v.MatchNames (pattern, this))
             |> Array.distinct
 

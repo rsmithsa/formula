@@ -21,6 +21,7 @@
     <Compile Include="FinancialFunctionsTests.fs" />
     <Compile Include="ForecastFunctionsTests.fs" />
     <Compile Include="ArrayFunctionsTests.fs" />
+    <Compile Include="WildcardMatcherTests.fs" />
   </ItemGroup>
 
   <ItemGroup>

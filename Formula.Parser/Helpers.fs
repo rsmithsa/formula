@@ -10,6 +10,7 @@ open System
 open System.Buffers
 open System.Text.RegularExpressions
 open Formula.Parser.Ast
+open Formula.Parser.WildcardMatcher
 
 type Helpers = 
 
@@ -157,7 +158,7 @@ type Helpers =
         finally
             pool.Return(buffer)
 
-    static member pooledCollectionFilter (collection: System.Collections.Generic.ICollection<string>) filter =
+    static member pooledCollectionWildcardFilter (collection: System.Collections.Generic.ICollection<string>) (pattern: string) =
         let pool = ArrayPool<string>.Shared
         let mutable requiredCap = collection.Count
         let mutable buffer = pool.Rent(requiredCap)
@@ -165,7 +166,7 @@ type Helpers =
 
         try
             for item in collection do
-                if filter item then
+                if isMatch (item.AsSpan()) (pattern.AsSpan()) then
                     buffer.[count] <- item
                     count <- count + 1
             let result = buffer.[0 .. count - 1]
@@ -173,12 +174,6 @@ type Helpers =
         finally
             pool.Return(buffer)
     
-    static member inline private matchWrapper pattern input = Regex.IsMatch(input, pattern)
-
-    static member getGlobMatcher (pattern: string) =
-        let regexPattern = "^" + Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".") + "$"
-        Helpers.matchWrapper regexPattern
-
     static member expandWildcard (provider: IVariableProvider) (pattern: string) : value =
         let names = provider.MatchNames pattern
         

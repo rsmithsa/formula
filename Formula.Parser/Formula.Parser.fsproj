@@ -25,6 +25,7 @@
 	<Compile Include="IFunctionProvider.fs" />
 	<Compile Include="EmptyFunctionProvider.fs" />
 	<Compile Include="ParserException.fs" />
+	<Compile Include="WildcardMatcher.fs" />
     <Compile Include="Helpers.fs" />
     <Compile Include="Newton.fs" />
     <Compile Include="Parser.fs" />

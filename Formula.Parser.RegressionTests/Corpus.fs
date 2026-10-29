@@ -31,7 +31,7 @@ type TypedMapVariableProvider(map: Map<string, value>) =
         | _ -> invalidArg "range" "Numeric range expected."
     member _.LookupIndex (name, _index) = map.[name]
     member _.MatchNames pattern =
-        Helpers.pooledCollectionFilter map.Keys (Helpers.getGlobMatcher pattern)
+        Helpers.pooledCollectionWildcardFilter map.Keys pattern
 
     interface IVariableProvider with
         member this.IsDefined name = this.IsDefined name

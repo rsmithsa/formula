@@ -403,5 +403,15 @@ namespace Formula.Parser.CsTests
             Assert.AreEqual(null, dep.Item2);
             Assert.AreEqual(null, dep.Item3);
         }
+
+        [TestMethod]
+        public void TestWildcardMatch()
+        {
+            var input = "MyVar";
+
+            Assert.IsTrue(CsWrapper.WildcardMatch(input, "MyV*?"));
+
+            Assert.IsTrue(CsWrapper.WildcardMatchIgnoreCase(input, "myv*?"));
+        }
     }
 }
