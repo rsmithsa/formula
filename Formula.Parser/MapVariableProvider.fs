@@ -18,6 +18,9 @@ type MapVariableProvider(map: Map<string, float>) =
         |> Seq.map (|KeyValue|)  
         |> Map.ofSeq
     
+    // The map is immutable, so cache its keys once: enumerating Map.Keys allocates per call.
+    let names = [| for KeyValue(k, _) in map -> k |]
+
     static member Empty = empty
 
     new(variables: System.Collections.Generic.IDictionary<string, double>) = MapVariableProvider(dictionaryToMap variables)
@@ -38,8 +41,8 @@ type MapVariableProvider(map: Map<string, float>) =
         match (index) with
         | (Number a) -> Number(value)
         | _ -> invalidArg "index" "Numeric index expected."
-    member this.MatchNames pattern =
-        Helpers.pooledCollectionWildcardFilter this.KnownVariables.Keys pattern
+    member this.MatchNames (pattern, collector) =
+        Helpers.collectWildcardMatchesFromArray names pattern collector
 
     interface IVariableProvider with
         member this.IsDefined (name) = this.IsDefined name
@@ -50,6 +53,6 @@ type MapVariableProvider(map: Map<string, float>) =
         member this.LookupRange (name, lower, upper, sender) = this.LookupRange name lower upper
         member this.LookupIndex (name, index) = this.LookupIndex name index
         member this.LookupIndex (name, index, sender) = this.LookupIndex name index
-        member this.MatchNames (pattern) = this.MatchNames pattern
-        member this.MatchNames (pattern, sender) = this.MatchNames pattern
+        member this.MatchNames (pattern, collector) = this.MatchNames (pattern, collector)
+        member this.MatchNames (pattern, collector, sender) = this.MatchNames (pattern, collector)
 

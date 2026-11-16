@@ -18,7 +18,10 @@ type ExpressionVariableProvider(expressionMap: Map<string, IAstItem<expr>>, func
         dictionary 
         |> Seq.map (|KeyValue|)  
         |> Map.ofSeq
-    
+
+    // The map is immutable, so cache its keys once: enumerating Map.Keys allocates per call.
+    let expressionNames = [| for KeyValue(k, _) in expressionMap -> k |]
+
     new(expressions: System.Collections.Generic.IDictionary<string, IAstItem<expr>>, functionProvider: IFunctionProvider, variableProvider: IVariableProvider) = ExpressionVariableProvider(dictionaryToMap expressions, functionProvider, variableProvider)
 
     new(expressions: System.Collections.Generic.IDictionary<string, string>, functionProvider: IFunctionProvider, variableProvider: IVariableProvider) =
@@ -88,14 +91,17 @@ type ExpressionVariableProvider(expressionMap: Map<string, IAstItem<expr>>, func
             | (false, f) -> v.LookupRange (name, lower, upper, this)
     member this.LookupIndex name index =
         this.Lookup name
-    member this.MatchNames pattern =
+    member this.MatchNames (pattern, collector) =
         match variableProvider with
         | None ->
-            Helpers.pooledCollectionWildcardFilter this.KnownExpressions.Keys pattern
+            Helpers.collectWildcardMatchesFromArray expressionNames pattern collector
         | Some v ->
-            Helpers.pooledCollectionWildcardFilter this.KnownExpressions.Keys pattern
-            |> Array.append (v.MatchNames (pattern, this))
-            |> Array.distinct
+            let distinct = DistinctNameCollector.Rent collector
+            try
+                Helpers.collectWildcardMatchesFromArray expressionNames pattern distinct
+                v.MatchNames (pattern, distinct, this)
+            finally
+                distinct.Release()
 
     interface IVariableProvider with
         member this.IsDefined (name) = this.IsDefined name
@@ -106,5 +112,5 @@ type ExpressionVariableProvider(expressionMap: Map<string, IAstItem<expr>>, func
         member this.LookupRange (name, lower, upper, sender) = this.LookupRange name lower upper
         member this.LookupIndex (name, index) = this.LookupIndex name index
         member this.LookupIndex (name, index, sender) = this.LookupIndex name index
-        member this.MatchNames (pattern) = this.MatchNames pattern
-        member this.MatchNames (pattern, sender) = this.MatchNames pattern
+        member this.MatchNames (pattern, collector) = this.MatchNames (pattern, collector)
+        member this.MatchNames (pattern, collector, sender) = this.MatchNames (pattern, collector)

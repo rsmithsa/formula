@@ -24,8 +24,8 @@ type MutableVariableProvider(map: System.Collections.Generic.IDictionary<string,
         | _ -> invalidArg "range" "Numeric range expected."
     member this.LookupIndex name index =
         this.Lookup name
-    member this.MatchNames pattern =
-        Helpers.pooledCollectionWildcardFilter this.KnownVariables.Keys pattern
+    member this.MatchNames (pattern, collector) =
+        Helpers.collectWildcardMatches this.KnownVariables.Keys pattern collector
 
     interface IVariableProvider with
         member this.IsDefined (name) = this.IsDefined name
@@ -36,6 +36,6 @@ type MutableVariableProvider(map: System.Collections.Generic.IDictionary<string,
         member this.LookupRange (name, lower, upper, sender) = this.LookupRange name lower upper
         member this.LookupIndex (name, index) = this.LookupIndex name index
         member this.LookupIndex (name, index, sender) = this.LookupIndex name index
-        member this.MatchNames (pattern) = this.MatchNames pattern
-        member this.MatchNames (pattern, sender) = this.MatchNames pattern
+        member this.MatchNames (pattern, collector) = this.MatchNames (pattern, collector)
+        member this.MatchNames (pattern, collector, sender) = this.MatchNames (pattern, collector)
 

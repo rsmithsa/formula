@@ -58,11 +58,24 @@ type CompositeVariableProvider(providers: seq<IVariableProvider>) =
             toSearch
             |> Seq.find (fun x -> x.IsDefined name)
         provider.LookupIndex (name, index)
-    member this.MatchNames pattern sender =
-        knownVariables.Force()
-        |> Seq.where (fun x -> LanguagePrimitives.PhysicalEquality x sender = false)
-        |> Seq.collect (fun x -> x.MatchNames pattern)
-        |> Seq.distinct |> Seq.toArray
+    member this.MatchNames (pattern: string) (collector: IVariableNameCollector) sender =
+        let providers = knownVariables.Force()
+        let mutable sources = 0
+        for x in providers do
+            if not (LanguagePrimitives.PhysicalEquality x sender) then sources <- sources + 1
+
+        if sources = 1 then
+            for x in providers do
+                if not (LanguagePrimitives.PhysicalEquality x sender) then
+                    x.MatchNames (pattern, collector)
+        elif sources > 1 then
+            let distinct = DistinctNameCollector.Rent collector
+            try
+                for x in providers do
+                    if not (LanguagePrimitives.PhysicalEquality x sender) then
+                        x.MatchNames (pattern, distinct)
+            finally
+                distinct.Release()
 
     interface IVariableProvider with
         member this.IsDefined (name) = this.IsDefined name null
@@ -73,5 +86,5 @@ type CompositeVariableProvider(providers: seq<IVariableProvider>) =
         member this.LookupRange (name, lower, upper, sender) = this.LookupRange name lower upper sender
         member this.LookupIndex (name, index) = this.LookupIndex name index null
         member this.LookupIndex (name, index, sender) = this.LookupIndex name index sender
-        member this.MatchNames (pattern) = this.MatchNames pattern null
-        member this.MatchNames (pattern, sender) = this.MatchNames pattern sender
+        member this.MatchNames (pattern, collector) = this.MatchNames pattern collector null
+        member this.MatchNames (pattern, collector, sender) = this.MatchNames pattern collector sender

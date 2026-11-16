@@ -158,71 +158,52 @@ type Helpers =
         finally
             pool.Return(buffer)
 
-    static member pooledCollectionWildcardFilter (collection: System.Collections.Generic.ICollection<string>) (pattern: string) =
-        let pool = ArrayPool<string>.Shared
-        let mutable requiredCap = collection.Count
-        let mutable buffer = pool.Rent(requiredCap)
-        let mutable count = 0
+    static member collectWildcardMatches (names: System.Collections.Generic.IEnumerable<string>) (pattern: string) (collector: IVariableNameCollector) =
+        for item in names do
+            if isMatch (item.AsSpan()) (pattern.AsSpan()) then
+                collector.Add item
 
-        try
-            for item in collection do
-                if isMatch (item.AsSpan()) (pattern.AsSpan()) then
-                    buffer.[count] <- item
-                    count <- count + 1
-            let result = buffer.[0 .. count - 1]
-            result
-        finally
-            pool.Return(buffer)
-    
+    static member collectWildcardMatchesFromArray (names: string[]) (pattern: string) (collector: IVariableNameCollector) =
+        for i = 0 to names.Length - 1 do
+            let item = names.[i]
+            if isMatch (item.AsSpan()) (pattern.AsSpan()) then
+                collector.Add item
+
+    static member matchNames (provider: IVariableProvider) (pattern: string) : string[] =
+        use collector = PooledNameCollector.Rent()
+        provider.MatchNames(pattern, collector)
+        collector.ToArray()
+
     static member expandWildcard (provider: IVariableProvider) (pattern: string) : value =
-        let names = provider.MatchNames pattern
-        
-        let pool = ArrayPool<value>.Shared
-        let mutable requiredCap = names.Length
-        let mutable buffer = pool.Rent(requiredCap)
-        let mutable count = 0
+        use names = PooledNameCollector.Rent()
+        provider.MatchNames(pattern, names)
 
-        try
-            for n in names do
-                let v = provider.Lookup (n)
-                buffer.[count] <- v
-                count <- count + 1
-
-            let result = buffer.[0 .. count - 1]
-            ValueArray(result)
-        finally
-            pool.Return(buffer)
+        let result = Array.zeroCreate<value> names.Count
+        for i = 0 to names.Count - 1 do
+            result.[i] <- provider.Lookup(names.[i])
+        ValueArray(result)
 
     static member expandWildcardIndex (provider: IVariableProvider) (pattern: string) (index: value) : value =
-        let names = provider.MatchNames pattern
-        
-        let pool = ArrayPool<value>.Shared
-        let mutable requiredCap = names.Length
-        let mutable buffer = pool.Rent(requiredCap)
-        let mutable count = 0
+        use names = PooledNameCollector.Rent()
+        provider.MatchNames(pattern, names)
 
-        try
-            for n in names do
-                let v = provider.LookupIndex (n, index)
-                buffer.[count] <- v
-                count <- count + 1
-
-            let result = buffer.[0 .. count - 1]
-            ValueArray(result)
-        finally
-            pool.Return(buffer)
+        let result = Array.zeroCreate<value> names.Count
+        for i = 0 to names.Count - 1 do
+            result.[i] <- provider.LookupIndex(names.[i], index)
+        ValueArray(result)
 
     static member expandWildcardRange (provider: IVariableProvider) (pattern: string) (lower: value) (upper: value) : value =
-        let names = provider.MatchNames pattern
-        
+        use names = PooledNameCollector.Rent()
+        provider.MatchNames(pattern, names)
+
         let pool = ArrayPool<value>.Shared
-        let mutable requiredCap = names.Length
+        let mutable requiredCap = names.Count
         let mutable buffer = pool.Rent(requiredCap)
         let mutable count = 0
 
         try
-            for n in names do
-                match provider.LookupRange (n, lower, upper) with
+            for i = 0 to names.Count - 1 do
+                match provider.LookupRange (names.[i], lower, upper) with
                 | ValueArray a ->
                     requiredCap <- requiredCap + a.Length
                     if requiredCap > buffer.Length then

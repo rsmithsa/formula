@@ -63,7 +63,7 @@ type CsWrapper private() =
             |> Seq.collect (fun x ->
                 match x.Item with
                 | Identifier i -> Seq.singleton i
-                | WildcardIdentifier p -> variableProvider.MatchNames p
+                | WildcardIdentifier p -> Helpers.matchNames variableProvider p
             )
         new System.Collections.Generic.HashSet<string>(names)
 

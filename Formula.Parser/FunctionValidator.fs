@@ -28,8 +28,8 @@ module FunctionValidator =
                 | _ -> ValueArray([| Number(0.0) |])
             member this.LookupIndex (name, index) = Number(0.0)
             member this.LookupIndex (name, index, sender) = Number(0.0)
-            member this.MatchNames (pattern) = Array.empty
-            member this.MatchNames (pattern, sender) = Array.empty
+            member this.MatchNames (pattern, collector) = ()
+            member this.MatchNames (pattern, collector, sender) = ()
     }
     
     let rec validateFunctions (ast: IAstItem<expr>) (functions: IFunctionProvider) errors =
