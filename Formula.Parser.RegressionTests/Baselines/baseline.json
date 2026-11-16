@@ -1,6 +1,6 @@
 {
-  "libraryVersion": "1.4.3",
-  "generatedUtc": "2026-10-01T11:23:50.5396491Z",
+  "libraryVersion": "2.0.0-alpha004",
+  "generatedUtc": "2026-11-16T08:47:03.4551255Z",
   "engines": [
     "Interpreter",
     "Interpreter+ConstantFold",
@@ -2993,6 +2993,114 @@
       "value": -1
     },
     {
+      "caseId": "filter-gt-sum-range",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 40
+    },
+    {
+      "caseId": "filter-gt-sum-range",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 40
+    },
+    {
+      "caseId": "filter-gt-sum-range",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 40
+    },
+    {
+      "caseId": "filter-gt-sum-range",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 40
+    },
+    {
+      "caseId": "filter-gt-sum-range",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 40
+    },
+    {
+      "caseId": "filter-gt-sum-range",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 40
+    },
+    {
+      "caseId": "filter-ne-sum-const",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 47
+    },
+    {
+      "caseId": "filter-ne-sum-const",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 47
+    },
+    {
+      "caseId": "filter-ne-sum-const",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 47
+    },
+    {
+      "caseId": "filter-ne-sum-const",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 47
+    },
+    {
+      "caseId": "filter-ne-sum-const",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 47
+    },
+    {
+      "caseId": "filter-ne-sum-const",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 47
+    },
+    {
+      "caseId": "filter-ne-sum-range",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 43
+    },
+    {
+      "caseId": "filter-ne-sum-range",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 43
+    },
+    {
+      "caseId": "filter-ne-sum-range",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 43
+    },
+    {
+      "caseId": "filter-ne-sum-range",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 43
+    },
+    {
+      "caseId": "filter-ne-sum-range",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 43
+    },
+    {
+      "caseId": "filter-ne-sum-range",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 43
+    },
+    {
       "caseId": "first-combo",
       "engine": "Compiler",
       "kind": "value",
@@ -8673,6 +8781,186 @@
       "engine": "Interpreter+ConstantFold",
       "kind": "value",
       "value": 66.66666666666667
+    },
+    {
+      "caseId": "vmult-sum-range",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 80
+    },
+    {
+      "caseId": "vmult-sum-range",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 80
+    },
+    {
+      "caseId": "vmult-sum-range",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 80
+    },
+    {
+      "caseId": "vmult-sum-range",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 80
+    },
+    {
+      "caseId": "vmult-sum-range",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 80
+    },
+    {
+      "caseId": "vmult-sum-range",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 80
+    },
+    {
+      "caseId": "wildcard-single-char",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "wildcard-single-char",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "wildcard-single-char",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "wildcard-single-char",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "wildcard-single-char",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "wildcard-single-char",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 3
+    },
+    {
+      "caseId": "wildcard-sum",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "wildcard-sum",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "wildcard-sum",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "wildcard-sum",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "wildcard-sum",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "wildcard-sum",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "wildcard-sum-index",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "wildcard-sum-index",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "wildcard-sum-index",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "wildcard-sum-index",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "wildcard-sum-index",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "wildcard-sum-index",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 6
+    },
+    {
+      "caseId": "wildcard-sum-range",
+      "engine": "Compiler",
+      "kind": "value",
+      "value": 12
+    },
+    {
+      "caseId": "wildcard-sum-range",
+      "engine": "Compiler+ConstantFold",
+      "kind": "value",
+      "value": 12
+    },
+    {
+      "caseId": "wildcard-sum-range",
+      "engine": "ILCompiler",
+      "kind": "value",
+      "value": 12
+    },
+    {
+      "caseId": "wildcard-sum-range",
+      "engine": "ILCompiler+ConstantFold",
+      "kind": "value",
+      "value": 12
+    },
+    {
+      "caseId": "wildcard-sum-range",
+      "engine": "Interpreter",
+      "kind": "value",
+      "value": 12
+    },
+    {
+      "caseId": "wildcard-sum-range",
+      "engine": "Interpreter+ConstantFold",
+      "kind": "value",
+      "value": 12
     }
   ]
 }

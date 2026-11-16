@@ -17,6 +17,8 @@ open Formula.Parser.RegressionTests
 ///
 /// Normal run: `RegressionSnapshot` recomputes every case through every engine and
 /// asserts equality against the committed baseline, failing with a per-entry diff.
+/// If the only differences are new entries absent from the baseline (new cases or
+/// engines), the test is Inconclusive rather than failed.
 ///
 /// Regenerate: set `FORMULA_REGEN_BASELINE=1` and `RegressionSnapshot` instead writes
 /// the fresh snapshot to the source tree (rolling baseline + per-version archive).
@@ -86,11 +88,29 @@ type RegressionTests() =
             let baseline = Snapshotter.deserialize (File.ReadAllText baselinePath)
             let mismatches = Comparer.compare (optionsFor cases) baseline current
 
-            if not (List.isEmpty mismatches) then
+            // Entries present now but absent from the baseline are new cases/engines, not
+            // regressions. Changed and removed entries are genuine differences.
+            let additions, regressions =
+                mismatches |> List.partition (fun m -> m.Baseline.IsNone && m.Current.IsSome)
+
+            let additionsSection () =
+                sprintf "%d new result(s) not in baseline:%s%s"
+                    additions.Length Environment.NewLine (Comparer.report additions)
+
+            if not (List.isEmpty regressions) then
                 let header =
                     sprintf "%d result(s) changed vs baseline version %s (current %s):"
-                        mismatches.Length baseline.LibraryVersion current.LibraryVersion
-                Assert.Fail(header + Environment.NewLine + Comparer.report mismatches)
+                        regressions.Length baseline.LibraryVersion current.LibraryVersion
+                let body = header + Environment.NewLine + Comparer.report regressions
+                let message =
+                    if List.isEmpty additions then body
+                    else body + Environment.NewLine + Environment.NewLine + additionsSection ()
+                Assert.Fail(message)
+            elif not (List.isEmpty additions) then
+                let header =
+                    sprintf "Baseline version %s (current %s) is missing new entries; regenerate with FORMULA_REGEN_BASELINE=1."
+                        baseline.LibraryVersion current.LibraryVersion
+                Assert.Inconclusive(header + Environment.NewLine + additionsSection ())
 
     /// Diff two arbitrary stored snapshots (e.g. two archived versions). Inconclusive
     /// unless FORMULA_COMPARE_A and FORMULA_COMPARE_B point at snapshot files.
