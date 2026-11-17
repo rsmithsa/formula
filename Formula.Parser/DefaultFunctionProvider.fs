@@ -180,6 +180,10 @@ type CountFunction() =
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type SumFunction() =
+    static let impl =
+        DoubleSpanFunc(fun values ->
+            if values.Length = 0 then Nothing else Number(System.Numerics.Tensors.TensorPrimitives.Sum values))
+
     member this.Name =
         "SUM"
         
@@ -191,8 +195,7 @@ type SumFunction() =
         | false ->
             if input.Length = 0 then Number(0.0)
             else
-                let values = Helpers.castFilterToNonNullDoubles input
-                if values.Length = 0 then Nothing else Number(Array.sum values)
+                Helpers.withNonNullDoubles(input, impl)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         true
@@ -204,14 +207,17 @@ type SumFunction() =
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type AvgFunction() =
+    static let impl =
+        DoubleSpanFunc(fun values ->
+            if values.Length = 0 then Nothing else Number(System.Numerics.Tensors.TensorPrimitives.Average values))
+
     member this.Name =
         "AVG"
         
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castFilterToNonNullDoubles input
-        if values.Length = 0 then Nothing else Number(Array.average values)
+        Helpers.withNonNullDoubles(input, impl)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -287,14 +293,17 @@ type LastFunction() =
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type MinFunction() =
+    static let impl =
+        DoubleSpanFunc(fun values ->
+            if values.Length = 0 then Nothing else Number(System.Numerics.Tensors.TensorPrimitives.Min values))
+
     member this.Name =
         "MIN"
         
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castFilterToNonNullDoubles input
-        if values.Length = 0 then Nothing else Number(Array.min values)
+        Helpers.withNonNullDoubles(input, impl)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -316,14 +325,17 @@ type MinFunction() =
         member this.Validate (input, message) = this.Validate (input, &message)
         
 type MaxFunction() =
+    static let impl =
+        DoubleSpanFunc(fun values ->
+            if values.Length = 0 then Nothing else Number(System.Numerics.Tensors.TensorPrimitives.Max values))
+
     member this.Name =
         "MAX"
         
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castFilterToNonNullDoubles input
-        if values.Length = 0 then Nothing else Number(Array.max values)
+        Helpers.withNonNullDoubles(input, impl)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -480,21 +492,25 @@ type SumProductFunction() =
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type MedianFunction() =
+    static let impl =
+        MutableDoubleSpanFunc(fun values ->
+            System.MemoryExtensions.Sort values
+            if values.Length = 0 then
+                Nothing
+            elif values.Length % 2 = 1 then
+                Number(values.[values.Length / 2])
+            else
+                let a = values.[values.Length / 2 - 1]
+                let b = values.[values.Length / 2]
+                Number((a + b) / 2.0))
+
     member this.Name =
         "MEDIAN"
         
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castFilterToNonNullDoubles input |> Array.sort
-        if values.Length = 0 then
-            Nothing
-        elif values.Length % 2 = 1 then
-            Number(values[values.Length / 2])
-        else
-            let a = values[values.Length / 2 - 1]
-            let b = values[values.Length / 2]
-            Number((a + b) / 2.0)
+        Helpers.withNonNullDoublesMutable(input, impl)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -516,19 +532,21 @@ type MedianFunction() =
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type VarianceFunction() =
+    static let impl =
+        DoubleSpanFunc(fun values ->
+            if values.Length < 2 then
+                Nothing
+            else
+                let popStdDev = System.Numerics.Tensors.TensorPrimitives.StdDev values
+                Number((popStdDev * popStdDev) * (float values.Length / (float values.Length - 1.0))))
+
     member this.Name =
         "VARIANCE"
-        
+
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castFilterToNonNullDoubles input
-        if values.Length < 2 then
-            Nothing
-        else
-            let mean = Array.average values
-            let sumSquares = values |> Array.sumBy (fun x -> (x - mean) ** 2.0)
-            Number(sumSquares / (float values.Length - 1.0))
+        Helpers.withNonNullDoubles(input, impl)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -550,19 +568,21 @@ type VarianceFunction() =
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type VariancePFunction() =
+    static let impl =
+        DoubleSpanFunc(fun values ->
+            if values.Length = 0 then
+                Nothing
+            else
+                let popStdDev = System.Numerics.Tensors.TensorPrimitives.StdDev values
+                Number(popStdDev * popStdDev))
+
     member this.Name =
         "VARIANCEP"
-        
+
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castFilterToNonNullDoubles input
-        if values.Length = 0 then
-            Nothing
-        else
-            let mean = Array.average values
-            let sumSquares = values |> Array.sumBy (fun x -> (x - mean) ** 2.0)
-            Number(sumSquares / float values.Length)
+        Helpers.withNonNullDoubles(input, impl)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -584,19 +604,21 @@ type VariancePFunction() =
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type StDevFunction() =
+    static let impl =
+        DoubleSpanFunc(fun values ->
+            if values.Length < 2 then
+                Nothing
+            else
+                let popStdDev = System.Numerics.Tensors.TensorPrimitives.StdDev values
+                Number(popStdDev * sqrt(float values.Length / (float values.Length - 1.0))))
+
     member this.Name =
         "STDEV"
-        
+
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castFilterToNonNullDoubles input
-        if values.Length < 2 then
-            Nothing
-        else
-            let mean = Array.average values
-            let sumSquares = values |> Array.sumBy (fun x -> (x - mean) ** 2.0)
-            Number(sqrt (sumSquares / (float values.Length - 1.0)))
+        Helpers.withNonNullDoubles(input, impl)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with
@@ -618,19 +640,21 @@ type StDevFunction() =
         member this.Validate (input, message) = this.Validate (input, &message)
 
 type StDevPFunction() =
+    static let impl =
+        DoubleSpanFunc(fun values ->
+            if values.Length = 0 then
+                Nothing
+            else
+                let popStdDev = System.Numerics.Tensors.TensorPrimitives.StdDev values
+                Number(popStdDev))
+
     member this.Name =
         "STDEVP"
-        
+
     member this.IsNonDeterministic = false
 
     member this.Execute (input: value[]) =
-        let values = Helpers.castFilterToNonNullDoubles input
-        if values.Length = 0 then
-            Nothing
-        else
-            let mean = Array.average values
-            let sumSquares = values |> Array.sumBy (fun x -> (x - mean) ** 2.0)
-            Number(sqrt (sumSquares / float values.Length))
+        Helpers.withNonNullDoubles(input, impl)
 
     member this.Validate (input: value[], [<Out>]message: string byref) =
         match isNull input with

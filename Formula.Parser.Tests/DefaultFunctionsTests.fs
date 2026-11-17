@@ -438,11 +438,11 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0); Number(1.0) |]); Number(1.0)]))
 
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Number(1.0)]))
-        Assert.AreEqual(Number(0.5), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
+        Assert.AreEqual(0.5, (functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)])).NumberValue, 0.000001)
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
-        Assert.AreEqual(Number(2.5), functionImplementation.Execute (List.toArray [Number(2.0); Nothing; Number(1.0); Number(3.0); Number(4.0); Number(5.0)]))
+        Assert.AreEqual(2.5, (functionImplementation.Execute (List.toArray [Number(2.0); Nothing; Number(1.0); Number(3.0); Number(4.0); Number(5.0)])).NumberValue, 0.000001)
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
-        Assert.AreEqual(Number(2.5), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing |]); ValueArray([| Number(1.0); Number(3.0); Number(4.0); Number(5.0) |])]))
+        Assert.AreEqual(2.5, (functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing |]); ValueArray([| Number(1.0); Number(3.0); Number(4.0); Number(5.0) |])])).NumberValue, 0.000001)
 
     [<TestMethod>]
     member this.TestDefaultFunctionVarianceP () =
@@ -457,12 +457,12 @@ type DefaultFunctionsTests () =
         Assert.AreEqual((true, (null: string)), functionImplementation.Validate (List.toArray [ValueArray([| Number(1.0); Number(1.0) |]) ]))
 
         Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Number(1.0)]))
-        Assert.AreEqual(Number(0.25), functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)]))
+        Assert.AreEqual(0.25, (functionImplementation.Execute (List.toArray [Number(1.0); Number(2.0)])).NumberValue, 0.000001)
         Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [Number(2.0); Nothing]))
-        Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [Number(2.0); Nothing; Number(1.0); Number(3.0); Number(4.0); Number(5.0)]))
+        Assert.AreEqual(2.0, (functionImplementation.Execute (List.toArray [Number(2.0); Nothing; Number(1.0); Number(3.0); Number(4.0); Number(5.0)])).NumberValue, 0.000001)
         Assert.AreEqual(Nothing, functionImplementation.Execute (List.toArray [Nothing; Nothing]))
         Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing |])]))
-        Assert.AreEqual(Number(2.0), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing; Number(1.0); Number(3.0) |]); Number(4.0); Number(5.0)]))
+        Assert.AreEqual(2.0, (functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing; Number(1.0); Number(3.0) |]); Number(4.0); Number(5.0)])).NumberValue, 0.000001)
 
     [<TestMethod>]
     member this.TestDefaultFunctionStDev () =
@@ -507,3 +507,43 @@ type DefaultFunctionsTests () =
         Assert.AreEqual(Number(0.5), functionImplementation.Execute (List.toArray [ValueArray([| Number(1.0); Number(2.0) |])]))
         Assert.AreEqual(Number(0.0), functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing |])]))
         Assert.AreEqual(sqrt 2.0, (functionImplementation.Execute (List.toArray [ValueArray([| Number(2.0); Nothing; Number(1.0) |]); Number(3.0); Number(4.0); Number(5.0)])).NumberValue, 0.000001)
+    /// The aggregates run over a stack buffer for small inputs and a pooled buffer for large
+    /// ones (and MEDIAN switches sort strategy at 16 elements). Check each against the plain
+    /// FSharp.Core Array computation, exactly, on both sides of those thresholds.
+    [<TestMethod>]
+    member this.TestDefaultFunctionAggregatesAcrossBufferThresholds () =
+        let rng = Random(1234)
+        let reference (name: string) (xs: float[]) =
+            if xs.Length = 0 then Nothing
+            else
+                let mean = Array.average xs
+                let ss = xs |> Array.sumBy (fun x -> (x - mean) ** 2.0)
+                let n = float xs.Length
+                match name with
+                | "SUM" -> Number(Array.sum xs)
+                | "AVG" -> Number(mean)
+                | "MIN" -> Number(Array.min xs)
+                | "MAX" -> Number(Array.max xs)
+                | "MEDIAN" ->
+                    let s = Array.sort xs
+                    if s.Length % 2 = 1 then Number(s.[s.Length / 2])
+                    else Number((s.[s.Length / 2 - 1] + s.[s.Length / 2]) / 2.0)
+                | "VARIANCE" -> if xs.Length < 2 then Nothing else Number(ss / (n - 1.0))
+                | "VARIANCEP" -> Number(ss / n)
+                | "STDEV" -> if xs.Length < 2 then Nothing else Number(sqrt (ss / (n - 1.0)))
+                | "STDEVP" -> Number(sqrt (ss / n))
+                | other -> failwithf "Unexpected function %s" other
+
+        for size in [ 0; 1; 2; 15; 16; 17; 127; 128; 129; 1000 ] do
+            let numbers = Array.init size (fun _ -> Math.Round(rng.NextDouble() * 200.0 - 100.0, 3))
+            // Interleave Nothing values and split the numbers between scalars and a nested array.
+            let scalars = numbers.[0 .. size / 2 - 1] |> Array.collect (fun x -> [| Number x; Nothing |])
+            let nested = ValueArray(numbers.[size / 2 ..] |> Array.collect (fun x -> [| Nothing; Number x |]))
+            let input = Array.append scalars [| nested |]
+
+            for name in [ "SUM"; "AVG"; "MIN"; "MAX"; "MEDIAN"; "VARIANCE"; "VARIANCEP"; "STDEV"; "STDEVP" ] do
+                let fn = DefaultFunctionProvider.Instance.Lookup name
+                let expected = if name = "SUM" && size = 0 then Nothing else reference name numbers
+                match expected with
+                | Nothing -> Assert.AreEqual(expected, (fn.Execute input), sprintf "%s over %d values" name size)
+                | _ -> Assert.AreEqual(expected.NumberValue, (fn.Execute input).NumberValue, 0.000001, sprintf "%s over %d values" name size)

@@ -8,11 +8,24 @@ namespace Formula.Parser
 
 open System
 open System.Buffers
-open System.Text.RegularExpressions
 open Formula.Parser.Ast
 open Formula.Parser.WildcardMatcher
 
-type Helpers = 
+/// A computation over a read-only span of doubles. F# lambdas cannot take byref-like
+/// parameters, but delegates can, so span consumers are expressed as delegates.
+type DoubleSpanFunc<'R> = delegate of ReadOnlySpan<float> -> 'R
+
+/// A computation over a read-only span of doubles with a same length scratch span. F# lambdas cannot take byref-like
+/// parameters, but delegates can, so span consumers are expressed as delegates.
+type DoubleSpanScratchFunc<'R> = delegate of ReadOnlySpan<float> * Span<float> -> 'R
+
+/// A computation over a mutable (scratch) span of doubles, e.g. for in-place sorting.
+type MutableDoubleSpanFunc<'R> = delegate of Span<float> -> 'R
+
+type Helpers =
+
+    /// Inputs flattening to at most this many doubles use a stack buffer; larger ones rent from the pool.
+    static member StackThreshold = 128
 
     static member castToBool value =
         match value with
@@ -125,36 +138,101 @@ type Helpers =
         finally
             pool.Return(buffer)
     
-    static member castFilterToNonNullDoubles (values: value[]) =
-        let pool = ArrayPool<float>.Shared
-        let mutable requiredCap = values.Length
-        let mutable buffer = pool.Rent(requiredCap)
+    /// Number of elements `values` produces when flattened one level (an exact upper
+    /// bound on the number of non-null doubles it can yield).
+    static member flattenedLength (values: value[]) =
+        let mutable total = 0
+        for v in values do
+            match v with
+            | ValueArray a -> total <- total + a.Length
+            | _ -> total <- total + 1
+        total
+
+    /// Flattens `values` one level, casts each element to a double and writes the non-null
+    /// ones into `dest`, returning how many were written. `dest` must hold at least
+    /// `flattenedLength values` elements.
+    static member fillNonNullDoubles (values: value[], dest: Span<float>) =
         let mutable count = 0
-
-        try
-            for v in values do 
-                match v with
-                | ValueArray a ->
-                    requiredCap <- requiredCap + a.Length
-                    if requiredCap > buffer.Length then
-                        let newBuffer = pool.Rent(requiredCap)
-                        Array.blit buffer 0 newBuffer 0 count
-                        pool.Return(buffer)
-                        buffer <- newBuffer
-
-                    for x in a do
-                        let n = Helpers.castToNullableDouble x
-                        if n.HasValue then
-                            buffer.[count] <- n.GetValueOrDefault()
-                            count <- count + 1
-                | x ->
+        for v in values do
+            match v with
+            | ValueArray a ->
+                for x in a do
                     let n = Helpers.castToNullableDouble x
                     if n.HasValue then
-                        buffer.[count] <- n.GetValueOrDefault()
+                        dest.[count] <- n.GetValueOrDefault()
                         count <- count + 1
+            | x ->
+                let n = Helpers.castToNullableDouble x
+                if n.HasValue then
+                    dest.[count] <- n.GetValueOrDefault()
+                    count <- count + 1
+        count
 
-            let result = buffer.[0 .. count - 1]
-            result
+    static member withNonNullDoubles (values: value[], f: DoubleSpanFunc<'R>) : 'R =
+        let cap = Helpers.flattenedLength values
+        if cap = 0 then
+            f.Invoke(ReadOnlySpan<float>.Empty)
+        elif cap <= Helpers.StackThreshold then
+            let span = SpanHelpers.stackalloc<float> cap
+            let n = Helpers.fillNonNullDoubles(values, span)
+            f.Invoke(span.Slice(0, n))
+        else
+            let pool = ArrayPool<float>.Shared
+            let buffer = pool.Rent(cap)
+            try
+                let n = Helpers.fillNonNullDoubles(values, Span<float>(buffer))
+                f.Invoke(ReadOnlySpan<float>(buffer, 0, n))
+            finally
+                pool.Return(buffer)
+
+    static member withNonNullDoublesScratch (values: value[], f: DoubleSpanScratchFunc<'R>) : 'R =
+        let cap = Helpers.flattenedLength values
+        if cap = 0 then
+            f.Invoke(ReadOnlySpan<float>.Empty, Span<float>.Empty)
+        elif cap <= Helpers.StackThreshold then
+            let span = SpanHelpers.stackalloc<float> cap
+            let n = Helpers.fillNonNullDoubles(values, span)
+
+            let scratch =
+                if n = 0 then Span<float>.Empty
+                else SpanHelpers.stackalloc<float> n
+
+            f.Invoke(span.Slice(0, n), scratch)
+        else
+            let pool = ArrayPool<float>.Shared
+            let buffer = pool.Rent(cap)
+            let scratchBuffer = pool.Rent(cap)
+            try
+                let n = Helpers.fillNonNullDoubles(values, Span<float>(buffer))
+                let s = Span<float>(scratchBuffer, 0, n)
+                f.Invoke(ReadOnlySpan<float>(buffer, 0, n), s)
+            finally
+                pool.Return(buffer)
+                pool.Return(scratchBuffer)
+
+    static member withNonNullDoublesMutable (values: value[], f: MutableDoubleSpanFunc<'R>) : 'R =
+        let cap = Helpers.flattenedLength values
+        if cap = 0 then
+            f.Invoke(Span<float>.Empty)
+        elif cap <= Helpers.StackThreshold then
+            let span = SpanHelpers.stackalloc<float> cap
+            let n = Helpers.fillNonNullDoubles(values, span)
+            f.Invoke(span.Slice(0, n))
+        else
+            let pool = ArrayPool<float>.Shared
+            let buffer = pool.Rent(cap)
+            try
+                let n = Helpers.fillNonNullDoubles(values, Span<float>(buffer))
+                f.Invoke(Span<float>(buffer, 0, n))
+            finally
+                pool.Return(buffer)
+
+    static member castFilterToNonNullDoubles (values: value[]) =
+        let pool = ArrayPool<float>.Shared
+        let buffer = pool.Rent(Helpers.flattenedLength values)
+        try
+            let n = Helpers.fillNonNullDoubles(values, Span<float>(buffer))
+            buffer.[0 .. n - 1]
         finally
             pool.Return(buffer)
 
