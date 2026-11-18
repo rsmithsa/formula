@@ -11,19 +11,7 @@ module Parser =
 
     open FParsec
     open Formula.Parser.Ast
-
-    let push item stack = item :: stack
-
-    let pop stack =
-        match stack with
-        | [] -> None, stack
-        | item :: newStack -> Some item, newStack
-
-    let peek stack =
-        match stack with
-        | [] -> None
-        | item :: newStack -> Some item
-    
+   
     let str s = pstring s
     let ws = spaces
     let str_ws s = str s .>> ws

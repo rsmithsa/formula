@@ -17,9 +17,6 @@ module Compiler =
 
     let compileFormula<'a> (ast: IAstItem<expr>) =
 
-        let invalidOperationEx (message: Expression) =
-            Expression.Throw(Expression.New(typeof<InvalidOperationException>.GetConstructor([| typeof<string> |]), message), typeof<value[]>)
-
         let variableProvider =
             Expression.Parameter(typeof<IVariableProvider>, "variableProvider")
 

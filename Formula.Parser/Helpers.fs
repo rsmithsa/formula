@@ -42,33 +42,21 @@ type Helpers =
         Option.ofNullable (Helpers.castToNullableDouble value)
    
     static member flattenValues (values: value[]) =
-        let pool = ArrayPool<value>.Shared
-        let mutable requiredCap = values.Length
-        let mutable buffer = pool.Rent(requiredCap)
+        let length = Helpers.flattenedLength values
+        let buffer = Array.zeroCreate<value> length
         let mutable count = 0
         
-        try
-            for v in values do 
-                match v with
-                | ValueArray a ->
-                    requiredCap <- requiredCap + a.Length
-                    if requiredCap > buffer.Length then
-                        let newBuffer = pool.Rent(requiredCap)
-                        Array.blit buffer 0 newBuffer 0 count
-                        pool.Return(buffer)
-                        buffer <- newBuffer
-
-                    for x in a do
-                        buffer.[count] <- x
-                        count <- count + 1
-                | x ->
+        for v in values do 
+            match v with
+            | ValueArray a ->
+                for x in a do
                     buffer.[count] <- x
                     count <- count + 1
+            | x ->
+                buffer.[count] <- x
+                count <- count + 1
 
-            let result = buffer.[0 .. count - 1]
-            result
-        finally
-            pool.Return(buffer)
+        buffer
     
     static member castToNullableDouble (value: value) =
         match value with
@@ -81,65 +69,41 @@ type Helpers =
         | _ -> invalidOp $"Unable to cast '{value}' to numeric."
     
     static member castToDoubles (values: value[]) =
-        let pool = ArrayPool<float option>.Shared
-        let mutable requiredCap = values.Length
-        let mutable buffer = pool.Rent(requiredCap)
+        let length = Helpers.flattenedLength values
+        let buffer = Array.zeroCreate<float option> length
         let mutable count = 0
-
-        try
-            for v in values do 
-                match v with
-                | ValueArray a ->
-                    requiredCap <- requiredCap + a.Length
-                    if requiredCap > buffer.Length then
-                        let newBuffer = pool.Rent(requiredCap)
-                        Array.blit buffer 0 newBuffer 0 count
-                        pool.Return(buffer)
-                        buffer <- newBuffer
-
-                    for x in a do
-                        buffer.[count] <- (Helpers.castToDouble x)
-                        count <- count + 1
-                | x ->
+        
+        for v in values do 
+            match v with
+            | ValueArray a ->
+                for x in a do
                     buffer.[count] <- (Helpers.castToDouble x)
                     count <- count + 1
+            | x ->
+                buffer.[count] <- (Helpers.castToDouble x)
+                count <- count + 1
 
-            let result = buffer.[0 .. count - 1]
-            result
-        finally
-            pool.Return(buffer)
+        buffer
 
     static member castToNullableDoubles (values: value[]) =
-        let pool = ArrayPool<Nullable<float>>.Shared
-        let mutable requiredCap = values.Length
-        let mutable buffer = pool.Rent(requiredCap)
+        let length = Helpers.flattenedLength values
+        let buffer = Array.zeroCreate<Nullable<float>> length
         let mutable count = 0
-
-        try
-            for v in values do 
-                match v with
-                | ValueArray a ->
-                    requiredCap <- requiredCap + a.Length
-                    if requiredCap > buffer.Length then
-                        let newBuffer = pool.Rent(requiredCap)
-                        Array.blit buffer 0 newBuffer 0 count
-                        pool.Return(buffer)
-                        buffer <- newBuffer
-
-                    for x in a do
-                        buffer.[count] <- (Helpers.castToNullableDouble x)
-                        count <- count + 1
-                | x ->
+        
+        for v in values do 
+            match v with
+            | ValueArray a ->
+                for x in a do
                     buffer.[count] <- (Helpers.castToNullableDouble x)
                     count <- count + 1
+            | x ->
+                buffer.[count] <- (Helpers.castToNullableDouble x)
+                count <- count + 1
 
-            let result = buffer.[0 .. count - 1]
-            result
-        finally
-            pool.Return(buffer)
-    
+        buffer
+
     /// Number of elements `values` produces when flattened one level (an exact upper
-    /// bound on the number of non-null doubles it can yield).
+    /// bound on the number of values it can yield).
     static member flattenedLength (values: value[]) =
         let mutable total = 0
         for v in values do

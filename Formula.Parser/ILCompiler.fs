@@ -15,13 +15,10 @@ module ILCompiler =
     open Formula.Parser
     open Formula.Parser.Ast
 
-    [<AbstractClass; Sealed>]
+    [<AbstractClass; Sealed; System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage(Justification = "Placeholder class for generated code.")>]
     type CompiledFormulae private() = class end
     
     let compileFormula<'a> (ast: IAstItem<expr>) =
-        
-        let invalidOperationEx = typeof<InvalidOperationException>.GetConstructor([| typeof<string> |])
-        
         let empty = typeof<value>.GetMethod("Empty", BindingFlags.NonPublic ||| BindingFlags.Static)
         let number = typeof<value>.GetMethod("NewNumber", BindingFlags.Public ||| BindingFlags.Static)
         let boolean = typeof<value>.GetMethod("NewBoolean", BindingFlags.Public ||| BindingFlags.Static)

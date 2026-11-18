@@ -44,6 +44,17 @@ type FunctionValidatorTests () =
             Assert.AreEqual(expected, errors);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestMissingFunctionArgs () =
+        let result = parseFormulaString "SUM([A]|1:1|) + [B]|42| / NOTAFUNC([A]|1:1|, 12, [B]|42|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let errors = getSimpleErrorList (validateFunctions ast DefaultFunctionProvider.Instance [])
+            let expected = [ Identifier("NOTAFUNC") ]
+            Assert.AreEqual(expected, errors);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
             
     [<TestMethod>]
     member this.TestKnownFunction () =
@@ -85,6 +96,17 @@ type FunctionValidatorTests () =
         | Success (ast, userState, endPos) ->
             let errors = getSimpleErrorList (validateFunctions ast DefaultFunctionProvider.Instance [])
             let expected = List.empty<identifier>
+            Assert.AreEqual(expected, errors);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestNestedMissingFunctionBranch () =
+        let result = parseFormulaString "IF [A] && [B] = ![D] THEN COUNT(1, [A], NOTAFUNC()) ELSE -[C]"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let errors = getSimpleErrorList (validateFunctions ast DefaultFunctionProvider.Instance [])
+            let expected = [ Identifier("NOTAFUNC") ]
             Assert.AreEqual(expected, errors);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

@@ -551,10 +551,20 @@ type ILCompilerTests () =
 
     [<TestMethod>]
     member this.TestCompileWildcardWithRange () =
-        let result = parseFormulaString "SUM({V*}|1:2|)"
+        let result = parseFormulaString "SUM({V*}|1:20|)"
         match result with
         | Success (ast, userState, endPos) ->
             let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
-            Assert.AreEqual(Some(96.0), value);
+            Assert.AreEqual(Some(960.0), value);
+        | Failure (msg, error, userState) ->
+            Assert.Fail(msg)
+
+    [<TestMethod>]
+    member this.TestCompileWildcardWithRange2 () =
+        let result = parseFormulaString "SUM({V*}|1:1|)"
+        match result with
+        | Success (ast, userState, endPos) ->
+            let value = (compileFormula ast).Invoke(varMap, DefaultFunctionProvider.Instance)
+            Assert.AreEqual(Some(48.0), value);
         | Failure (msg, error, userState) ->
             Assert.Fail(msg)

@@ -34,7 +34,10 @@ type MapVariableProvider(map: Map<string, float>) =
     member this.LookupRange name lower upper =
         let value = this.KnownVariables.[name]
         match (lower, upper) with
-        | (Number a, Number b) -> ValueArray(Array.init (int(b - a) + 1) (fun x -> Number(value)))
+        | (Number a, Number b) ->
+            if a = b then Number(value)
+            else
+                ValueArray(Array.init (int(b - a) + 1) (fun x -> Number(value)))
         | _ -> invalidArg "range" "Numeric range expected."
     member this.LookupIndex name index =
         let value = this.KnownVariables.[name]

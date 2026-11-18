@@ -12,26 +12,6 @@ module FunctionValidator =
     
     open Formula.Parser.Ast
     
-    let private mockVariableProvider = {
-        new IVariableProvider with 
-            member this.IsDefined (name) = true
-            member this.IsDefined (name, sender) = true
-            member this.Lookup (name) = Number(0.0)
-            member this.Lookup (name, sender) = Number(0.0)
-            member this.LookupRange (name, lower, upper) =
-                match (lower, upper) with
-                | (Number a, Number b) -> ValueArray(Array.init (int(b - a) + 1) (fun x -> Number(0.0)))
-                | _ -> ValueArray([| Number(0.0) |])
-            member this.LookupRange (name, lower, upper, sender) =
-                match (lower, upper) with
-                | (Number a, Number b) -> ValueArray(Array.init (int(b - a) + 1) (fun x -> Number(0.0)))
-                | _ -> ValueArray([| Number(0.0) |])
-            member this.LookupIndex (name, index) = Number(0.0)
-            member this.LookupIndex (name, index, sender) = Number(0.0)
-            member this.MatchNames (pattern, collector) = ()
-            member this.MatchNames (pattern, collector, sender) = ()
-    }
-    
     let rec validateFunctions (ast: IAstItem<expr>) (functions: IFunctionProvider) errors =
         
         match ast.Item with
